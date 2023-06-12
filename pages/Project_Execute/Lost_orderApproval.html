@@ -384,7 +384,7 @@
               receive_data = rel.data;
               post_data = JSON.parse(JSON.stringify(receive_data));
               show_content(rel.data);
-              if (role_id === '4' && modify === '-2'){
+              if ((role_id === '4' && modify === '-2') || ( role_id === '8' && modify === '-2')){
                 $("#ageree").show()
                 $("#disagree").show()
 
