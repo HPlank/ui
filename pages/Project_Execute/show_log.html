@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>湛德财务项目管理系统</title>
+  <link rel="stylesheet" href="../../layui/css/layui.css">
+  <link rel="stylesheet" href="../../css/main.css">
+  <link rel="stylesheet" href="../../css/skin.css">
+  <link rel="stylesheet" href="../../css/sq.css">
+  <style type="text/css">
+    .layui-table th{
+      font-weight: bold;
+    }
+    #mainContent{
+      padding: 20px;
+    }
+    .layui-layer-title {
+      padding: 0 80px 0 20px;
+      height: 42px;
+      line-height: 42px;
+      border-bottom: 1px solid #eee;
+      font-size: 14px;
+      color: #333;
+      overflow: hidden;
+      border-radius: 2px 2px 0 0;
+    }
+    .editinput{
+      padding: 10px;
+      width: 90%;
+      border: 1px solid #5FB878;
+    }
+    .edittd{
+      position: absolute;
+      left: 0;
+      right: 0;
+      top:0;
+      bottom: 0;
+      padding: 20px;
+    }
+    .edittd:hover{
+      cursor: pointer;
+      background-color: #dcf0e2;
+    }
+    .headAddLeft{
+      overflow: hidden;
+      background-color: #efefef;
+      padding: 15px 0 5px 20px;
+      border-left: 5px solid #003c97;
+    }
+    .sqsel{
+      padding: 3px;
+      border: 1px solid #003c97;
+      color: #003c97;
+      font-size: 18px;
+      margin-right: 20px;
+    }
+    .layui-form-select dl{
+      max-height: 100px;
+    }
+  </style>
+</head>
+<body>
+<div id="mainContent">
+  <div id="rightContent">
+    <div class="articleContent">
+      <div class="headAddLeft" style="padding-top:10px;">
+
+          <div class="layui-col-md12 layui-inline" style="font-size: 18px;font-weight: bold;line-height: 38px;">成本录入
+            <div class="layui-inline" style="font-weight: normal;margin-left: 100px">可用额度: <label class="layui-inline" id="available">50</label>元</div>
+          <button class="layui-btn layui-inline" onclick="add()" style="float:right;margin-top:-3px;margin-right: 20px;">增加条目</button></div>
+
+
+      </div>
+      <table class="layui-table" id="infoList" >
+        <colgroup>
+          <col>
+          <col>
+          <col>
+          <col>
+          <col>
+          <col>
+        </colgroup>
+        <thead>
+        <tr>
+          <th style="text-align: center">录入人</th>
+<!--          <th style="text-align: center">类型</th>-->
+          <th style="text-align: center">费用</th>
+          <!-- <th style="text-align: center">备注</th> -->
+          <th style="text-align: center">时间</th>
+          <th style="text-align: center">操作</th>
+        </tr>
+        </thead>
+        <tbody id="listTbody">
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<script src="/js/jquery.min.js"></script>
+<script src="/layui/layui.js"></script>
+<script src="/js/ajax.js"></script>
+<script>
+  var cost_type =sq.getHashStringArgs()["type"]
+  var tgt =sq.getHashStringArgs()["tgt"];
+  var targetframe = parent;
+  if ( tgt in  top.frameset) {
+    targetframe = top.frameset[tgt].contentWindow
+    delete  top.frames[tgt]
+  }
+  console.log(targetframe.obj)
+  var department = [
+    { id: "travel", dname: "差旅费"},
+    { id: "communication", dname: "交际费"},
+    { id: "market_investment", dname: "市场投入"},
+    { id: "tender", dname: "招标费"},
+    { id: "dealer_maintenance", dname: "经销商维修"},
+    { id: "product_maintenance", dname: "产品维修"},
+    { id: "purchasing_cost", dname: "采购成本"},
+  ];
+  var departmentValue ='';
+  for (let i = 0; i < department.length; i++) {
+    if(department[i].id == cost_type){
+    departmentValue = department[i].dname;
+    }
+  }
+  var sendObj = new Object();
+  sendObj.page_size = 15;
+  sendObj.page = 1;
+
+  function setTable(infoList) {
+    /**
+     *@infoList 是一个数组
+     *  **/
+
+    infoList.forEach(function (value) {
+      //显示的按钮
+      var buttonStr = '<button class="layui-btn editbt layui-btn-sm" onclick="openEditWindow(\''+encodeURIComponent(JSON.stringify(value))+'\')"><i class="layui-icon layui-icon-edit "></i>   </button>'+
+              '<button type="button" class="layui-btn layui-btn-danger layui-btn-sm" onclick="del_project('+value.id+')"><i class="layui-icon"></i></button>';
+      //将数据插入表格中
+      $("#infoList").append('<tr>' +
+              '<td style="text-align: center">'+value.submit_nickname+'</td>' +
+              // '<td style="text-align: center">'+value.type_name+'</td>' +
+              '<td style="text-align: right">'+numFormat(value.price)+'</td>' +
+              // '<td style="text-align: center">' +value.remark+'</td>' +
+              '<td style="text-align: center">'+value.time+'</td>' +
+              '<td style="text-align: center">'+buttonStr+'</td>' +
+              '</tr>');
+    })
+  }
+  function openEditWindow(data) {
+    if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+    console.log(JSON.parse(decodeURIComponent(data)))
+    sq.inputWindow({
+      title: {
+        text: "修改成本条目",//标题
+        titleColor: "#FFFFFF"//弹窗文字颜色
+      },
+      closeBtn: 1,
+      width: "350px",
+      shadeClose: false,
+      form: {
+        // mdeparment: {
+        //   label: "类型",
+        //   type: "select",
+        //   value: departmentValue,
+        //   tip: departmentValue,
+        //   allowNull: false
+        // },
+        price_add: {
+          label: "费用",
+          type: "text",
+          value: JSON.parse(decodeURIComponent(data)).price,
+          tip: JSON.parse(decodeURIComponent(data)).price,
+          allowNull: false
+        },
+        // postscript_add: {
+        //   label: "备注",
+        //   type: "text",
+        //   value: JSON.parse(decodeURIComponent(data)).remark,
+        //   tip: "请输入备注",
+        //   allowNull: true
+        // },
+      },
+      sure: function (rel) {
+        cur_page = 1;
+        console.log(rel);
+        let sendObj_1 =new Object();
+        sendObj_1.type = cost_type;
+        sendObj_1.price = rel.price_add;
+        sendObj_1.remark = rel.postscript_add;
+        if(sq.checkNumber(rel.price_add)){  // 10.9 检测输入数字合法性
+          getAjaxDate("/api/cost/"+JSON.parse(decodeURIComponent(data)).id+"/","patch",sendObj_1,function (rel) {
+            console.log(rel.data)
+            if(rel.code == 1){
+              layer.msg(rel.msg,{time:1000}, function(){
+                // $("#infoList").empty()
+                $("#listTbody").empty()
+                show_table()
+                window.targetframe.location.reload()
+                // targetframe.parent.location.reload()
+                layer.closeAll()
+              });
+            }else if(rel.code == 0){
+              layer.msg(rel.msg,{time:2000})
+            }
+          });
+        }else{
+          layer.msg("请输入正确的金额 ！")
+        }
+      }
+    })
+  }
+  function add() {
+    if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+    sq.inputWindow({
+      title: {
+        text: "添加成本条目",//标题
+        titleColor: "#FFFFFF"//弹窗文字颜色
+      },
+      closeBtn: 1,
+      width: "500px",
+      offset:'5px',//高度坐标
+      shadeClose: false,
+      form: {
+        mdeparment: {
+          label: "类型",
+          type: "hdtext",
+          value: departmentValue,
+          tip: departmentValue,
+          allowNull: false
+        },
+        price_add: {
+          label: "费用",
+          type: "text",
+          value: "",
+          tip: "请输入费用",
+          allowNull: false
+        },
+        // postscript_add: {
+        //   label: "备注",
+        //   type: "text",
+        //   value: "",
+        //   tip: "请输入备注",
+        //   allowNull: true
+        // },
+        seldatetime: {
+          label: "时间",
+          type: "datetime",
+          value: sq.fmtDate(new Date().getTime()/1000),
+          tip: "请输入时间",
+          allowNull: true
+        },
+      },
+      sure: function (rel) {
+        cur_page = 1;
+        console.log(rel);
+        let sendObj_1 =new Object();
+        sendObj_1.type = cost_type;
+        sendObj_1.price = rel.price_add;
+        sendObj_1.remark = rel.postscript_add;
+        sendObj_1.time = rel.seldatetime;
+        cur_year = parseInt(sendObj_1.time.split(' ')[0].split('-')[0]);
+        cur_sysyear = new Date().getFullYear();
+        sendObj_1.item = targetframe.obj.id;
+        if(sq.checkNumber(rel.price_add)){  // 10.9 检测输入数字合法性
+          if((cur_year != cur_sysyear && window.sessionStorage.getItem("historyUpdate")==1)||cur_year == cur_sysyear){
+            getAjaxDate("/api/cost/","post",sendObj_1,function (rel) {
+              console.log(rel.data)
+              if(rel.code == 1){
+                layer.msg(rel.msg,{time:700}, function(){
+                  // $("#infoList").empty() 9.29 修改误删表头操作
+                  $("#listTbody").empty()
+                  show_table()
+                  window.targetframe.location.reload()
+                  // targetframe.parent.location.reload()
+                  layer.closeAll()
+                });
+              }else if(rel.code == 0){
+                layer.msg(rel.msg,{time:1000})
+              }
+            });
+          }else{
+            layer.msg("录入时间仅限当年！")
+          }
+        }else{
+          layer.msg("请输入正确的金额 ！")
+        }
+      }
+    })
+  }
+  show_table()
+  function show_table() {
+    getAjaxDate('/api/cost/','get',{item:targetframe.obj.id,type:cost_type},function (rel) {
+      let remain_mon = rel.data.total - rel.data.spend;
+      $("#available").text(numFormat(remain_mon))
+      if(remain_mon == 0){
+        layer.msg("请注意！本条目的费用额度已用尽！")
+      }else if(remain_mon/rel.data.total < 0.05){
+        layer.msg("请注意！本条目的额度即将用尽！目前剩余："+remain_mon)
+      }
+   
+      console.log(rel.data)
+      setTable(rel.data.results)
+    })
+  }
+  function del_project(id) {
+    if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+    layer.confirm('确定删除本条目吗？', {
+      btn: ['确定','取消'] //按钮
+    }, function(){
+      getAjaxDate('/api/cost/'+id+'/','patch',{on_delete:1},function (rel) {
+        console.log(rel.data)
+        if(rel.code == 1){
+          layer.msg(rel.msg,{time:700}, function(){
+            // $("#infoList").empty()
+            $("#listTbody").empty()
+            show_table()
+            window.targetframe.location.reload()
+            // targetframe.parent.location.reload()
+            // console.log(targetframe.parent.location.href)
+            layer.closeAll()
+          });
+        }else if(rel.code ==0){
+          layer.msg(rel.msg,{time:700})
+        }
+      })
+    }, function(){
+      layer.msg('取消成功', {time: 300},function (){
+        targetframe.layer.closeAll()
+      });
+    });
+
+  }
+
+
+</script>
+</body>
+</html>

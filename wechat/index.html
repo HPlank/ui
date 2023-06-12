@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>湛德财务项目管理系统</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="/css/sq.css">
+    <script src="../js/echarts.min.js"></script>
+    <style type="text/css">
+        body{
+            padding-bottom: 50px;
+        }
+        #topContainer{
+            text-align: center;
+            background-color: #003c97;
+            color: #FFF;
+            font-weight: bold;
+            font-size: 18px;
+            padding: 20px;
+        }
+        .iconContent{
+            float: left;
+            text-align: center;
+            font-size: 14px;
+        }
+        .lxdh{
+            /*margin-left: 10px;*/
+            color: #FD482C;
+        }
+        #footContainer{
+            font-size: 10px;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background-color: #efefef;
+            text-align: center;
+        }
+        .sq-lm{
+            margin: 10px auto;
+            text-align: left;padding: 10px;
+            border: 1px solid #003c97;
+            position: relative;
+        }
+        .sq-lm-title{
+            position: absolute;
+            top: -15px;
+            background-color: #003c97;
+            border-radius: 3px;
+            padding: 3px 8px;
+            font-size: 14px;
+            color: #FFF;
+            font-weight: bold;
+        }
+        #mainContainer{
+            padding: 20px;
+        }
+        .butiao{
+            height: 200px;
+        }
+        .sq-index-ul{
+            padding: 0;
+            margin: 0;
+        }
+        .sq-index-ul li{
+            display: inline-block;
+            width: 49%;
+            margin: 0;
+            padding: 10px 0;
+            list-style: none;
+            text-align: center;
+            font-size: 16px;
+            background-color: #efefef;
+            margin-top: 10px;
+        }
+        .sq-index-ul li:active{
+            background-color: #ccc;
+        }
+        .sq-index-ul li i{
+            margin-left: 10px;
+        }
+        .rankUL{
+            margin:0;
+            padding: 0;
+            text-align: center;
+        }
+        .rankUL li{
+            display: inline-block;
+            width: 32%;
+            text-align: center;
+            overflow: hidden;
+            border-radius: 5px;
+        }
+        .departmentNum{
+            background-color: #FFF;
+            padding: 12px 0;
+            font-weight: bold;color: #07c160;font-size: 18px;
+        }
+        .departmentTitle{
+            padding: 3px 0;
+            background-color: #07c160;
+            color: #FFF;
+            margin-top: 5px;
+        }
+        .departmentOne{
+            height: 130px;
+            overflow: hidden;
+            margin: 10px;
+            background-color: #efefef;
+            border-radius: 3px;
+            -moz-box-shadow:2px 2px 5px #999; -webkit-box-shadow:2px 2px 5px #999; box-shadow:2px 2px 5px #999;
+        }
+        #myUL{
+            margin: 0;
+            padding: 10px;
+            background-color: #FFF;
+        }
+        #myUL li{
+            list-style: none;
+            background-color: #FFFFFF;
+            margin: 5px 0 0 1%;
+            padding: 0 0 10px 0;
+            border-radius: 5px;
+            cursor: pointer;
+            overflow: hidden;
+            border-bottom: 1px solid #efefef;
+        }
+        #myUL li p{
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+<div id="topContainer">
+    湛德财务项目管理系统
+</div>
+
+<div id="mainContainer" class="layui-form">
+    <div class="sq-lm" style="">
+        <span class="sq-lm-title" style="">待办事项</span>
+        <ul class="sq-index-ul">
+           <li onclick="open_approval_detial()">立项申请 <span id="item_apply" style="font-weight: bold;color: #FD482C;">4</span><i class="layui-icon layui-icon-next"></i>   </li>
+           <li onclick="open_knot_detail()">立项修改 <span id="item_update" style="font-weight: bold;color: #FD482C;">400</span><i class="layui-icon layui-icon-next"></i></li>
+           <li onclick="open_losed_detail()">丢单 <span id="item_loss" style="font-weight: bold;color: #FD482C;">42</span><i class="layui-icon layui-icon-next"></i></li>
+           <li onclick="open_waring_detail()">项目警告 <span id="item_warn" style="font-weight: bold;color: #FD482C;">35</span><i class="layui-icon layui-icon-next"></i></li>
+        </ul>
+
+    </div>
+    <div class="sq-lm" style="">
+        <span class="sq-lm-title" style="">历史登录</span>
+        <div>
+            <hr class="layui-border-blue">
+            <!--            <div id="test" style="width: 100%;height:330%;margin-top: 10px"></div>-->
+            <ul id="myUL"></ul>
+        </div>
+
+    </div>
+
+<!--    <div class="sq-lm"  style="">-->
+<!--        <span class="sq-lm-title" >其他统计</span>-->
+<!--        <div>-->
+<!--            <div id="test_3" style="width:100%;height:400px;margin-top: 30px"></div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--    <div class="sq-lm"  style="">-->
+<!--        <span class="sq-lm-title" >排行榜</span>-->
+<!--        <div style="padding: 16px;font-size: 16px;font-weight: bold;overflow: hidden;">-->
+<!--            <div class="layui-col-xs8" style="color: #666;">部门利润排名</div>-->
+<!--            <div class="layui-col-xs4" style="text-align: right;font-size: 14px;font-weight: normal;color: #888;" onclick="sq.open('ranking.html#type=department')">-->
+<!--                <span style="padding-right: 5px;">全部</span><i class="layui-icon">&#xe602;</i>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <ul id="cprankUL" class="rankUL">-->
+<!--            <li><div class="departmentOne" id="cprankid0">-->
+<!--                <div class="departmentNum"><img src="../img/guanjun.png" style="height: 35px;" /></div>-->
+<!--                <div class="departmentTitle" style="background-color: #fa5353;" id="cprankTitle0">5000000000</div>-->
+<!--                <div class="departmentNum" style="color: #feae30;" id="cprankNum0">部门1</div>-->
+<!--            </div></li>-->
+<!--            <li><div class="departmentOne" id="cprankid1">-->
+<!--                <div class="departmentNum"><img src="../img/yajun.png" style="height: 35px;" /></div>-->
+<!--                <div class="departmentTitle" style="background-color: #fa5353;" id="cprankTitle1">450000000</div>-->
+<!--                <div class="departmentNum" style="color: #89b8d4;" id="cprankNum1">暂无</div>-->
+<!--            </div></li>-->
+<!--            <li><div class="departmentOne" id="cprankid2">-->
+<!--                <div class="departmentNum"><img src="../img/jijun.png" style="height: 35px;" /></div>-->
+<!--                <div class="departmentTitle" style="background-color: #fa5353;" id="cprankTitle2">399998989 </div>-->
+<!--                <div class="departmentNum" style="color: #ff8846;" id="cprankNum2">暂无</div>-->
+<!--            </div></li>-->
+<!--        </ul>-->
+<!--        <div style="padding: 16px;font-size: 16px;font-weight: bold;overflow: hidden;">-->
+<!--            <div class="layui-col-xs8" style="color: #666;">个人利润排名</div>-->
+<!--            <div class="layui-col-xs4" style="text-align: right;font-size: 14px;font-weight: normal;color: #888;" onclick="sq.open('ranking.html#type=personal')">-->
+<!--                <span style="padding-right: 5px;">全部</span><i class="layui-icon">&#xe602;</i>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <ul id="cprankUL1" class="rankUL">-->
+<!--            <li><div class="departmentOne" id="cprankid4">-->
+<!--                <div class="departmentNum"><img src="../img/guanjun.png" style="height: 35px;" /></div>-->
+<!--                <div class="departmentTitle" style="background-color: #fa5353;" id="cprankTitle4">暂无</div>-->
+<!--                <div class="departmentNum" style="color: #feae30;" id="cprankNum4">暂无</div>-->
+<!--            </div></li>-->
+<!--            <li><div class="departmentOne" id="cprankid5">-->
+<!--                <div class="departmentNum"><img src="../img/yajun.png" style="height: 35px;" /></div>-->
+<!--                <div class="departmentTitle" style="background-color: #fa5353;" id="cprankTitle5">暂无</div>-->
+<!--                <div class="departmentNum" style="color: #89b8d4;" id="cprankNum5">暂无</div>-->
+<!--            </div></li>-->
+<!--            <li><div class="departmentOne" id="cprankid6">-->
+<!--                <div class="departmentNum"><img src="../img/jijun.png" style="height: 35px;" /></div>-->
+<!--                <div class="departmentTitle" style="background-color: #fa5353;" id="cprankTitle6">暂无</div>-->
+<!--                <div class="departmentNum" style="color: #ff8846;" id="cprankNum6">暂无</div>-->
+<!--            </div></li>-->
+<!--        </ul>-->
+<!--    </div>-->
+</div>
+<div id="footContainer">
+    <div style="width: 25%;color: #003c97;" class="iconContent" id="index_foot">
+        <div style="padding: 10px 0">
+            <i class="layui-icon layui-icon-home" style="font-size: 22px;font-weight: bold;"></i>
+            <br>
+            <span>首页</span>
+        </div>
+    </div>
+<!--    <div style="width: 25%" class="iconContent" id="project_foot">-->
+<!--        <div style="padding: 10px 0" onclick="sq.open('approvalList.html')">-->
+<!--            <i class="layui-icon layui-icon-form" style="font-size: 22px;font-weight: bold;"></i>-->
+<!--            <br>-->
+<!--            <span>项目</span>-->
+<!--        </div>-->
+<!--    </div>-->
+    <div style="width: 25%" class="iconContent" id="project_foot">
+        <div style="padding: 10px 0" id="project_dropdown">
+            <i class="layui-icon layui-icon-form" style="font-size: 22px;font-weight: bold;"></i>
+            <br>
+            <span >项目</span>
+        </div>
+    </div>
+    <div style="width: 25%" class="iconContent" id="execute_foot">
+        <div style="padding: 10px 0" onclick="sq.open('execute.html')">
+            <i class="layui-icon layui-icon-template-1" style="font-size: 22px;font-weight: bold;"></i>
+            <br>
+            <span>执行</span>
+        </div>
+    </div>
+    <div style="width: 25%;display: none;" class="iconContent" id="analyse_foot">
+        <div style="padding: 10px 0" id="analyse_dropdown">
+            <i class="layui-icon layui-icon-template-1" style="font-size: 22px;font-weight: bold;"></i>
+            <br>
+            <span>分析</span>
+        </div>
+    </div>
+    <div style="width: 25%" class="iconContent" id="msg_foot">
+        <div style="padding: 10px 0" onclick="sq.open('my.html')">
+            <i class="layui-icon layui-icon-notice" style="font-size: 22px;font-weight: bold;"></i>
+            <br>
+            <span>消息</span>
+        </div>
+    </div>
+</div>
+<!--下方为模板部分-->
+<!--用户登陆的模板-->
+</body>
+<script type="text/javascript" src="../js/jquery-3.3.1.min.js" language="JavaScript"></script>
+<script src="/layui/layui.js"></script>
+<script src="/js/ajax.js"></script>
+<script src="/js/jquery.cookie.js"></script>
+<script>
+    layui.use('dropdown', function(){
+        var dropdown = layui.dropdown
+        dropdown.render({
+            elem: '#project_dropdown' //可绑定在任意元素中，此处以上述按钮为例
+            ,align: 'center'
+            ,data: [{
+                title: '立项申请'
+                ,id: 100
+                ,href: 'approvalList.html'
+            },{
+                title: '立项修改'
+                ,id: 101
+                ,href: 'approval_editList.html' //开启超链接
+                // ,target: '_blank' //新窗口方式打开
+            },{
+                title: '丢单'
+                ,id: 102
+                ,href: 'Lost_orderList.html'
+            },]
+            ,id: 'project_dropdown'
+            //菜单被点击的事件
+            ,click: function(obj){
+                console.log(obj);
+                // layer.msg('回调返回的参数已显示再控制台');
+            }
+        });
+    });
+    layui.use('dropdown', function(){
+        var dropdown = layui.dropdown
+        dropdown.render({
+            elem: '#analyse_dropdown' //可绑定在任意元素中，此处以上述按钮为例
+            ,align: 'center'
+            ,data: [{
+                title: '销售分析'
+                ,id: 200
+                ,href: 'sales_analysis.html'
+            },{
+                title: '财务分析'
+                ,id: 201
+                ,href: 'financial_analysis.html' //开启超链接
+                // ,target: '_blank' //新窗口方式打开
+            },{
+                title: '开票分析'
+                ,id: 202
+                ,href: 'bill_analysis.html'
+            },]
+            ,id: 'analyse_dropdown'
+            //菜单被点击的事件
+            ,click: function(obj){
+                console.log(obj);
+                // layer.msg('回调返回的参数已显示再控制台');
+            }
+        });
+    });
+    console.log(sq.getHashStringArgs()['user_data'])
+    if(sq.getHashStringArgs()['user_data'] != null){
+        user_info = JSON.parse(sq.getHashStringArgs()['user_data'])
+        window.sessionStorage.setItem("page", sq.getHashStringArgs()['page'])
+        window.sessionStorage.setItem("number", sq.getHashStringArgs()['number'])
+        window.sessionStorage.setItem("token",user_info.token)
+        window.sessionStorage.setItem("realname",user_info.nickname)
+        window.sessionStorage.setItem("loginname",user_info.user_name)
+        window.sessionStorage.setItem("sex",user_info.gender)
+        window.sessionStorage.setItem("tel",user_info.tel)
+        window.sessionStorage.setItem("department",user_info.department_name)
+        window.sessionStorage.setItem("role_name",user_info.role_name)
+        window.sessionStorage.setItem("role_id",user_info.role_id)
+    }
+    else{
+        if(window.sessionStorage.getItem("token") == undefined){
+            // layer.msg('用户非法，请登录！')
+            sq.open('/wechat/msg.html#code=0&msg=用户非法，请登录！')
+        }
+    }
+    if(window.sessionStorage.getItem('role_id') == 3){
+        $("#execute_foot").hide()
+        $("#index_foot").css('width','34%')
+        $("#project_foot").css('width','33%')
+        $("#msg_foot").css('width','33%')
+    }
+    if(window.sessionStorage.getItem('role_id') == 4){
+        $("#execute_foot").hide()
+        $("#analyse_foot").show()
+    }
+
+    get_loginlog()
+    function get_loginlog() {
+        getAjaxDate('/api/loginlog/','get',{page:1,page_size:5},function (rel) {
+            console.log(rel.data)
+            $("#myUL").empty()
+            setTable(rel.data.results)
+        })
+    }
+    getAjaxDate('/api/todoitem/','get','',function (rel) {
+        $("#item_apply").text(rel.data.item_apply)
+        $("#item_update").text(rel.data.item_update)
+        $("#item_loss").text(rel.data.item_loss)
+        $("#item_warn").text(rel.data.item_warn)
+        console.log(rel.data)
+    })
+
+    function setTable(infoList) {
+        /**
+         *@infoList 是一个数组
+         *  **/
+        infoList.forEach(function (value) {
+            //显示的按钮
+            //将数据插入表格中
+            $("#myUL").append('<li>'+'<div class="layui-col-md12 layui-col-xs12">'+'<p style="text-align: left;">'
+                +'<span id="project">'+value.nickname+' ('+value.device+')'+'</span>'
+                +'<span  style="float: right;">'+value.ip+'</span>'
+                +'</p><div style="padding: 10px 5px;">'
+                +'<div class="layui-col-xs6"><span class="lxdh" style="color: #01AAED">'+value.address+'</span></div>'
+                +'<div class="layui-col-xs6" style="text-align: right;"><span class="sqtime">'+value.time+'</span></div></div> </div> </li>'
+            );
+        })
+    }
+
+    // 11.11 增加微信消息获取跳转
+    if (window.sessionStorage.back!=="1") {
+        checkMessage()
+    }
+    function checkMessage(){
+        if (window.sessionStorage.page==="approvalList"){
+            let url = "approvalList.html?t="+$.now()+"#number="+window.sessionStorage.number
+            window.sessionStorage.removeItem("page")
+            window.sessionStorage.removeItem("name")
+            window.sessionStorage.setItem("back",1)
+            sq.open(url);
+
+        }
+        if (window.sessionStorage.page==="approval_editList"){
+            let url = "approval_editList.html?t="+$.now()+"#number="+window.sessionStorage.number
+            window.sessionStorage.removeItem("page")
+            window.sessionStorage.removeItem("name")
+            window.sessionStorage.setItem("back",1)
+            sq.open(url);
+        }
+        if (window.sessionStorage.page==="Lost_orderList"){
+            let url = "Lost_orderList.html?t="+$.now()+"#number="+window.sessionStorage.number
+            window.sessionStorage.removeItem("page")
+            window.sessionStorage.removeItem("name")
+            window.sessionStorage.setItem("back",1)
+            sq.open(url);
+        }
+    }
+
+    // getAjaxDate("/api/record/ranking/",'get','',function (rel) {
+    //     console.log('************************************************')
+    //     console.log(rel.data)
+    //     $("#cprankTitle0").text(rel.data.department[0].surplus)
+    //     $("#cprankTitle1").text(rel.data.department[1].surplus)
+    //     $("#cprankTitle2").text(rel.data.department[2].surplus)
+    //     $("#cprankTitle4").text(rel.data.personal[0].surplus)
+    //     $("#cprankTitle5").text(rel.data.personal[1].surplus)
+    //     $("#cprankTitle6").text(rel.data.personal[2].surplus)
+    //     $("#cprankNum0").text(rel.data.department[0].department_name)
+    //     $("#cprankNum1").text(rel.data.department[1].department_name)
+    //     $("#cprankNum2").text(rel.data.department[2].department_name)
+    //     $("#cprankNum4").text(rel.data.personal[0].nickname)
+    //     $("#cprankNum5").text(rel.data.personal[1].nickname)
+    //     $("#cprankNum6").text(rel.data.personal[2].nickname)
+    //
+    //
+    // })
+    var cur_page = 1;
+    var sendObj = new Object();
+    sendObj.type = "getGoodslist";
+    sendObj.size = 5;
+    sendObj.pname = "";
+    sendObj.tel = "";
+    sendObj.idcard = "";
+    getList(cur_page);
+    function getList(cur_page) {
+        $("#loadMoreBT").hide();
+        sendObj.page = cur_page;
+        // get_record()
+        // getAjaxDate("action/handle.php",
+        //     sendObj,
+        //     function(rel){
+        //
+        //     }
+        // );
+    }
+    function open_approval_detial() {
+        sq.open("approvalList.html?t="+$.now()+"#wait=1");
+    }
+    function open_knot_detail() {
+        sq.open("approval_editList.html?t="+$.now()+"#wait=1");
+    }
+    function open_losed_detail() {
+        sq.open("Lost_orderList.html?t="+$.now()+"#wait=1");
+
+    }
+    function open_waring_detail() {
+        sq.open("my.html?t="+$.now()+"#wait=1");
+    }
+    // var myChart_1 = echarts.init(document.getElementById('test'));
+    // var option_1;
+    // var data_1;
+    // var data_2;
+    // // var data_1 = [["2000-06-05",116],["2000-06-06",129],["2000-06-07",135],["2000-06-08",86],["2000-06-09",73],["2000-06-10",85],["2000-06-11",73],["2000-06-12",68],["2000-06-13",92],["2000-06-14",130],["2000-06-15",245],["2000-06-16",139],["2000-06-17",115],["2000-06-18",111],["2000-06-19",309],["2000-06-20",206],["2000-06-21",137],["2000-06-22",128],["2000-06-23",85],["2000-06-24",94],["2000-06-25",71],["2000-06-26",106],["2000-06-27",84],["2000-06-28",93],["2000-06-29",85],["2000-06-30",73],["2000-07-01",83],["2000-07-02",125],["2000-07-03",107],["2000-07-04",82],["2000-07-05",44],["2000-07-06",72],["2000-07-07",106],["2000-07-08",107],["2000-07-09",66],["2000-07-10",91],["2000-07-11",92],["2000-07-12",113],["2000-07-13",107],["2000-07-14",131],["2000-07-15",111],["2000-07-16",64],["2000-07-17",69],["2000-07-18",88],["2000-07-19",77],["2000-07-20",83],["2000-07-21",111],["2000-07-22",57],["2000-07-23",55],["2000-07-24",60]];
+    // var dateList_1 = data_1.map(function (item) {
+    //     return item[0];
+    // });
+    // var valueList_1 = data_1.map(function (item) {
+    //     return item[1];
+    // });
+    // var dateList_2 = data_2.map(function (item) {
+    //     return item[0];
+    // });
+    // var valueList_2 = data_2.map(function (item) {
+    //     return item[1];
+    // });
+    // option_1 = {
+    //     // Make gradient line here
+    //     visualMap: [{
+    //         show: false,
+    //         type: 'continuous',
+    //         seriesIndex: 0,
+    //         min: 0,
+    //         max: 400
+    //     }, {
+    //         show: false,
+    //         type: 'continuous',
+    //         seriesIndex: 1,
+    //         dimension: 0,
+    //         min: 0,
+    //         max: dateList_1.length - 1
+    //     }],
+    //
+    //
+    //     title: [{
+    //         top: '4%',
+    //         left: 'center',
+    //         text: '公司上提情况'
+    //     }, {
+    //         top: '50%',
+    //         left: 'center',
+    //         text: '公司支出情况'
+    //     }],
+    //     tooltip: {
+    //         trigger: 'axis'
+    //     },
+    //     xAxis: [{
+    //         data: dateList_1
+    //     }, {
+    //         data: dateList_1,
+    //         gridIndex: 1
+    //     }],
+    //     yAxis: [{
+    //     }, {
+    //         gridIndex: 1
+    //     }],
+    //     grid: [{
+    //         bottom: '60%'
+    //     }, {
+    //         top: '60%'
+    //     }],
+    //     series: [{
+    //         type: 'line',
+    //         showSymbol: false,
+    //         data: valueList_1
+    //     }, {
+    //         type: 'line',
+    //         showSymbol: false,
+    //         data: valueList_2,
+    //         xAxisIndex: 1,
+    //         yAxisIndex: 1
+    //     }]
+    // };
+    // var data_3;
+    // option_1 && myChart_1.setOption(option_1);
+    // var myChart_2 = echarts.init(document.getElementById('test_1'));
+    // var option_2;
+    // setTimeout(function () {
+    //
+    //     option_2 = {
+    //         title: {
+    //             left: 'center',
+    //             text: '各部门收益情况',
+    //         },
+    //         legend: {top: 'bottom'},
+    //         tooltip: {
+    //             trigger: 'axis',
+    //             showContent: false
+    //         },
+    //         dataset: data_3,
+    //         //     {
+    //         //     source: [
+    //         //         ['time', '2012', '2013', '2014', '2015', '2016', '2017'],
+    //         //         ['部门1', 56.5, 82.1, 88.7, 70.1, 53.4, 85.1],
+    //         //         ['部门2', 51.1, 51.4, 55.1, 53.3, 73.8, 68.7],
+    //         //         ['部门3', 40.1, 62.2, 69.5, 36.4, 45.2, 32.5],
+    //         //         ['部门4', 25.2, 37.1, 41.2, 18, 33.9, 101]
+    //         //     ]
+    //         //     // source
+    //         // },
+    //         xAxis: {type: 'category'},
+    //         yAxis: {gridIndex: 0},
+    //         grid: {top: '50%'},
+    //         series: [
+    //             {type: 'line', smooth: true, seriesLayoutBy: 'row', emphasis: {focus: 'series'}},
+    //             {type: 'line', smooth: true, seriesLayoutBy: 'row', emphasis: {focus: 'series'}},
+    //             // {type: 'line', smooth: true, seriesLayoutBy: 'row', emphasis: {focus: 'series'}},
+    //             // {type: 'line', smooth: true, seriesLayoutBy: 'row', emphasis: {focus: 'series'}},
+    //             {
+    //                 type: 'pie',
+    //                 id: 'pie',
+    //                 radius: '35%',
+    //                 center: ['50%', '25%'],
+    //                 emphasis: {focus: 'data'},
+    //                 label: {
+    //                     formatter: '{b}: {@2012} ({d}%)'
+    //                 },
+    //                 encode: {
+    //                     itemName: 'time',
+    //                     value: '2012',
+    //                     tooltip: '2012'
+    //                 }
+    //             }
+    //         ]
+    //     };
+    //
+    //     myChart_2.on('updateAxisPointer', function (event) {
+    //         var xAxisInfo = event.axesInfo[0];
+    //         if (xAxisInfo) {
+    //             var dimension = xAxisInfo.value + 1;
+    //             myChart_2.setOption({
+    //                 series: {
+    //                     id: 'pie',
+    //                     label: {
+    //                         formatter: '{b}: {@[' + dimension + ']} ({d}%)'
+    //                     },
+    //                     encode: {
+    //                         value: dimension,
+    //                         tooltip: dimension
+    //                     }
+    //                 }
+    //             });
+    //         }
+    //     });
+    //
+    //     myChart_2.setOption(option_2);
+    //
+    // });
+    // var myChart_3 = echarts.init(document.getElementById('test_2'));
+    // var option_3;
+    // var data_4;
+    // setTimeout(function () {
+    //
+    //     option_3 = {
+    //         title: {
+    //             left: 'center',
+    //             text: '各部门支出情况',
+    //         },
+    //         legend: {top: 'bottom'},
+    //         tooltip: {
+    //             trigger: 'axis',
+    //             showContent: false
+    //         },
+    //         dataset:
+    //             data_4,
+    //         //     {
+    //         //     source: [
+    //         //         ['product', '2012', '2013', '2014', '2015', '2016', '2017'],
+    //         //         ['部门1', 56.5, 82.1, 88.7, 70.1, 53.4, 85.1],
+    //         //         ['部门2', 51.1, 51.4, 55.1, 53.3, 73.8, 68.7],
+    //         //         ['部门3', 40.1, 62.2, 69.5, 36.4, 45.2, 32.5],
+    //         //         ['部门4', 25.2, 37.1, 41.2, 18, 33.9, 101]
+    //         //     ]
+    //         // },
+    //         xAxis: {type: 'category'},
+    //         yAxis: {gridIndex: 0},
+    //         grid: {top: '50%'},
+    //         series: [
+    //             {type: 'line', smooth: true, seriesLayoutBy: 'row', emphasis: {focus: 'series'}},
+    //             {type: 'line', smooth: true, seriesLayoutBy: 'row', emphasis: {focus: 'series'}},
+    //             {type: 'line', smooth: true, seriesLayoutBy: 'row', emphasis: {focus: 'series'}},
+    //             {type: 'line', smooth: true, seriesLayoutBy: 'row', emphasis: {focus: 'series'}},
+    //             {
+    //                 type: 'pie',
+    //                 id: 'pie',
+    //                 radius: '35%',
+    //                 center: ['50%', '25%'],
+    //                 emphasis: {focus: 'data'},
+    //                 label: {
+    //                     formatter: '{b}: {@2012} ({d}%)'
+    //                 },
+    //                 encode: {
+    //                     itemName: 'product',
+    //                     value: '2012',
+    //                     tooltip: '2012'
+    //                 }
+    //             }
+    //         ]
+    //     };
+    //
+    //     myChart_3.on('updateAxisPointer', function (event) {
+    //         var xAxisInfo = event.axesInfo[0];
+    //         if (xAxisInfo) {
+    //             var dimension = xAxisInfo.value + 1;
+    //             myChart_3.setOption({
+    //                 series: {
+    //                     id: 'pie',
+    //                     label: {
+    //                         formatter: '{b}: {@[' + dimension + ']} ({d}%)'
+    //                     },
+    //                     encode: {
+    //                         value: dimension,
+    //                         tooltip: dimension
+    //                     }
+    //                 }
+    //             });
+    //         }
+    //     });
+    //
+    //     myChart_3.setOption(option_3);
+    //
+    // });
+    // var data_5;
+    // var myChart_4 = echarts.init(document.getElementById('test_3'));
+    // var option_4;
+    //
+    // option_4 = {
+    //     title: {
+    //         text: '公司全部项目状态图',
+    //         subtext: '纯属虚构',
+    //         left: 'center'
+    //     },
+    //     tooltip: {
+    //         trigger: 'item'
+    //     },
+    //     legend: {
+    //         orient: 'vertical',
+    //         left: 'right',
+    //         padding:[40,15,0,0]
+    //     },
+    //     grid: {top: '50%'},
+    //     series: [
+    //         {
+    //             center: ['50%', '65%'],
+    //             name: '访问来源',
+    //             type: 'pie',
+    //             radius: ['40%', '70%'],
+    //             avoidLabelOverlap: false,
+    //             itemStyle: {
+    //                 borderRadius: 10,
+    //                 borderColor: '#fff',
+    //                 borderWidth: 2
+    //             },
+    //             label: {
+    //                 show: false,
+    //                 position: 'center'
+    //             },
+    //             emphasis: {
+    //                 label: {
+    //                     show: true,
+    //                     fontSize: '30',
+    //                     fontWeight: 'bold'
+    //                 }
+    //             },
+    //             labelLine: {
+    //                 show: false
+    //             },
+    //             data: data_5,
+    //             //     [
+    //             //     {value: 1048, name: '部门审核'},
+    //             //     {value: 735, name: '助理审核'},
+    //             //     {value: 580, name: '总监审核'},
+    //             //     {value: 484, name: '立项'},
+    //             //     {value: 300, name: '结项'},
+    //             //     {value: 300,  name: '丢单'}
+    //             // ],
+    //         }
+    //     ],
+    // };
+    //
+    // option_4 && myChart_4.setOption(option_4);
+    // function get_record() {
+    //     getAjaxDate('/api/todoitem/','get',{overview:1,},function (rel) {
+    //         console.log(rel.data)
+    //         data_overview = rel.data
+    //         $("#num_approval").text(data_overview.item_apply)
+    //         $("#item_clo_count").text(data_overview.item_update)
+    //         $("#item_lost_count").text(data_overview.item_loss)
+    //         $("#real_surplus_warning_count").text(data_overview.item_warn)
+    //         data_1 = rel.data[1]
+    //         data_2 = rel.data[2]
+    //         data_3 = {source:rel.data[3]}
+    //         data_4 = {source:rel.data[4]}
+    //         data_5 = rel.data[5]
+    //     })
+    //
+    // }
+
+</script>
+</html>

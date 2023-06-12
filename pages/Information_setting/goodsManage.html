@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title></title>
+    <link rel="stylesheet" href="/layui/css/layui.css">
+    <link rel="stylesheet" href="/css/sq.css">
+    <style type="text/css">
+        .layui-table th{
+            font-weight: bold;
+        }
+        #mainContent{
+            padding: 20px;
+        }
+        .layui-form-switch{
+            margin-top: 13px;
+        }
+        .layui-input, .layui-textarea{
+            padding-right: 10px;
+        }
+        .layui-input, .layui-textarea, .layui-select{
+            height: 31px;
+        }
+        .sqsel{
+            padding: 3px;
+            border: 1px solid #003c97;
+            color: #003c97;
+            font-size: 18px;
+            margin-right: 20px;
+        }
+    </style>
+</head>
+<body>
+<div id="mainContent">8
+    <div id="rightContent">
+        <div class="articleContent layui-form">
+            <div class="layui-elem-quote" style="overflow: hidden;line-height: 60px;border-left-color: #003c97;width: 98%">
+                <div class="layui-col-md1" style="font-size: 18px;font-weight: bold;">商品管理</div>
+                <div class="layui-col-md9" style="font-size: 16px;font-weight: bold;">
+                    <div class="layui-col-md12 layui-inline" style="text-align: left;line-height: 40px;">
+                        <div class="layui-col-md7">
+                            <label class="layui-form-label" style="font-size: 16px;margin-top: 10px;font-weight: bold;">模糊搜索:</label>
+                            <div class="layui-input-inline">
+                                <input type="text" class="layui-input" id="pro_nickname" placeholder="商品名字、厂家、规格、型号" style="margin-bottom: 12px;margin-top: 10px">
+                            </div>
+                        </div>
+                        <div class="layui-col-md5">
+                            <label class="layui-form-label" style="font-size: 16px;margin-top: 10px;font-weight: bold;padding-left: 25px">是否在售：</label>
+                            <input type="checkbox" checked="" style="margin-top: -10px" id="switch" name="open" lay-skin="switch" lay-filter="switchTest_1" lay-text="是|否">
+                        </div>
+                        </div>
+
+                        <div class="layui-col-md12 layui-inline" style="font-size: 16px;font-weight: bold;">
+                            <div class="layui-col-md7">
+                                <label class="layui-form-label" style="text-align: right;font-weight: bold;" >折扣范围:</label>
+                                <div class="layui-col-md6" style="margin-top: -11px" >
+                                    <input  type="button" class="layui-btn layui-btn-sm"  onclick="plus('#test-startdiscount-1','-')" value="-"/>
+                                    <input type="text" autocomplete="off" id="test-startdiscount-1" class="layui-input" placeholder="0" style="width: 30px; display: inline-block;text-align: center;">
+                                    <input  type="button" class="layui-btn layui-btn-sm" onclick="plus('#test-startdiscount-1','+')" value="+"/>
+                                    &nbsp;&nbsp;-
+                                    <input  type="button" class="layui-btn layui-btn-sm"  onclick="plus('#test-enddiscount-1','-')" value="-"/>
+                                    <input type="text" autocomplete="off" id="test-enddiscount-1" class="layui-input" placeholder="0" style="width: 30px; display: inline-block;text-align: center;">
+                                    <input  type="button" class="layui-btn layui-btn-sm" onclick="plus('#test-enddiscount-1','+')" value="+"/>
+                                </div>
+                            </div>
+                            <div class="layui-col-md5">
+                                <div class="layui-row"  id="test6">
+                                    <label class="layui-form-label" style="text-align: right;font-weight: bold;margin-top: 10px" >日期范围:</label>
+                                    <div style="">
+                                        <input type="text" autocomplete="off" id="test-startDate-1" class="layui-input" placeholder="开始日期" style="width: 110px;display: inline-block; text-align: center;">
+                                        &nbsp;&nbsp;-
+                                        <input type="text" autocomplete="off" id="test-endDate-1" class="layui-input" placeholder="结束日期" style="width: 110px;display: inline-block;text-align: center;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <div class="layui-inline" style="padding-left: 20px;padding-top: 0;">
+                        <div  id="sqselect_depdiv" style="text-align: right;padding: 5px;"><span style="font-size: 16px;">商品大类筛选：</span>
+                            <select class="sqsel" id="sqSelect_type" lay-ignore >
+                                <option value="">所有类别</option>
+                                <option value="设备">设备</option>
+                                <option value="耗材">耗材</option>
+                                <option value="第三方采购">第三方采购</option>
+                            </select>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="layui-col-md2" style="text-align: right;">
+                    <a class="layui-btn" style="background-color: #ca1c1d;margin-bottom: 8px;margin-top: 9px;margin-left: 10px;padding-left:50px;padding-right:50px;height: auto;" id="AnaBT" onclick="search_pro(cur_page)">搜索</a>
+                </div>
+
+                <div style="text-align: right;overflow: hidden;width: 100%" >
+                    <button onclick="copy_good=''&openAddWindow('false')" class="layui-btn" >添加</button>
+                    <button onclick="file_import()" class="layui-btn" style="background-color: #01AAED;" >批量导入</button>
+<!--                    <a href="" download="商品列表.xls" id="download_example" onclick="file_export()" class="layui-btn" style="background-color: #393D49;" >导出文件</a>-->
+                    <button onclick="dupldelete()" class="layui-btn" style="background-color: #ff8a00;" >批量删除</button>
+                </div>
+            </div>
+            <table class="layui-table" id="userListTable" style="width: 130%;">
+                <colgroup>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                </colgroup>
+                <thead>
+                <tr>
+                    <th>商品大类</th>
+                    <th>商品小类</th>
+                    <th>商品名</th>
+                    <th>厂商</th>
+                    <th>规格</th>
+                    <th>单位</th>
+                    <th>型号</th>
+                    <th>报价</th>
+                    <th>折扣</th>
+                    <th>添加方式</th>
+                    <th>添加人</th>
+                    <th>添加时间</th>
+                    <th>在售</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody id="jjTbody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script src="/js/jquery.min.js"></script>
+<script src="/layui/layui.js"></script>
+<script src="/js/ajax.js"></script>
+<script src="/js/jszip.js"></script>
+<script src="/js/xlsx.js"></script>
+<script src="/js/jquery.cookie.js"></script>
+<script>
+    var send_obj = new Object();
+    send_obj.sale = '1';
+    var copy_good = '';
+    var sendObj = new Object();
+    if($.cookie(window.location.href) == undefined){
+        sendObj.page_size = 10;
+        send_obj.page_size = 10;
+        $.cookie(window.location.href, sendObj.page_size);
+    }else{
+        sendObj.page_size= $.cookie(window.location.href);
+        send_obj.page_size= $.cookie(window.location.href);
+
+    }
+    var cur_page = 1;
+    var export_data = new Array()
+    export_data = [[ "商品大类", "商品小类","商品名", "厂商", "规格","单位", "型号", "报价", "折扣","添加方式", "添加人", "添加时间",
+        "在售"]]
+
+
+    function plus(objid,op,range){
+        if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+        // objid 是控件ID
+        // op 如果为空表示加法，否则为减法
+        // range表示变化范围，如(0,10)
+        if(typeof op== "undefined")
+        {
+            op="+"
+        }
+        if(typeof range == 'undefined')
+        {
+            range=[0,10]
+        }
+
+        lower = range[0]
+        upper = range[1]
+
+
+        var input=$(objid);
+        var amount  = 0;
+
+
+        //读取用户的输入，尝试转化为整数，如果失败则设置为0
+        try {
+            amount=parseInt(input.val()); //解析整数
+
+        }
+        catch (e) {//解析整数失败，尝试解析浮点数
+            try {
+                amount=parseFloat(input.val()); //解析浮点数
+                amount = Math.floor(amount)//强制转化为不超过当前浮点数的整数
+            }
+            catch (e) {//浮点数解析失败，自动设置为0
+            }
+        }
+        if(isNaN(amount)){amount=0;}
+
+        //增加或减少数值
+        if(op=='+'){
+            amount++;
+            amount = Math.min(amount,upper);
+        }
+        else if (op=='-') {
+            amount--;
+            amount = Math.max(amount,lower);
+        }
+        else{
+            alert("请选择正确的折扣范围！");
+        }
+        input.val(amount)
+
+    }
+
+    getList(cur_page);
+    function getList(cur_page) {
+        sendObj.page = cur_page;
+        getAjaxDate("/api/product/","get",sendObj,
+            function(rel){
+                console.log(rel.data.results);
+                $("#jjTbody").empty();
+                setTable(rel.data.results);
+                sq.checkBoxToTable("#userListTable");
+                sq.page({
+                    count : ((rel.data.total_items === undefined) ? 0 : rel.data.total_items),
+                    page : ((rel.data.page === undefined) ? 1 : rel.data.page),
+                    size : sendObj.page_size,
+                    jump : function(obj){
+                        sendObj.page = obj.curr;
+                        sendObj.page_size = obj.limit;
+                        $.cookie(window.location.href, obj.limit);
+                        // $("#jjTbody").empty();
+                        getList(obj.curr);
+                    },
+                    bro : "#userListTable"
+                });
+            })
+
+    }
+    function file_export() {
+        if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+        let url1 = "/api/productfile/"
+        let method = "get"
+        let opinion = ""
+        let fun = function (rel){
+            console.log(rel.data)
+            $("#download_example").attr("href",imgurl+rel.data)
+        }
+        $.ajax({
+            async: false,
+            url: _url+url1,
+            type : method,
+            data : opinion,
+            dataType : "json",
+            beforeSend: function(XMLHttpRequest) {
+                XMLHttpRequest.setRequestHeader("Authorization","JWT"+" "+window.sessionStorage.getItem("token"));},
+            success: function(result){
+                //注意layer关闭的时候验证码框的问题！
+                //layer.closeAll();
+                sq.tipurl(url1);
+                console.log("%c%s","color:#443312;background-color:#d1c9b8;font-size:10px;padding:10px;","Loading date success:"+JSON.stringify(opinion));
+                console.log("%c%s","color:#999;background-color:#efefef;font-size:10px;padding:10px;","Loading date success:"+JSON.stringify(result));
+                //alert(JSON.stringify(result));
+                checkRetno(result,opinion.type,fun);
+            },
+            error:function (xhr){
+                // alert("正在测试："+JSON.stringify(xhr))
+                // layer.closeAll();
+                console.log(xhr);
+            }
+        });
+    }
+    function setTable(infoList) {
+        /**
+         *@infoList 是一个数组
+         *  **/
+
+        infoList.forEach(function (value) {
+            //显示的按钮
+            if (value.sale === 1){
+                str = '<input type="checkbox" checked="" id="switch" name="open" lay-skin="switch" lay-filter="switchTest" lay-text="是|否" item_id="'+value.id+'">'
+            }else{
+                str = '<input type="checkbox" id="switch" name="open" lay-skin="switch" lay-filter="switchTest" lay-text="是|否" item_id="'+value.id+'">'
+            }
+            var buttonStr = '<button class="layui-btn editbt layui-btn-sm" onclick="copy_goods(\''+encodeURIComponent(JSON.stringify(value))+'\')"><i class="layui-icon">&#xe621;</i>   </button> ' +
+                '<button class="layui-btn editbt layui-btn-sm" onclick="openEditWindow(\''+encodeURIComponent(JSON.stringify(value))+'\')"><i class="layui-icon layui-icon-edit"></i>   </button> ' +
+                '<button  class="layui-btn layui-btn-danger delbt layui-btn-sm" onclick="openDeleteWindow('+value.id+')"><i class="layui-icon layui-icon-delete"></i>   </button> ';
+            //将数据插入表格中
+            let temp_data = [value.type,value.subtype,value.name,value.manufacturer,value.specification,value.unit,value.model,value.offer,
+                value.discount,value.add_type,value.nickname,value.time,value.sale ]
+            export_data.push(temp_data)
+            $("#userListTable").append('<tr id="tr'+value.id+'" sqid="'+value.id+'" ondblclick="copy_goods(\''+encodeURIComponent(JSON.stringify(value))+'\')">' +
+                '<td style="text-align: center">'+value.type+'</td>' +
+                '<td style="text-align: center">'+value.subtype+'</td>' +
+                '<td style="text-align: center">'+value.name+'</td>' +
+                '<td style="text-align: center">'+value.manufacturer+'</td>' +
+                '<td style="text-align: center">'+value.specification+'</td>' +
+                '<td style="text-align: center">'+value.unit+'</td>' +
+                '<td style="text-align: center">'+value.model+'</td>' +
+                '<td style="text-align: right">'+numFormat(value.offer)+'</td>' +
+                '<td style="text-align: right">'+value.discount+'</td>' +
+                '<td style="text-align: center">'+value.add_type+'</td>' +
+                '<td style="text-align: center">'+value.nickname+'</td>' +
+                '<td style="text-align: center">'+value.time+'</td>' +
+                '<td style="text-align: center">'+str+'</td>' +
+                '<td style="text-align: center">'+buttonStr+'</td>' +
+                '</tr>');
+        });
+        layui.form.render()
+        // $("tr").on("mouseover",function () {
+        //     layer.tips('双击复制',"#"+$(this).attr("id"),{tips:3})
+        // })
+    }
+    function copy_goods(obj) {
+        if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+        copy_good = obj
+        openAddWindow('true')
+    }
+    function openDeleteWindow(id) {
+        if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+        layer.confirm('确定删除这个商品么？', {
+            btn: ['确定','取消'] //按钮
+        }, function(){
+            getAjaxDate("/api/product/"+id +"/", "patch",
+                {on_delete:1},
+                function(rel){
+                    layer.msg(rel.msg);
+                    getList();
+                }
+            );
+        }, function(){
+
+        });
+
+    }
+    function openAddWindow(copy) {
+        if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+        if(copy === 'false'){
+            copy_good = ''
+        }
+        layer.open({
+            type: 2,
+            title: '添加商品',
+            shadeClose: true,
+            shade: 0.7,
+            maxmin: true, //开启最大化最小化按钮
+            area: ['1000px', '390px'],
+            content: 'addGoods.html#copy_good='+copy_good
+        });
+    }
+    function openEditWindow(id) {
+        if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+        console.log(id)
+        layer.open({
+            type: 2,
+            title: '编辑商品',
+            shadeClose: true,
+            shade: 0.7,
+            maxmin: true, //开启最大化最小化按钮
+            area: ['1000px', '390px'],
+            content: 'addGoods.html#uid='+id
+        });
+    }
+    function dupldelete() {
+        if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+        console.log(sq.getCheckBoxFromTable('#userListTable'))
+        let send_obj = new Object();
+        send_obj.method = 'post';
+        send_obj.pks = JSON.stringify(sq.getCheckBoxFromTable('#userListTable'))
+        getAjaxDate('/api/product/batch_delete/','post',send_obj,function (rel) {
+            console.log(rel.data);
+            $("#jjTbody").empty();
+            getList(cur_page);
+        })
+    }
+    layui.use('form', function(){
+        var form = layui.form;
+        form.on('switch(switchTest)', function(data){
+            item_id = $(this).attr("item_id");
+            console.log(item_id)
+            getAjaxDate('/api/product/'+item_id+'/','patch',{sale:(this.checked ? '1' : '0')},function (rel) {
+                console.log(rel.data)
+            });
+            layer.msg('商品：'+ (this.checked ? '上架成功' : '已下架'), {
+                offset: '6px'
+            });
+            // layer.tips('温馨提示：请注意开关状态的文字可以随意定义，而不仅仅是ON|OFF', data.othis)
+        })});
+
+    layui.use('form', function(){
+        var form = layui.form;
+        form.on('switch(switchTest_1)', function(data){
+            item_id = $(this).attr("item_id");
+            send_obj.sale = (this.checked ? '1' : '0')
+        })});
+    var start_time;
+    var end_time;
+    layui.use('laydate', function(){
+        var laydate = layui.laydate;
+        laydate.render({
+            elem: '#test6'
+            //设置开始日期、日期日期的 input 选择器
+            //数组格式为 2.6.6 开始新增，之前版本直接配置 true 或任意分割字符即可
+            ,range: ['#test-startDate-1', '#test-endDate-1']
+            ,theme: 'molv'
+            ,change: function(value, date, endDate){
+                start_time = value.split(" ")[0]
+                end_time = value.split(" ")[2]
+                // console.log(value.split(" ")); //得到日期生成的值，如：2017-08-18
+                console.log(start_time);
+                console.log(end_time);
+                console.log(date); //得到日期时间对象：{year: 2017, month: 8, date: 18, hours: 0, minutes: 0, seconds: 0}
+                console.log(endDate);}
+            ,done: function(value, date){
+                start_time = value.split(" ")[0];
+                end_time = value.split(" ")[2];
+                console.log(start_time);
+                console.log(end_time);
+                // layer.alert('你选择的日期是：' + value + '<br>获得的对象是' + JSON.stringify(date));
+            }
+        });
+    });
+
+    function search_pro(cur_page) {
+        if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+        send_obj.search = $("#pro_nickname").val();
+        send_obj.min_discount = $("#test-startdiscount-1").val();
+        send_obj.max_discount = $("#test-enddiscount-1").val();
+        send_obj.type = $("#sqSelect_type").val();
+        send_obj.start_time = start_time;
+        send_obj.end_time = end_time;
+        if(send_obj.min_discount >= send_obj.max_discount && send_obj.min_discount !=="" && send_obj.max_discount !== ""){
+            layer.msg('请选择正确的折扣范围！')
+        }else {
+            send_obj.page = cur_page;
+            getAjaxDate('/api/product/','get',send_obj,function (rel) {
+                $("#jjTbody").empty();
+                setTable(rel.data.results);
+                sq.checkBoxToTable("#userListTable");
+                sq.page({
+                    count : ((rel.data.total_items === undefined) ? 0 : rel.data.total_items),
+                    page : ((rel.data.page === undefined) ? 1 : rel.data.page),
+                    size : send_obj.page_size,
+                    jump : function(obj){
+                        send_obj.page = obj.curr;
+                        send_obj.page_size = obj.limit;
+                        $.cookie(window.location.href, obj.limit);
+                        // $("#jjTbody").empty();
+                        search_pro(obj.curr);
+                    },
+                    bro : "#userListTable"
+                });
+            })
+        }
+        console.log(send_obj)
+    }
+
+    function file_import() {
+        if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+        layer.open({
+            type: 2,
+            title: '批量导入',
+            shadeClose: true,
+            shade: 0.7,
+            maxmin: true, //开启最大化最小化按钮
+            area: ['600px', '300px'],
+            content: 'file_import.html#'
+        });
+    }
+
+</script>
+</body>
+</html>

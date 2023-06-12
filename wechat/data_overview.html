@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Overview</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="../css/sq.css">
+    <style type="text/css">
+        body{
+            padding-bottom: 50px;
+        }
+        #topContainer{
+            text-align: center;
+            background-color: #003c97;
+            color: #FFF;
+            font-weight: bold;
+            font-size: 18px;
+            padding: 20px;
+        }
+        .iconContent{
+            float: left;
+            text-align: center;
+            font-size: 14px;
+        }
+        #myUL{
+            margin: 0;
+            padding: 20px;
+            background-color: #FFF;
+        }
+        #myUL li{
+            list-style: none;
+            background-color: #FFFFFF;
+            margin: 5px 0 0 1%;
+            padding: 0 0 10px 0;
+            border-radius: 5px;
+            cursor: pointer;
+            overflow: hidden;
+            border-bottom: 1px solid #efefef;
+        }
+        #myUL li p{
+            padding: 5px;
+        }
+        .lxdh{
+            margin-left: 10px;
+            color: #FD482C;
+        }
+        #footContainer{
+            font-size: 10px;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background-color: #efefef;
+            text-align: center;
+        }
+        .sqtime{
+            font-size: 12px;
+            color: #999999;
+        }
+        .sqsel{
+            padding: 3px;
+            border: 1px solid #003c97;
+            color: #003c97;
+            font-size: 14px;
+            margin-right: 20px;
+        }
+    </style>
+</head>
+<body>
+<div id="topContainer">
+    湛德财务项目管理系统
+</div>
+<div id="mainContainer" class="layui-form">
+    <hr class="layui-border-blue">
+    <div  id="sqselect_depdiv" style="text-align: center;padding: 10px;"><span style="margin-right: 5px;font-weight: bold;">筛选：</span>
+        <select class="sqsel" id="sqSelect_dep" lay-ignore>
+                        <option value="">全部</option>
+        </select>
+        <span style="margin-right:9px;font-size: 16px;">总计: <strong id="totalnum_dep" style="color: #008fb8;"></strong> 条</span>
+    </div>
+    <ul id="myUL"></ul>
+    <div style="text-align: center;padding: 10px;">
+        <button class="layui-btn" id="loadMoreBT" style="background-color: #666;" onclick="getList(++cur_page)" >点击加载更多……</button>
+    </div>
+</div>
+<div id="searchBT" style="background-color: #222;color: #FFF;position: fixed;right: 10px;bottom: 70px;width: 40px;height: 40px;border-radius: 20px;text-align: center;line-height: 40px;">
+    <i class="layui-icon layui-icon-search" style="font-size: 20px;"></i>
+</div>
+<!--下方为模板部分-->
+<!--用户登陆的模板-->
+</body>
+<script type="text/javascript" src="../js/jquery-3.3.1.min.js" language="JavaScript"></script>
+<script src="../layui/layui.js"></script>
+<script src="../js/ajax.js"></script>
+<script type="text/javascript" >
+    var status = JSON.parse(decodeURIComponent(sq.getHashStringArgs()["data"]))
+    var cur_page = 1;
+    console.log(status)
+    var dep_id;
+    // setul(data.results)
+    function setul(infoList) {
+        /**1
+         *@infoList 是一个数组
+         *  **/
+        infoList.forEach(function (value) {
+            //显示的按钮
+            //将数据插入表格中
+            $("#myUL").append('<li>'+'<div class="layui-col-md12 layui-col-xs12">'+'<p style="text-align: left;">'
+                +'<strong>项目名称:  </strong>'
+                +'<span id="project">'+value.name+'</span>'
+                +'<span  style="float: right;">'
+                +'<button class="layui-btn layui-btn-normal layui-btn-sm" onclick="jump_detail('+value.id+')" style="background-color: #2D93CA;padding: 0px 10px;" type="button"><i class="layui-icon layui-icon-form"></i>'
+                +'</button></span>' +'</p>' + '<div style="overflow: hidden;">' +
+                '<div class="layui-col-xs6"><div style="padding: 5px;"><strong>部门:  </strong>'
+                +'<span id="project">'+value.department_name+'</span></div></div>'+
+                '<div class="layui-col-xs6"><div style="padding: 5px;"><strong>申请人:  </strong>'
+                +'<span id="project">'+value.nickname+'</span></div></div>' +
+                '</div>' + '<div style="padding: 10px 5px;">'
+                +'<div class="layui-col-xs6"><span class="xm">结余：</span><span class="lxdh" style="color: #00e365">'+value.surplus+'</span></div>'
+                +'<div class="layui-col-xs6" style="text-align: right;"><span class="sqtime">'+value.time+'</span></div></div> </div> </li>');
+        })
+    }
+    $("#sqSelect_dep").on("change",function () {
+        $("#loadMoreBT").show();
+        cur_page = 1;
+        // sendObj.status = $(this).val()
+        dep_id = $(this).val()
+        console.log($(this).val())
+        $("#myUL").empty()
+        getList()
+    });
+    getList()
+    function getList() {
+        getAjaxDate('/api/record/','get',{overview:0,status:status,department_id:dep_id},function (rel) {
+            $("#loadMoreBT").show();
+            console.log(rel.data.total_items - cur_page*rel.data.page_size)
+            if (rel.data.total_items - cur_page*rel.data.page_size <= 0){
+                $("#loadMoreBT").hide();
+            }
+            $("#totalnum").text(rel.data.total_items)
+            setul(rel.data.results)
+            console.log(rel.data)
+        })
+        // $("#sqSelect_dep").empty()
+    }
+    function jump_detail(id) {
+        sq.open('product_detail.html#id='+id);
+    }
+    getAjaxDate('/api/department/','get',"",function (rel) {
+        console.log(rel.data)
+        setselect(rel.data.results)
+    });
+    function setselect(infoList){
+        infoList.forEach(function (value) {
+            //显示的按钮
+            //将数据插入表格中
+            $("#sqSelect_dep").append(new Option(value.name, value.id));
+            // layui.form.render("select");
+        })
+    }
+</script>
+<!--<script>-->
+<!--    var role_id = window.sessionStorage.getItem("role_id")-->
+<!--    var cur_page = 1;-->
+<!--    var sendObj = new Object();-->
+<!--    sendObj.type = "getGoodslist";-->
+<!--    sendObj.page_size = 5;-->
+<!--    getList(cur_page);-->
+<!--    function getList() {-->
+<!--        sendObj.page = cur_page;-->
+<!--        if (role_id === "1"){-->
+<!--            $("#sqselect_depdiv").hide()-->
+<!--            get_data()-->
+<!--        }-->
+<!--        if (role_id === "2"){-->
+<!--            get_data()-->
+<!--            $("#btn_apply").show()-->
+<!--            if (sendObj.get_type === 'department' || sendObj.get_type === undefined){-->
+<!--                $("#btn_apply").hide()-->
+<!--            }-->
+
+<!--        }-->
+<!--        if (role_id === "3"){-->
+<!--            $("#btn_apply").hide()-->
+<!--            $("#sqselect_depdiv").hide()-->
+<!--            get_data()-->
+<!--        }-->
+<!--        if(role_id === '4'){-->
+<!--            get_data()-->
+<!--            $("#btn_apply").hide()-->
+<!--            $("#sqselect_depdiv").hide()-->
+<!--        }-->
+<!--    }-->
+<!--    $("#sqSelect").on("change",function () {-->
+<!--        $("#loadMoreBT").show();-->
+<!--        cur_page = 1;-->
+<!--        sendObj.status = $(this).val()-->
+<!--        $("#myUL").empty()-->
+<!--        getList()-->
+<!--    });-->
+<!--    $("#sqSelect_dep").on("change",function () {-->
+<!--        $("#loadMoreBT").show();-->
+<!--        cur_page = 1;-->
+<!--        sendObj.get_type = $(this).val()-->
+<!--        console.log($(this).val())-->
+<!--        $("#myUL").empty()-->
+<!--        getList()-->
+<!--    });-->
+<!--    function get_data() {-->
+<!--        getAjaxDate("/api/item/","get",sendObj,-->
+<!--            function(rel){-->
+<!--                console.log(rel.data.total_items - cur_page*rel.data.page_size)-->
+<!--                $("#loadMoreBT").show();-->
+<!--                if (rel.data.total_items - cur_page*rel.data.page_size <= 0){-->
+<!--                    $("#loadMoreBT").hide();-->
+<!--                }-->
+<!--                console.log(rel.data)-->
+<!--                $("#totalnum").text(rel.data.total_items)-->
+<!--                $("#depName").text(window.sessionStorage.getItem("department"))-->
+<!--                setul(rel.data.results)-->
+<!--            }-->
+<!--        );-->
+<!--    }-->
+<!--    function setul(infoList) {-->
+<!--        /**1-->
+<!--         *@infoList 是一个数组-->
+<!--         *  **/-->
+<!--        infoList.forEach(function (value) {-->
+<!--            //显示的按钮-->
+<!--            //将数据插入表格中-->
+<!--            if (value.status ==='0'){-->
+<!--                var str = '<button type="button" class="layui-btn layui-btn-danger layui-btn-sm" onclick="del_project('+value.id+')"><i class="layui-icon"></i></button>'-->
+<!--            }else {-->
+<!--                str = ''-->
+<!--            }-->
+<!--            $("#myUL").append('<li>'+'<div class="layui-col-md12 layui-col-xs12">'+'<p style="text-align: left;">'-->
+<!--                +'<strong>项目名称:  </strong>'-->
+<!--                +'<span id="project">'+value.name+'</span>'-->
+<!--                +'<span  style="float: right;">'-->
+<!--                +'<button class="layui-btn layui-btn-normal layui-btn-sm" onclick="edit_project('+value.id+','+value.status+')" style="background-color: #2D93CA;padding: 0px 10px;" type="button"><i class="layui-icon"></i>'-->
+<!--                +'</button>'+str+'</span>'-->
+<!--                +'</p><div style="padding: 10px 5px;">'-->
+<!--                +'<div class="layui-col-xs6"><span class="xm">状态：</span><span class="lxdh" style="color: #00e365">'+value.project_status+'</span></div>'-->
+<!--                +'<div class="layui-col-xs6" style="text-align: right;"><span class="sqtime">'+value.time+'</span></div></div> </div> </li>');-->
+<!--            console.log("project"+value.id)-->
+<!--        })-->
+<!--    }-->
+<!--    function addApproval() {-->
+<!--        sq.inputWindow({-->
+<!--            title: {-->
+<!--                text: "新建申请",//标题-->
+<!--                titleColor: "#FFFFFF"//弹窗文字颜色-->
+<!--            },-->
+<!--            closeBtn: 1,-->
+<!--            width: "90%",-->
+<!--            shadeClose: false,-->
+<!--            form: {-->
+<!--                object_name: {-->
+<!--                    label: "项目名称",-->
+<!--                    type: "text",-->
+<!--                    value: "",-->
+<!--                    tip: "请输入项目名称",-->
+<!--                    allowNull: false-->
+<!--                }-->
+<!--            },-->
+<!--            sure: function (rel) {-->
+<!--                console.log(rel);-->
+<!--                let sendObj_1 = new Object()-->
+<!--                sendObj_1.name = rel.object_name;-->
+<!--                sendObj_1.token = window.sessionStorage.getItem("token")-->
+<!--                getAjaxDate("/api/item/","post",sendObj_1,-->
+<!--                    function (rel) {-->
+<!--                        console.log(rel.data)-->
+<!--                        $("#myUL").empty()-->
+<!--                        getList()-->
+<!--                    })-->
+<!--            }-->
+<!--        })-->
+<!--    }-->
+<!--    $("#searchBT").click(function () {-->
+<!--        sq.inputWindow({-->
+<!--            title: {-->
+<!--                text: "输入模糊查询词",//标题-->
+<!--                titleColor: "#FFFFFF"//弹窗文字颜色-->
+<!--            },-->
+<!--            closeBtn: 1,-->
+<!--            width: "90%",-->
+<!--            shadeClose: false,-->
+<!--            form: {-->
+<!--                gname: {-->
+<!--                    label: "项目名称",-->
+<!--                    type: "text",-->
+<!--                    value: "",-->
+<!--                    tip: "请输入商品名称",-->
+<!--                    allowNull: true-->
+<!--                },-->
+<!--                monthYear: {-->
+<!--                    label: "年月",-->
+<!--                    type: "text",-->
+<!--                    value: "",-->
+<!--                    tip: "2021或2021-3",-->
+<!--                    allowNull: true-->
+<!--                },-->
+<!--            },-->
+<!--            sure: function (rel) {-->
+<!--                cur_page = 1;-->
+<!--                console.log(rel);-->
+<!--                sendObj.pname = rel.pname;-->
+<!--                sendObj.tel = rel.tel;-->
+<!--                sendObj.idcard = rel.idcard;-->
+<!--                $("#myUL").html("");-->
+<!--                getList(cur_page);-->
+<!--            }-->
+<!--        })-->
+<!--    })-->
+<!--    function edit_project(id,status) {-->
+<!--        sq.open('approval.html#id='+id+'&status='+status);-->
+<!--    }-->
+
+<!--    function del_project(id) {-->
+<!--        layer.confirm('确定要删除吗？', {-->
+<!--            btn: ['确定','取消'] //按钮-->
+<!--            ,btn1: function () {-->
+<!--                getAjaxDate("/api/item/" + id + "/", "patch", {on_delete: 1},-->
+<!--                    function (rel) {-->
+<!--                        console.log(id)-->
+<!--                        cur_page = 1;-->
+<!--                        $("#myUL").empty()-->
+<!--                        getList(cur_page)-->
+<!--                        parent.layer.closeAll();-->
+<!--                        layer.msg(rel.msg)-->
+<!--                    })},-->
+<!--            btn2: function () {-->
+<!--                layer.msg("取消成功")-->
+<!--            }-->
+<!--        })-->
+<!--    }-->
+
+<!--</script>-->
+</html>

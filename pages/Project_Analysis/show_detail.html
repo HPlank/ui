@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>湛德财务项目管理系统</title>
+  <link rel="stylesheet" href="../../layui/css/layui.css">
+  <link rel="stylesheet" href="../../css/main.css">
+  <link rel="stylesheet" href="../../css/skin.css">
+  <link rel="stylesheet" href="../../css/sq.css">
+  <style type="text/css">
+    .layui-table th{
+      font-weight: bold;
+    }
+    #mainContent{
+      padding: 20px;
+    }
+    .layui-layer-title {
+      padding: 0 80px 0 20px;
+      height: 42px;
+      line-height: 42px;
+      border-bottom: 1px solid #eee;
+      font-size: 14px;
+      color: #333;
+      overflow: hidden;
+      border-radius: 2px 2px 0 0;
+    }
+    .editinput{
+      padding: 10px;
+      width: 90%;
+      border: 1px solid #5FB878;
+    }
+    .edittd{
+      position: absolute;
+      left: 0;
+      right: 0;
+      top:0;
+      bottom: 0;
+      padding: 20px;
+    }
+    .edittd:hover{
+      cursor: pointer;
+      background-color: #dcf0e2;
+    }
+    .headAddLeft{
+      overflow: hidden;
+      background-color: #efefef;
+      padding: 15px 0 5px 20px;
+      border-left: 5px solid #003c97;
+    }
+    .sqsel{
+      padding: 3px;
+      border: 1px solid #003c97;
+      color: #003c97;
+      font-size: 18px;
+      margin-right: 20px;
+    }
+    .layui-form-select dl{
+      max-height: 100px;
+    }
+    .layui-input, .layui-textarea{
+      display: inline;
+      margin-right: 20px;
+    }
+    .layui-input, .layui-textarea{
+      border: none;
+      outline: none;
+    }
+    .summaryContent  label{
+      font-weight: bold;
+    }
+    .layui-form-item .layui-input-inline{
+      width: 150px;
+    }
+    .layui-form-label{
+      width: 100px;
+    }
+  </style>
+</head>
+<body>
+<div id="mainContent">
+  <div id="rightContent">
+    <div class="articleContent">
+      <div class="headAddLeft" style="padding-top:10px;">
+
+        <div class="layui-col-md12 layui-inline" style="font-size: 18px;font-weight: bold;line-height: 38px;">明细查询
+          <div id="depselect_div" class="layui-inline" style="font-weight: normal;margin-left: 100px">筛选部门:  <select class="sqsel" id="sqSelect_dep" lay-ignore >
+            <option value="">所有部门</option>
+          </select>
+          </div>
+          <div class="layui-inline" style="font-weight: normal;margin-left: 100px">类型筛选:  <select class="sqsel" id="sqSelect_type" lay-ignore >
+            <option value="">所有类型</option>
+            <option value="增加支出">增加支出</option>
+            <option value="费用调整">费用调整</option>
+            <option value="删除支出">删除支出</option>
+            <option value="上提调整">上提调整</option>
+            <option value="开票操作">开票操作</option>
+          </select>
+          </div>
+          <div id="test6" style="font-weight: normal;margin-left: 100px;display: inline">
+            <label style="text-align: right;margin-top: 2px" >时间筛选:</label>
+            <input type="text" autocomplete="off" id="test-startDate-1" class="layui-input" placeholder="开始时间" style="width: 115px;text-align: center;">
+            -
+            <input type="text" autocomplete="off" id="test-endDate-1" class="layui-input" placeholder="结束时间" style="width: 115px;text-align: center;margin-left: 10px">
+          </div>
+          </div>
+      </div>
+      <table class="layui-table" id="infoList" >
+        <colgroup>
+          <col>
+          <col>
+          <col>
+          <col>
+          <col>
+          <col>
+        </colgroup>
+        <thead>
+        <tr>
+          <th style="text-align: center">录入人</th>
+          <th style="text-align: center" id="dep_th">部门</th>
+          <th style="text-align: center">类型</th>
+          <th style="text-align: center">余额</th>
+          <th style="text-align: center">变化值</th>
+          <th style="text-align: center">时间</th>
+          <th style="text-align: center">备注</th>
+        </tr>
+        </thead>
+        <tbody id="listTbody">
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<script src="/js/jquery.min.js"></script>
+<script src="/layui/layui.js"></script>
+<script src="/js/ajax.js"></script>
+<script src="/js/jquery.cookie.js"></script>
+<script>
+  var sendObj = new Object();
+  sendObj.page = 1;
+  var start_time ='';
+  var end_time ='';
+  if($.cookie(window.location.href) == undefined){
+    sendObj.page_size = 10;
+    $.cookie(window.location.href, sendObj.page_size);
+  }else{
+    sendObj.page_size= $.cookie(window.location.href);
+  }
+  layui.use('laydate', function(){
+    var laydate = layui.laydate;
+    laydate.render({
+      elem: '#test6'
+      //设置开始日期、日期日期的 input 选择器
+      //数组格式为 2.6.6 开始新增，之前版本直接配置 true 或任意分割字符即可
+      ,range: ['#test-startDate-1', '#test-endDate-1']
+      ,theme: 'molv'
+      ,change: function(value, date, endDate){
+        start_time = value.split(" ")[0]
+        end_time = value.split(" ")[2]
+        // console.log(value.split(" ")); //得到日期生成的值，如：2017-08-18
+        console.log(start_time)
+        console.log(end_time)
+        $("#listTbody").empty();
+        show_table(1)
+      }
+      ,done: function(value, date, endDate){
+        // console.log(value); //得到日期生成的值，如：2017-08-18
+        // console.log(date); //得到日期时间对象：{year: 2017, month: 8, date: 18, hours: 0, minutes: 0, seconds: 0}
+        // console.log(endDate); //得结束的日期时间对象，开启范围选择（range: true）才会返回。对象成员同上。
+        start_time = value.split(" ")[0]
+        end_time = value.split(" ")[2]
+        $("#listTbody").empty();
+        show_table(1)
+      }
+    });
+  });
+  var tgt =sq.getHashStringArgs()["tgt"];
+  var targetframe = parent;
+  if ( tgt in  top.frameset) {
+    targetframe = top.frameset[tgt].contentWindow
+    delete  top.frames[tgt]
+  }
+  show_table(1)
+  var dep_list =[{ label: "请选择类型", value: "" }];
+  getAjaxDate('/api/department/','get','',function (res) {
+    for (let i = 0; i < res.data.results.length; i++) {
+      dep_list.push({ label: res.data.results[i].name, value: res.data.results[i].id });
+    }
+    setselect(res.data.results)
+  })
+
+
+  function setTable(infoList) {
+    /**
+     *@infoList 是一个数组
+     *  **/
+    console.log(infoList)
+    infoList.forEach(function (value) {
+      //将数据插入表格中
+      $("#infoList").append('<tr>' +
+              '<td style="text-align: center">'+value.nickname+'</td>' +
+              '<td id="dep_td'+value.id+'" style="text-align: center">'+value.department_name+'</td>' +
+              '<td style="text-align: center">'+value.type+'</td>' +
+              '<td id="new_value'+value.id+'" style="text-align: right">'+numFormat(value.new_value)+'</td>' +
+              '<td id="differ'+value.id+'" style="text-align: right">'+numFormat(value.differ)+'</td>' +
+              '<td style="text-align: center">'+value.time+'</td>' +
+              '<td style="text-align: center">'+value.remark+'</td>' +
+              '</tr>');
+      if(value.new_value < 0 ){
+        $("#new_value"+value.id).css('color','red')
+      }
+      if(value.differ < 0 ){
+        $("#differ"+value.id).css('color','red')
+      }
+      if(targetframe.page_type === 'admin_expenses'){
+        $("#dep_td"+value.id).hide()
+      }
+    })
+    if(targetframe.page_type === 'admin_expenses'){
+      $("#dep_th").hide()
+    }
+
+  }
+
+  function show_table(cur_page) {
+    if(targetframe.page_type === 'dep_expenses'){
+      sendObj.department = $("#sqSelect_dep").val()
+    }else if(targetframe.page_type === 'admin_expenses'){
+      $("#depselect_div").hide()
+      sendObj.department = 1
+    }
+    sendObj.page = cur_page
+    sendObj.type = $("#sqSelect_type").val()
+    sendObj.start_time = start_time
+    sendObj.end_time = end_time
+    getAjaxDate('/api/wallet_log/','get',sendObj,function (rel) {
+      console.log(rel)
+      $("#listTbody").empty()
+      setTable(rel.data.results)
+      sq.page({
+        count : ((rel.data.total_items === undefined) ? 0 : rel.data.total_items),
+        page : ((rel.data.page === undefined) ? 1 : rel.data.page),
+        size : sendObj.page_size,
+        jump : function(obj){
+          sendObj.page = obj.curr;
+          sendObj.page_size = obj.limit
+          $.cookie(window.location.href, obj.limit);
+          show_table(obj.curr);
+        },
+        bro : "#infoList"
+      });
+    })
+  }
+
+  function setselect(infoList){
+    infoList.forEach(function (value) {
+      //显示的按钮
+      //将数据插入表格中
+      $("#sqSelect_dep").append(new Option(value.name, value.id));
+    })
+  }
+  $("#sqSelect_dep").on("change",function () {
+    dept = $(this).val();
+    console.log(dept)
+    $("#listTbody").empty();
+    show_table(1);
+  });
+  $("#sqSelect_type").on("change",function () {
+    $("#listTbody").empty();
+    show_table(1);
+  });
+</script>
+</body>
+</html>

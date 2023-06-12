@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>湛德财务项目管理系统</title>
+    <link rel="stylesheet" href="/layui/css/layui.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <!--    <link rel="stylesheet" href="../css/skin.css">-->
+    <style type="text/css">
+        .layui-table th{
+            font-weight: bold;
+        }
+        #mainContent{
+            padding: 20px;
+        }
+        .sq-db-up{
+            border: 1px solid #666;
+            padding: 10px;
+            background-color: #2ba245;
+            /*background-color: rgb(34, 172, 56);*/
+            color: #fff;
+            height: 20px;
+            margin: auto;
+        }
+        .sq-db-down{
+            border-left:1px solid #666 ;
+            border-bottom:1px solid #666 ;
+            border-right:1px solid #666 ;
+            padding: 20px;
+            height: 30px;
+        }
+        .span_div{
+            font-size: 18px;
+        }
+        .sq-db-up span{
+            margin-right: 10px;
+        }
+        .sq-db-down span{
+            margin-right: 10px;
+        }
+        .sq-db-up strong{
+            color: #ffff00;
+        }
+        .sq-db-down strong{
+            margin: 15px;
+            color: #008fb8;
+        }
+        .agency_div{
+            height: 120px;
+            width: 90%;
+            padding: 5px 17px;
+            display: inline-block;
+        }
+        .layui-input, .layui-textarea{
+            display: inline;
+            margin-right: 20px;
+        }
+        .headAddLeft{
+            overflow: hidden;
+            background-color: #efefef;
+            padding: 10px 0 5px 20px;
+            border-left: 5px solid #003c97;
+        }
+    </style>
+</head>
+<body>
+<div id="mainContent">
+    <div class="headAddLeft" style="padding: 15px">
+        <div class="layui-form">
+            <label id="title" style="font-size: 22px;font-weight: bold;line-height: 38px;text-align: center;">项目编号:</label>
+            <div style="float: right;">
+                <div class="layui-inline" >
+                    <a class="layui-btn" style="background-color: #1E9FFF;" id="add_expense" onclick="add_expense()">增加花费</a>
+                    <a class="layui-btn" style="background-color: #2F4056;" id="history" onclick="show_detail()">明细查询</a>
+                </div>
+            </div>
+        </div>
+    </div>
+<!--    <div style="height: 20px;"></div>-->
+    <div style="background-color: #f2f2f2">
+        <div style="background-color: #f2f2f2;height: 20px;"></div>
+        <div class="layui-card" style="margin-left: 20px;margin-right: 20px;">
+            <ul id="ul_scorll" class="sq-lm-list" style="text-align: center">
+                <div id="index_approval" class="agency_div" style="padding-top: 20px">
+                    <div id="admin_expenses" class="sq-db-up" style="text-align: center"><span class="span_div"></span></div>
+                    <div class="sq-db-down" style="text-align: center">
+                        <div><span id="admin_expenses_num" style="font-size: 30px;margin-top: 20px;"> </span>元</div>
+                    </div>
+                </div>
+            </ul>
+            <table class="layui-table" id="infoList" style="width: 90%;text-align: center;margin-left: 60px;margin-bottom: 10px;">
+                <colgroup>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                </colgroup>
+                <thead>
+                <tr id="tr_line">
+                    <!--            <th style="text-align: center">部门一</th>-->
+                    <!--            <th style="text-align: center">部门二</th>-->
+                    <!--            <th style="text-align: center">部门三</th>-->
+                    <!--            <th style="text-align: center">部门四</th>-->
+                    <!--            <th style="text-align: center">部门五</th>-->
+                </tr>
+                </thead>
+                <tbody id="listTbody">
+                </tbody>
+            </table>
+            <div style="height: 10px;"></div>
+        </div>
+        <div style="background-color: #f2f2f2;height: 20px;"></div>
+    </div>
+
+    <hr>
+    <div class="headAddLeft" style="padding: 15px;margin-top: 30px;">
+        <label style="font-size: 22px;font-weight: bold;">费用分析</label>
+
+
+        <form class="layui-form layui-inline" lay-filter="searchcond">
+            <div class="layui-input-block" style="margin-left: 170px;" >
+                <input id="year_search" type="radio" name="searchtype" value="year" title="年度分析"  checked="" lay-filter="searchtype">
+                <input type="radio" name="searchtype" value="halfyear" title="半年度分析" lay-filter="searchtype">
+                <input type="radio" name="searchtype" value="quarter" title="季度分析" lay-filter="searchtype">
+                <input type="radio" name="searchtype" value="month" title="月度分析" lay-filter="searchtype">
+                <div id="switch_year"  class="layui-inline" style="margin-left: 100px;">
+                    <label class="layui-inline" style="text-align: right;font-weight: bold;margin-top: 2px" >年度选择</label>
+                    <input type="text" class="layui-input" id="year" name='year' placeholder="分析年度" style="width: 90px;text-align: center;" lay-filter="year">
+                </div>
+                <div class="layui-inline" style="float: right;" >
+                    <a class="layui-btn" style="background-color: #ca1c1d;" id="AnaBT" onclick="search_pro()">搜索</a>
+                    <!--                            <a class="layui-btn" style="background-color: #FD482C;" id="reset" onclick="reset()&&search_pro()">重置</a>-->
+                </div>
+            </div>
+
+
+        </form>
+    </div>
+<!--    <div class="layui-col-md12" style="font-size: 22px;font-weight: bold;line-height: 38px;text-align: center;margin-bottom: 30px;"><hr><span style="padding: 10px 40px;border-bottom: 3px solid #003c97;"></span></div>-->
+
+</div>
+<div style="background-color: #f2f2f2">
+    <hr>
+    <div class="layui-card" style="margin-left: 20px;margin-right: 20px;">
+        <div id="year_div" style="display: none">
+            <div class="layui-card-body">
+                <div class="layui-inline" id="year_pic_income" style="width: 100%;height: 300px"></div>
+            </div>
+            <div class="layui-card-body">
+                <div class="layui-inline" id="year_pic_expend" style="width: 100%;height: 300px"></div>
+            </div>
+        </div>
+        <div id="half_year_div" style="display: none">
+            <div class="layui-card-body" >
+                <div class="layui-inline" id="left_pic_income" style="width: 100%;height: 300px"></div>
+            </div>
+            <div class="layui-card-body">
+                <div class="layui-inline" id="left_pic_expend" style="width: 100%;height: 300px"></div>
+            </div>
+        </div>
+        <div id="quarter_div" style="display: none">
+            <div class="layui-card-body">
+                <div class="layui-inline" id="Q1_income" style="width: 100%;height: 300px"></div>
+            </div>
+            <div class="layui-card-body">
+                <div class="layui-inline" id="Q1_expend" style="width: 100%;height: 300px"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--    <div class="layui-row layui-col-space15"  style="margin-top: 30px;">-->
+<!--        <div class="agency_div" style="width: 90%;margin-left: 53px;">-->
+<!--            <div class="layui-panel" style="background-color: aliceblue">-->
+<!--                <div class="layui-inline" id="行政费用" style="width: 50%;height: 300px"></div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--       <div class="agency_div">-->
+<!--            <div class="layui-panel" style="background-color: aliceblue">-->
+<!--                <div class="layui-inline" id="部门费用" style="width: 50%;height: 300px"></div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+
+<script src="/js/jquery.min.js"></script>
+<script src="/layui/layui.js"></script>
+<script src="/js/ajax.js"></script>
+<script src="/js/jszip.js"></script>
+<script src="/js/xlsx.js"></script>
+<script src="/js/echarts.min.js"></script>
+
+<script>
+    var dep_mon_income;
+    var dep_mon_expend;
+    var department_sum =''
+    var admin_remain =''
+    page_type = sq.getHashStringArgs()["type"]
+    // layer.msg(page_type)
+    if(page_type === 'admin_expenses'){
+        $("#title").text('行政费用')
+        $("#admin_expenses").text('行政费用')
+        getAjaxDate('/api/manage_cost/admins_statistic/','get','',function (res) {
+            console.log(res)
+            $("#admin_expenses_num").text(numFormat(res.data.admin_remain))
+            admin_remain = res.data.admin_remain
+            for(let i=0;i<res.data.department_profit.length;i++){
+                $("#tr_line").append('<th style="text-align: center">'+res.data.department_profit[i].name+'</th>')
+                $("#listTbody").append('<th style="text-align: center">'+numFormat(res.data.department_profit[i].admin_turn_price)+'</th>')
+            }
+            console.log(res)
+        })
+        getAjaxDate('/api/manage_cost/admins_analysis/','get',{year:$("#year").val()},function (rel) {
+            console.log(rel)
+            console.log(rel.data)
+            dep_mon_income = rel.data.statistic[0].source
+            dep_mon_expend = rel.data.statistic[1].source
+            show_pic('年度分析')
+        })
+    }else if(page_type === 'dep_expenses'){
+        $("#title").text('部门费用')
+        $("#admin_expenses").text('部门费用')
+        $(".sq-db-up").css('background-color','#003c97')
+        getAjaxDate('/api/manage_cost/department_statistic/','get','',function (res) {
+            $("#admin_expenses_num").text(numFormat(res.data.department_sum))
+            department_sum = res.data.department_sum
+            for(let i=0;i<res.data.department.length;i++){
+                $("#tr_line").append('<th style="text-align: center">'+res.data.department[i].department_name+'</th>')
+                $("#listTbody").append('<th style="text-align: center">'+numFormat(res.data.department[i].total_turn_price)+'</th>')
+            }
+            console.log(res)
+        })
+        getAjaxDate('/api/manage_cost/department_analysis/','get',{year:$("#year").val()},function (rel) {
+            console.log(rel)
+            console.log(rel.data)
+            dep_mon_income = rel.data.statistic[0].source
+            dep_mon_expend = rel.data.statistic[1].source
+            show_pic('年度分析')
+        })
+    }
+
+
+
+
+    function show_pic(pic_type) {
+        if(pic_type === '年度分析'){
+            $("#year_div").show()
+            source_income = parse_data('年度分析',dep_mon_income,'收入')[0]
+            title_income = parse_data('年度分析',dep_mon_income,'收入')[1]
+            source_expend = parse_data('年度分析',dep_mon_expend,'支出')[0]
+            title_expend = parse_data('年度分析',dep_mon_expend,'支出')[1]
+            update_pro_value_dep(source_income,'year_pic_income', title_income)
+            update_pro_value_dep(source_expend,'year_pic_expend', title_expend)
+
+
+        }
+        if(pic_type ==='半年度分析'){
+            $("#half_year_div").show()
+            source_0_income =  parse_data('半年度分析',dep_mon_income,'收入')[0][0]
+            // source_1_income =  parse_data('半年度分析',dep_mon_income,'收入')[0][1]
+            title_1_income =  parse_data('半年度分析',dep_mon_income,'收入')[1][0]
+            // title_2_income =  parse_data('半年度分析',dep_mon_income,'收入')[1][1]
+            source_0_expend =  parse_data('半年度分析',dep_mon_expend,'支出')[0][0]
+            // source_1_expend =  parse_data('半年度分析',dep_mon_expend,'支出')[0][1]
+            title_1_expend =  parse_data('半年度分析',dep_mon_expend,'支出')[1][0]
+            // title_2_expend =  parse_data('半年度分析',dep_mon_expend,'支出')[1][1]
+            update_pro_value_dep(source_0_income,'left_pic_income', title_1_income)
+            // update_pro_value_dep(source_1_income,'right_pic_income', title_2_income)
+            update_pro_value_dep(source_0_expend,'left_pic_expend', title_1_expend)
+            // update_pro_value_dep(source_1_expend,'right_pic_expend', title_2_expend)
+        }
+        if(pic_type === '季度分析'){
+            $("#quarter_div").show()
+            source_0_income =  parse_data('季度分析',dep_mon_income,'收入')[0][0]
+            title_1_income =  parse_data('季度分析',dep_mon_income,'收入')[1][0]
+            source_0_expend =  parse_data('季度分析',dep_mon_expend,'支出')[0][0]
+            title_1_expend =  parse_data('季度分析',dep_mon_expend,'支出')[1][0]
+            update_pro_value_dep(source_0_income,'Q1_income', title_1_income)
+            update_pro_value_dep(source_0_expend,'Q1_expend', title_1_expend)
+        }
+        if(pic_type === '月度分析'){
+            $("#year_div").show()
+            title_income =  parse_data('月度分析',dep_mon_income,'收入')
+            title_expend =  parse_data('月度分析',dep_mon_expend,'支出')
+            update_pro_value_dep(dep_mon_income,'year_pic_income', title_income)
+            update_pro_value_dep(dep_mon_expend,'year_pic_expend', title_expend)
+        }
+    }
+    function parse_data(type,data,in_or_expend) {
+        let sum_num = 0;
+        let source = []
+        if(type === '月度分析'){
+            for(let i=1;i<data.length;i++){
+                let sum = 0;
+                for(let j=1;j<data[i].length;j++){
+                    sum = sum + data[i][j]
+                }
+                sum_num = sum_num + sum
+            }
+            let title = $("#year").val() + '年月度 '+in_or_expend+'费用分析 ('+sum_num.toFixed(2) +')'
+            return title
+        }
+        if(type ==='年度分析'){
+            source.push(['年度',$("#year").val()+'年度'])
+            for(let i=1;i<data.length;i++){
+                let push_data = [];
+                push_data.push(data[i][0])
+                let sum = 0;
+                for(let j=1;j<data[i].length;j++){
+                    sum = sum + data[i][j]
+                }
+                push_data.push(sum.toFixed(2))
+                sum_num = sum_num + sum
+                source.push(push_data)
+            }
+
+        let title = $("#year").val() + '年度 '+in_or_expend+'费用分析 ('+sum_num.toFixed(2) +')'
+        return [source,title]
+        }
+        if(type ==='半年度分析'){
+            let sum_num_A = 0;
+            source.push([])
+            source[0].push(['上半年度',$("#year").val()+'上半年度',$("#year").val()+'下半年度'])
+            for(let i=1;i<data.length;i++){
+                let push_data_A = [];
+                let push_data_B = [];
+                push_data_A.push(data[i][0])
+                let sum_A = 0;
+                let sum_B = 0;
+                for(let j=1;j<data[i].length;j++){
+                    if(j<=6){
+                        sum_A = sum_A + data[i][j]
+                    }else{
+                        sum_B = sum_B + data[i][j]
+                    }
+                }
+                push_data_A.push(sum_A.toFixed(2))
+                push_data_A.push(sum_B.toFixed(2))
+                sum_num_A = sum_num_A + sum_A +sum_B
+                source[0].push(push_data_A)
+            }
+
+            let title_a = $("#year").val() + '半年度 '+in_or_expend+'费用分析 ('+sum_num_A.toFixed(2) +')'
+            return [source,[title_a]]
+        }
+        if(type ==='季度分析'){
+            let sum_num_A = 0;
+            source.push([])
+            source[0].push(['第一季度',$("#year").val()+'第一季度',$("#year").val()+'第二季度',$("#year").val()+'第三季度',$("#year").val()+'第四季度'])
+            for(let i=1;i<data.length;i++){
+                let push_data_A = [];
+                push_data_A.push(data[i][0])
+                let sum_A = 0;
+                let sum_B = 0;
+                let sum_C = 0;
+                let sum_D = 0;
+                for(let j=1;j<data[i].length;j++){
+                    if(0< j && j <= 3){
+                        sum_A = sum_A + data[i][j]
+                    }else if(3 < j && j <= 6){
+                        sum_B = sum_B + data[i][j]
+                    }else if(6 < j && j <= 9){
+                        sum_C = sum_C + data[i][j]
+                    }else if(9 < j && j <= 12){
+                        sum_D = sum_D + data[i][j]
+                    }
+                }
+                push_data_A.push(sum_A.toFixed(2))
+                push_data_A.push(sum_B.toFixed(2))
+                push_data_A.push(sum_C.toFixed(2))
+                push_data_A.push(sum_D.toFixed(2))
+                sum_num_A = sum_num_A + sum_A + sum_B + sum_C + sum_D
+                source[0].push(push_data_A)
+            }
+
+            let title_a = $("#year").val() + '季度 '+in_or_expend+'费用分析 ('+sum_num_A.toFixed(2) +')'
+            return [source,[title_a]]
+        }
+
+    }
+
+    function add_expense() {
+        if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+        let tgt = Math.random();//随机
+        top.frameset[tgt]=self.frameElement;
+        top.layer.open({
+            type: 2,
+            shadeClose: true,
+            shade: 0.7,
+            maxmin: true, //开启最大化最小化按钮
+            area: ['1000px', '600px'],
+            content: 'pages/Project_Analysis/add_expense.html#tgt='+tgt
+        });
+    }
+    function show_detail() {
+        if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+        let tgt = Math.random();//随机
+        top.frameset[tgt]=self.frameElement;
+        top.layer.open({
+            type: 2,
+            shadeClose: true,
+            shade: 0.7,
+            maxmin: true, //开启最大化最小化按钮
+            area: ['1400px', '700px'],
+            content: 'pages/Project_Analysis/show_detail.html#tgt='+tgt
+        });
+    }
+
+
+    var start_time ='';
+    var end_time ='';
+    var search_type='year'
+    layui.use(['element','laydate','form'], function(){
+
+        var laydate = layui.laydate
+        laydate.render({
+            elem: '#year'
+            ,type: 'year'
+        });
+
+        laydate.render({
+            elem: '#month'
+            ,type: 'month'
+        });
+
+
+        layui.form.on('radio(searchtype)', function(data){
+            search_type = data.value;
+            $('#year_div').hide()
+            $('#half_year_div').hide()
+            $('#quarter_div').hide()
+            // $('#switch_quarter').hide()
+
+            if(data.value=='year')
+            {
+                $('#switch_year').show()
+                show_pic('年度分析')
+            }
+            if(data.value=='halfyear')
+            {
+                $('#switch_year').show()
+                $('#switch_halfyear').show()
+                show_pic('半年度分析')
+
+            }
+            if(data.value=='quarter')
+            {
+                $('#switch_year').show()
+                $('#switch_quarter').show()
+                show_pic('季度分析')
+
+
+            }
+            if(data.value=='month')
+            {
+                $('#switch_year').show()
+                show_pic('月度分析')
+
+            }
+            layui.form.render()
+
+        });
+
+    });
+    var intFormt=(x)=>{
+        return numFormat(x.value).split('.')[0]
+    }
+
+    var labelOption = {
+        show: true,
+        position: 'inside',
+        formatter:intFormt
+    }
+
+    function addmonth(start_time,month){
+        let dt =new Date(Date.parse(start_time))
+        return sq.fmtDate(new Date(dt.setMonth(dt.getMonth()+month)-1))
+    }
+
+    function extract_time_range(){
+        let myform = layui.form.val('searchcond')
+
+        switch (myform.searchtype) {
+            case 'year':
+                let year = myform.year
+                start_time= myform.year +'-01-01 00:00:00'
+                end_time=addmonth(start_time,12)
+                break;
+        }
+
+    }
+
+
+    function extract_title(){
+        let myform = layui.form.val('searchcond')
+        switch (myform.searchtype) {
+            case 'year':
+                return  myform.year + '年度'
+                break;
+            case 'halfyear':
+                if (myform.halfyear=='first'){
+                    return myform.year + '上半年'
+                }
+                else{
+                    return myform.year + '下半年'
+                }
+                break;
+            case 'quarter':
+                return myform.year + '年第'+myform.quarter+'季度'
+                break;
+            case 'month':
+                return myform.month.replace('-','年')+'月'
+
+
+        }
+
+    }
+
+
+
+    function reset(){
+
+        let now = new Date();
+
+        $("input[name='searchtype']").get(0).checked = true;
+        $("#year").val(now.getFullYear());
+        $("#month").val(now.getFullYear()+'-'+now.getMonth());
+        $('#switch_year').show()
+        $('#switch_month').hide()
+        $('#switch_halfyear').hide()
+        $('#switch_quarter').hide()
+        layui.form.render('radio[searchtype]')
+        return true
+    }
+
+    function search_pro() {
+        if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+        $("#year_search").prop('checked','checked')
+        let myform = layui.form.val('searchcond')
+        search_obj={year:myform.year};
+        if(page_type === 'dep_expenses'){
+            getAjaxDate('/api/manage_cost/department_analysis/','get',search_obj,function (rel) {
+                dep_mon_income = rel.data.statistic[0].source
+                dep_mon_expend = rel.data.statistic[1].source
+                show_pic('年度分析')
+                if(rel.code!=1)
+                {
+                    layer.msg(rel.msg);
+                    return
+                }
+
+                // update_pro_value_dep(rel.data.statistic[0].source,'行政费用', extract_title()+'财务分析')
+            });
+        }else if(page_type === 'admin_expenses'){
+            getAjaxDate('/api/manage_cost/admins_analysis/','get',search_obj,function (rel) {
+                console.log(rel.data.statistic[0].source)
+                dep_mon_income = rel.data.statistic[0].source
+                dep_mon_expend = rel.data.statistic[1].source
+                show_pic('年度分析')
+                if(rel.code!=1)
+                {
+                    layer.msg(rel.msg);
+                    return
+                }
+
+                // update_pro_value_dep(rel.data.statistic.source,'行政费用', extract_title()+'财务分析')
+            });
+        }
+    }
+    reset()
+    // search_pro();
+    source = [
+        ['部门', '1月', '2月', '3月'],
+        ['部门一', 43.3, 85.8, 93.7],
+        ['部门二', 83.1, 73.4, 55.1],
+        ['部门三', 86.4, 65.2, 82.5],
+        ['部门四', 72.4, 53.9, 39.1]
+    ]
+    // update_pro_value_dep(source,'行政费用',extract_title()+'收入费用分析')
+    function update_pro_value_dep(source,domid,title){
+        if(typeof source== 'undefined') {
+            source = [
+                ['部门', '部门一', '部门二', '部门三', '部门四'],
+                ['开票数', 41.1, 30.4, 65.1, 53.3],
+                ['待执行数', 86.5, 92.1, 85.7, 83.1],
+                ['丢单数', 24.1, 67.2, 79.5, 86.4]
+            ];
+        }
+
+
+        let chartDom = document.getElementById(domid);
+        let myChart = echarts.init(chartDom);
+        let data_category = []
+        for(let i=1;i<source.length;i++){
+            data_category.push(source[i][0])
+        }
+        // let data_category = [source[1][0],source[2][0],source[3][0],source[4][0],source[5][0]]
+        let data_departs = source[0].slice(1)
+        let series = []
+        for(let i=1; i<source.length;++i){
+
+            series.push({
+                name:source[i][0],
+                data:source[i].slice(1),
+                label:labelOption,
+                type:'bar'})
+        }
+        let option = {
+            toolbox: {
+                show: true,
+                feature: {
+                    magicType: {
+                        type: ["bar",'stack']
+                    },
+                    restore: {},
+                    saveAsImage: {}
+                }
+            },
+            legend: {data:data_category,top:"12%"},
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow'
+                }
+            },
+            title: {
+                text: title,
+                data: data_departs,
+                // left:'center'
+
+            },
+            xAxis: {type: 'category',
+                data: data_departs
+            },
+            yAxis: {},
+            // Declare several bar series, each will be mapped
+            // to a column of dataset.source by default.
+            series: series
+        };
+        option && myChart.setOption(option);
+    }
+    function extract_title(){
+        let myform = layui.form.val('searchcond')
+        switch (myform.searchtype) {
+            case 'year':
+                return  myform.year + '年度'
+                break;
+            case 'halfyear':
+                if (myform.halfyear=='first'){
+                    return myform.year + '上半年'
+                }
+                else{
+                    return myform.year + '下半年'
+                }
+                break;
+            case 'quarter':
+                return myform.year + '年第'+myform.quarter+'季度'
+                break;
+            case 'month':
+                return myform.month.replace('-','年')+'月'
+        }
+
+    }
+
+</script>
+</body>
+</html>

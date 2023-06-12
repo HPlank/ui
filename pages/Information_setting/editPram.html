@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title></title>
+    <link rel="stylesheet" href="/layui/css/layui.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <style type="text/css">
+        body{
+            background-color: #f8f8f8;
+        }
+        .layui-table th{
+            font-weight: bold;
+        }
+        #mainContent{
+            padding: 20px;
+        }
+        .redtext{
+            color: #fe2213;
+            margin-right: 2px;
+        }
+        #roleContainer input{
+            margin: 10px;
+            line-height: 50px;
+        }
+        .layui-form-label{
+            width: auto;
+            font-weight: bold;
+        }
+        .layui-inline{
+            color: #2F4056;
+            margin-bottom: 20px !important;
+        }
+    </style>
+</head>
+<body>
+<div id="mainContent" style="padding-right: 50px;">
+    <div class="layui-elem-quote" style="overflow: hidden;line-height: 60px;border-left-color: #003c97;">
+        <div class="layui-col-md3" style="font-size: 18px;font-weight: bold;">参数配置</div>
+    </div>
+    <div class="layui-form" action="" style="width:700px;margin: 0 auto;background-color: #FFF;padding: 20px;border-radius: 10px;text-align: center;">
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label"><span class="redtext"></span>系统默认税率(%)</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="default_tax_rate" value="0.00"  autocomplete="off"  placeholder="请输入系统默认税率" class="layui-input sq-number" input_type="rate" tip_name="系统默认税率">
+                </div>
+                <label class="layui-form-label"><span class="redtext"></span>默认上缴比例(%)</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="default_turn_ratio" value="0.00"  autocomplete="off"  placeholder="请输入默认上缴比例" class="layui-input sq-number" input_type="rate" tip_name="系统默认税率">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label"><span class="redtext"></span>行政上提比例(%)</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="proportion_promotion" value="0.00"  autocomplete="off"  placeholder="请输入行政上提比例" class="layui-input sq-number" input_type="rate" tip_name="系统默认税率">
+                </div>
+                <label class="layui-form-label"><span class="redtext"></span>部门上提比例(%)</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="department_promotion" value="0.00"  autocomplete="off"  placeholder="请输入部门上提比例" class="layui-input sq-number" input_type="rate" tip_name="系统默认税率">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label"><span class="redtext"></span>印花税(%)</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="stamp_tax" value="0.00"  autocomplete="off"  placeholder="请输入行政上提比例" class="layui-input sq-number" input_type="rate" tip_name="系统默认税率">
+                </div>
+                <label class="layui-form-label"><span class="redtext"></span>附加税(%)</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="default_surtax" value="0.00"  autocomplete="off"  placeholder="请输入部门上提比例" class="layui-input sq-number" input_type="rate" tip_name="系统默认税率">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label"><span class="redtext"></span>默认付款利率(%)</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="default_payment_rate" value="0.00"  autocomplete="off"  placeholder="请输入默认付款利率" class="layui-input sq-number" input_type="rate" tip_name="系统默认税率">
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <a class="layui-btn" lay-submit="" onclick="saveCameraInfo()" lay-filter="demo1">更新参数</a>
+                <button type="reset" class="layui-btn layui-btn-primary" onclick="reset_form()">重置</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/js/jquery-3.3.1.min.js"></script>
+<script src="/layui/layui.js"></script>
+<script src="/js/ajax.js"></script>
+<script type="text/javascript">
+    layui.use(['form', 'layedit', 'laydate'], function() {
+        var form = layui.form
+            , layer = layui.layer
+            , layedit = layui.layedit
+            , laydate = layui.laydate;
+    });
+    var obj1 = {};
+    function saveCameraInfo() {
+        if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+        if(check_from()){
+            console.log(check_from())
+            layer.confirm("确定保存本条记录吗？",{
+                btn: ["是", "否"],
+                btn1: function () {
+                    obj1.default_tax_rate = $("#default_tax_rate").val();
+                    obj1.default_turn_ratio =  $("#default_turn_ratio").val();
+                    obj1.proportion_promotion =  $("#proportion_promotion").val();
+                    obj1.department_promotion =  $("#department_promotion").val();
+                    obj1.default_payment_rate =  $("#default_payment_rate").val();
+                    obj1.default_surtax =  $("#default_surtax").val();
+                    obj1.stamp_tax =  $("#stamp_tax").val();
+                    console.log(obj1)
+                    // 提交
+                    getAjaxDate("/api/parameter/batch_update/","put",
+                        obj1,
+                        function (rel) {
+                            console.log(rel)
+                            layer.msg("提交成功")
+                            main();
+                            parent.layer.closeAll();
+                        });
+                },
+                btn2: function () {
+                    layer.msg("取消成功")
+                }
+            })
+        }
+    }
+    var data = new Object();
+    function main() {
+        getAjaxDate("/api/parameter/","get","",function (res) {
+            console.log(res)
+            if (res.code === 1){
+                // layer.msg("参数获取成功！")
+                data = res.data.results;
+                parameter_list = ["#default_tax_rate","#default_turn_ratio","#proportion_promotion","#department_promotion","#default_payment_rate","#default_surtax","#stamp_tax"]
+                for (var i=0;i<parameter_list.length;i++){
+                    $(parameter_list[i]).val(res.data["results"][i]["value"])
+                }
+            }
+
+        });
+    }
+    main();
+    function reset_form() {
+        if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+        for (var i=0;i<parameter_list.length;i++){
+            $(parameter_list[i]).val(data[i]["value"])
+        }
+    }
+</script>
+</body>
+</html>

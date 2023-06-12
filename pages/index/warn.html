@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title></title>
+    <link rel="stylesheet" href="/layui/css/layui.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <style type="text/css">
+        .layui-table th{
+            font-weight: bold;
+        }
+        #mainContent{
+            padding: 20px;
+        }
+        .headAddLeft{
+            overflow: hidden;
+            background-color: #efefef;
+            padding: 10px 0 5px 20px;
+            border-left: 5px solid #003c97;
+        }
+        .sqsel{
+            padding: 3px;
+            border: 1px solid #003c97;
+            color: #003c97;
+            font-size: 18px;
+            margin-right: 20px;
+        }
+        .readcss{
+            background-color:#c2c2c2;
+        }
+        .unreadcss{
+
+        }
+    </style>
+</head>
+<body>
+<div id="mainContent">
+    <div id="rightContent">
+        <div class="articleContent">
+            <div class="layui-elem-quote" style="overflow: hidden;line-height: 40px;">
+                <div class="layui-col-xs1" style="font-size: 18px;font-weight: bold;">系统消息</div>
+
+                <form class="layui-form layui-col-xs-offset1" style="overflow: hidden;" lay-filter="params">
+
+                    <div class="layui-input-block layui-inline">
+                        <input type="radio" name="read" value="" title="所有"  checked="" lay-filter="read">
+                        <input type="radio" name="read" value="1" title="已读" lay-filter="read">
+                        <input type="radio" name="read" value="0" title="未读" lay-filter="read">
+                    </div>
+
+                    <div class="layui-input-block layui-inline">
+                        <input type="checkbox" name="get_type[JYJG]" title="结余警告" checked lay-filter="get_type">
+                        <input type="checkbox" name="get_type[HKTX]" title="回款提醒" checked lay-filter="get_type">
+                        <input type="checkbox" name="get_type[LXSQ]" title="立项申请" checked lay-filter="get_type">
+                        <input type="checkbox" name="get_type[LXXG]" title="立项修改" checked lay-filter="get_type">
+                        <input type="checkbox" name="get_type[DD]" title="丢单" checked lay-filter="get_type">
+                    </div>
+
+                </form>
+            </div>
+            <table class="layui-table layui-form" id="userListTable">
+                <colgroup>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                </colgroup>
+                <thead>
+                <tr>
+                    <th>项目编号</th>
+                    <th>标题</th>
+                    <th>类型</th>
+                    <th>时间</th>
+
+                </tr>
+                </thead>
+                <tbody id="jjTbody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script src="/js/jquery-3.3.1.min.js"></script>
+<script src="/layui/layui.js"></script>
+<script src="/js/ajax.js"></script>
+<script src="/js/jquery.cookie.js"></script>
+<script>
+
+    //  刷新页面
+    var sendObj = new Object();
+    if($.cookie(window.location.href) == undefined){
+        sendObj.page_size = 10;
+        $.cookie(window.location.href, sendObj.page_size);
+    }else{
+        sendObj.page_size= $.cookie(window.location.href);
+    }
+    var cur_page = 1;
+    var datalist = [];
+    if(sq.getHashStringArgs()["wait"] === '1'){
+        // $("input[name='warn_type[JYJG]']").attr("checked", "checked");
+        $("input[name='get_type[LXSQ]']").removeAttr("checked");
+        $("input[name='get_type[LXXG]']").removeAttr("checked");
+        $("input[name='get_type[DD]']").removeAttr("checked");
+        $("input[name='read']").removeAttr("checked");
+        $("input[name='read']").eq(2).attr("checked","checked");
+        layui.form.render('checkbox')
+        // layui.form.render('radio')
+    }
+
+
+    function getList(page) {
+        let remind_type = new Array();
+        if(typeof page =="undefined")
+        {
+            page=1
+        }
+
+        sendObj.page = page;
+        params = layui.form.val('params');
+
+        sendObj.read=params.read
+        if(sendObj.read=="")//为空则不传回赛选条件
+        {
+            delete sendObj["read"];
+        }
+        else
+        {
+            sendObj.read = parseInt(sendObj.read);
+        }
+
+        if(params["get_type[JYJG]"]=="on"){remind_type.push("结余警告")}
+        if(params["get_type[HKTX]"]=="on"){remind_type.push("回款提醒")}
+        if(params["get_type[LXSQ]"]=="on"){remind_type.push("立项申请")}
+        if(params["get_type[LXXG]"]=="on"){remind_type.push("立项修改")}
+        if(params["get_type[DD]"]=="on"){remind_type.push("丢单操作")}
+        // else if(params["get_type[JYJG]"]!="on" &&params["get_type[HKTX]"]=="on" )
+        // {
+        //     sendObj.remind_type="回款提醒"
+        // }
+        // else if(params["get_type[JYJG]"]!="on" &&params["get_type[HKTX]"]!="on" )
+        // {
+        //     sendObj.remind_type=""
+        // }
+        // else{//如果都选择，则不传回任何筛选条件
+        //     if (params["get_type[JYJG]"]=="on" &&params["get_type[HKTX]"]=="on" && "remind_type" in sendObj) {
+        //         delete sendObj["remind_type"];
+        //     }
+        //
+        // }
+        sendObj.remind_type = JSON.stringify(Array.from(remind_type));
+        getAjaxDate("/api/remind/","get",
+            sendObj,
+            function(rel){
+            layer.msg("获取数据成功")
+                // console.log(rel.data.results)
+                $("#jjTbody").empty()
+                datalist =rel.data.results;
+                setTable(datalist)
+                sq.page({
+                    count : ((rel.data.total_items === undefined) ? 0 : rel.data.total_items),
+                    page : ((rel.data.page === undefined) ? 1 : rel.data.page),
+                    size : sendObj.page_size,
+                    jump : function(obj){
+                        sendObj.page = obj.curr;
+                        sendObj.page_size = obj.limit;
+                        $.cookie(window.location.href, obj.limit);
+                        // $("#jjTbody").empty()
+                        getList(obj.curr);
+                    },
+                    bro : "#userListTable"
+                });
+            });
+    }
+
+
+    function checkMessage(row_id) {
+        if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+        let value = datalist[row_id]
+        layer.open({
+            title: "【"+value.remind_type+"】"+value.id
+            ,content: value.msg
+            ,btn: ['确认', '详情', '取消']
+            ,yes: function(index, layero){
+                getAjaxDate("/api/remind/"+value.id+"/","patch",
+                    {read:1},
+                    function(rel){
+                        let row = $("#jjTbody").find('tr').eq(row_id)
+                        row.removeClass('unreadcss')
+                        row.addClass('readcss')
+                        layer.closeAll()
+                    });
+            }
+            ,btn2: function(index, layero){
+                getAjaxDate("/api/remind/"+value.id+"/","patch",
+                    {read:1},
+                    function(rel){
+                        let row = $("#jjTbody").find('tr').eq(row_id)
+                        row.removeClass('unreadcss')
+                        row.addClass('readcss')
+                        layer.closeAll()
+                    });
+                console.log(value.remind_type)
+                if (value.remind_type==="立项申请"){
+                    let url = "pages/Project_Management/approvalList.html?t="+$.now()+"#number="+value.number
+                    top.open_Tab(url,"103","立项申请",true)
+                    top.$("dd").removeClass("layui-this")
+                    top.$("#prj_apply").addClass("layui-this")
+                }
+                if (value.remind_type==="立项修改"||value.remind_type==="结余警告"||value.remind_type==="回款提醒"){
+                    let url = "pages/Project_Management/approval_editList.html?t="+$.now()+"#number="+value.number
+                    top.open_Tab(url,"123","立项修改",true)
+                    top.$("dd").removeClass("layui-this")
+                    top.$("#prj_modify").addClass("layui-this")
+                }
+                if (value.remind_type==="丢单操作"){
+                    let url = "pages/Project_Execute/Lost_orderList.html?t="+$.now()+"#number="+value.number
+                    top.open_Tab(url,"108","丢单操作",true)
+                    top.$("dd").removeClass("layui-this")
+                    top.$("#oder_lost_manage").addClass("layui-this")
+                }
+
+                //return false 开启该代码可禁止点击该按钮关闭
+            }
+            ,btn3: function(index, layero){
+                //按钮【按钮三】的回调
+
+                //return false 开启该代码可禁止点击该按钮关闭
+            }
+        })
+    }
+
+    function setTable(infoList) {
+        /**
+         *@infoList 是一个数组
+         *  **/
+        for(let row_id = 0;row_id< infoList.length;++row_id){
+            let value = infoList[row_id]
+            let rowcss = null;
+            if(value.read){
+                rowcss='readcss';
+            }
+            else
+            {
+                rowcss='unreadcss';
+            }
+
+            //将数据插入表格中
+            $("#userListTable").append('<tr class="'+rowcss+'" onclick="checkMessage('+row_id+')">' +
+                '<td>'+value.number+'</td>' +
+                '<td >'+value.remark+'</td>' +
+                '<td>'+value.remind_type+'</td>' +
+                '<td>'+value.time+'</td>' +
+                '</tr>');
+        }
+        layui.form.render()
+
+    }
+
+
+    //监听指定开关
+    layui.use('form', function(){
+        var form = layui.form;
+        form.on('checkbox(get_type)', (data)=>{getList(cur_page);});
+        form.on('radio(read)', (data)=>{getList(cur_page);});
+
+        form.render()
+
+    });
+
+    getList(cur_page);
+
+</script>
+</body>
+</html>
+</html>

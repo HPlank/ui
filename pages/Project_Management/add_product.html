@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title></title>
+    <link rel="stylesheet" href="/layui/css/layui.css">
+    <link rel="stylesheet" href="/css/sq.css">
+    <style type="text/css">
+        .layui-table th{
+            font-weight: bold;
+        }
+        #mainContent{
+            padding: 20px;
+        }
+        tr:hover{
+            color:#01AAED;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div id="mainContent">
+    <div id="rightContent">
+        <div class="articleContent layui-form">
+            <div class="layui-elem-quote" style="overflow: hidden;line-height: 60px;border-left-color: #003c97;">
+                <div class="layui-col-md12" style="font-size: 18px;font-weight: bold;">添加商品</div>
+                <div class="layui-col-md10" style="font-size: 16px;font-weight: bold;">
+                    <div class="layui-col-md12 layui-inline" style="text-align: left;line-height: 40px;">
+                        <div class="layui-col-md7">
+                            <label class="layui-form-label" style="font-size: 16px;margin-top: 10px;font-weight: bold;">模糊搜索:</label>
+                            <div class="layui-input-inline">
+                                <input type="text" class="layui-input" id="pro_nickname" placeholder="商品名字、厂家、规格、型号" style="margin-bottom: 12px;margin-top: 10px">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-md12 layui-inline" style="font-size: 16px;font-weight: bold;">
+                        <div class="layui-col-md7">
+                            <label class="layui-form-label" style="text-align: right;font-weight: bold;" >折扣范围:</label>
+                            <div class="layui-col-md6" style="margin-top: -11px" >
+                                <input  type="button" class="layui-btn layui-btn-sm"  onclick="plus('#test-startdiscount-1','-')" value="-"/>
+                                <input type="text" autocomplete="off" id="test-startdiscount-1" class="layui-input" placeholder="0" style="width: 30px; display: inline-block;text-align: center;">
+                                <input  type="button" class="layui-btn layui-btn-sm" onclick="plus('#test-startdiscount-1','+')" value="+"/>
+                                &nbsp;&nbsp;-
+                                <input  type="button" class="layui-btn layui-btn-sm"  onclick="plus('#test-enddiscount-1','-')" value="-"/>
+                                <input type="text" autocomplete="off" id="test-enddiscount-1" class="layui-input" placeholder="0" style="width: 30px; display: inline-block;text-align: center;">
+                                <input  type="button" class="layui-btn layui-btn-sm" onclick="plus('#test-enddiscount-1','+')" value="+"/>
+                            </div>
+                        </div>
+                        <div class="layui-col-md6">
+                            <div class="layui-row"  id="test6">
+                                <label class="layui-form-label" style="text-align: right;font-weight: bold;margin-top: 10px" >日期范围:</label>
+                                <div style="">
+                                    <input type="text" autocomplete="off" id="test-startDate-1" class="layui-input" placeholder="开始日期" style="width: 110px;display: inline-block; text-align: center;">
+                                    &nbsp;&nbsp;-
+                                    <input type="text" autocomplete="off" id="test-endDate-1" class="layui-input" placeholder="结束日期" style="width: 110px;display: inline-block;text-align: center;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="layui-col-md2" style="text-align: right;">
+                    <a class="layui-btn" style="background-color: #ca1c1d;margin-bottom: 8px;margin-top: 9px;margin-left: 10px;padding-left:50px;padding-right:50px;height: auto;" id="AnaBT" onclick="search_pro(cur_page)">搜索</a>
+                    <div id="add_btn">
+                    <a class="layui-btn" style="background-color: #01AAED;margin-bottom: 8px;margin-top: 9px;margin-left: 10px;padding-left:50px;padding-right:50px;height: auto;" id="add" onclick="batch_add()">批量添加</a>
+                    </div>
+                </div>
+
+            </div>
+            <table class="layui-table" id="userListTable" style="width: 110%;">
+                <colgroup>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                </colgroup>
+                <thead>
+                <tr>
+                    <th style="text-align: center">商品大类</th>
+                    <th style="text-align: center">商品小类</th>
+                    <th style="text-align: center">商品名</th>
+                    <th style="text-align: center">厂商</th>
+                    <th style="text-align: center">单位</th>
+                    <th style="text-align: center">型号</th>
+                    <th style="text-align: center">报价</th>
+                    <th style="text-align: center">折扣</th>
+                    <th style="text-align: center">添加时间</th>
+                </tr>
+                </thead>
+                <tbody id="jjTbody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script src="/js/jquery.min.js"></script>
+<script src="/layui/layui.js"></script>
+<script src="/js/ajax.js"></script>
+<script>
+    $("#add_btn").hover(function () {
+        layer.tips('请选择商品后点击添加','#add_btn',{tips:3})
+    })
+
+    var sendObj = new Object();
+    sendObj.page_size=5;
+    sendObj.sale = '1';
+    var cur_page = 1;
+    var role_id = window.sessionStorage.getItem("role_id");
+    var tgt =sq.getHashStringArgs()["tgt"];
+    var targetframe = parent;
+    if ( tgt in  top.frameset) {
+        targetframe = top.frameset[tgt].contentWindow
+        delete  top.frames[tgt]
+    }
+    var recieved_product = new Object();
+
+
+    getList(cur_page);
+    function getList(cur_page) {
+        sendObj.page = cur_page;
+        getAjaxDate("/api/product/","get",sendObj,
+            function(rel){
+                recieved_product = rel.data.results;
+                console.log(rel.data.results);
+                $("#jjTbody").empty();
+                setTable(rel.data.results);
+                sq.checkBoxToTable("#userListTable");
+                sq.page({
+                    count : ((rel.data.total_items === undefined) ? 0 : rel.data.total_items),
+                    page : ((rel.data.page === undefined) ? 1 : rel.data.page),
+                    size : sendObj.page_size,
+                    jump : function(obj){
+                        sendObj.page = obj.curr;
+                        sendObj.page_size = obj.limit;
+                        // $("#jjTbody").empty();
+                        getList(obj.curr);
+                    },
+                    bro : "#userListTable"
+                });
+            })
+
+    }
+
+    var send_obj = new Object();
+    send_obj.sale = '1';
+    send_obj.page_size = 5;
+    send_obj.min_discount = 0;
+    send_obj.max_discount = 10;
+    function setTable(infoList) {
+        /**
+         *@infoList 是一个数组
+         *  **/
+
+        infoList.forEach(function (value) {
+            //将数据插入表格中
+            $("#userListTable").append('<tr id="tr'+value.id+'" sqid="'+encodeURIComponent(JSON.stringify(value))+'" ondblclick="add_product(\''+encodeURIComponent(JSON.stringify(value))+'\')">' +
+                '<td style="text-align: center">'+value.type+'</td>' +
+                '<td style="text-align: center">'+value.subtype+'</td>' +
+                '<td style="text-align: center">'+value.name+'</td>' +
+                '<td style="text-align: center">'+value.manufacturer+'</td>' +
+                // '<td>'+value.specification+'</td>' +
+                '<td style="text-align: center">'+value.unit+'</td>' +
+                '<td style="text-align: center">'+value.model+'</td>' +
+                '<td style="text-align: center">'+numFormat(value.offer)+'</td>' +
+                '<td style="text-align: center">'+value.discount+'</td>' +
+                '<td style="text-align: center">'+value.time+'</td>' +
+                '</tr>');
+        });
+        layui.form.render()
+        $("tr").on("mouseover",function () {
+            layer.tips('双击添加',"#"+$(this).attr("id"),{tips:3})
+        })
+    }
+
+
+    var start_time;
+    var end_time;
+    layui.use('laydate', function(){
+        var laydate = layui.laydate;
+        laydate.render({
+            elem: '#test6'
+            //设置开始日期、日期日期的 input 选择器
+            //数组格式为 2.6.6 开始新增，之前版本直接配置 true 或任意分割字符即可
+            ,range: ['#test-startDate-1', '#test-endDate-1']
+            ,theme: 'molv'
+            ,change: function(value, date, endDate){
+                start_time = value.split(" ")[0]
+                end_time = value.split(" ")[2]
+                // console.log(value.split(" ")); //得到日期生成的值，如：2017-08-18
+                console.log(start_time)
+                console.log(end_time)
+                console.log(date); //得到日期时间对象：{year: 2017, month: 8, date: 18, hours: 0, minutes: 0, seconds: 0}
+                console.log(endDate);}
+            ,done: function(value, date){
+                start_time = value.split(" ")[0];
+                end_time = value.split(" ")[2];
+                console.log(start_time);
+                console.log(end_time);
+                // layer.alert('你选择的日期是：' + value + '<br>获得的对象是' + JSON.stringify(date));
+            }
+        });
+    });
+
+    function search_pro(cur_page) {
+
+        if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+
+        send_obj.search = $("#pro_nickname").val();
+        send_obj.min_discount = $("#test-startdiscount-1").val();
+        send_obj.max_discount = $("#test-enddiscount-1").val();
+        send_obj.start_time = start_time;
+        send_obj.end_time = end_time;
+        if(send_obj.min_discount >= send_obj.max_discount && send_obj.min_discount !=="" && send_obj.max_discount !== ""){
+            layer.msg('折扣错误！')
+        }else {
+            send_obj.page = cur_page;
+            getAjaxDate('/api/product/','get',send_obj,function (rel) {
+                console.log(rel.data)
+                $("#jjTbody").empty();
+                setTable(rel.data.results);
+                sq.checkBoxToTable("#userListTable");
+                sq.page({
+                    count : ((rel.data.total_items === undefined) ? 0 : rel.data.total_items),
+                    page : ((rel.data.page === undefined) ? 1 : rel.data.page),
+                    size : send_obj.page_size,
+                    jump : function(obj){
+                        send_obj.page = obj.curr;
+                        send_obj.page_size = obj.limit;
+                        // $("#jjTbody").empty();
+                        search_pro(obj.curr);
+                    },
+                    bro : "#userListTable"
+                });
+            })
+        }
+        console.log(send_obj)
+    }
+    function plus(objid,op,range){
+        if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+        // objid 是控件ID
+        // op 如果为空表示加法，否则为减法
+        // range表示变化范围，如(0,10)
+        if(typeof op== "undefined")
+        {
+            op="+"
+        }
+        if(typeof range == 'undefined')
+        {
+            range=[0,10]
+        }
+        lower = range[0]
+        upper = range[1]
+        var input=$(objid);
+        var amount  = 0;
+        //读取用户的输入，尝试转化为整数，如果失败则设置为0
+        try {
+            amount=parseInt(input.val()); //解析整数
+
+        }
+        catch (e) {//解析整数失败，尝试解析浮点数
+            try {
+                amount=parseFloat(input.val()); //解析浮点数
+                amount = Math.floor(amount)//强制转化为不超过当前浮点数的整数
+            }
+            catch (e) {//浮点数解析失败，自动设置为0
+            }
+        }
+        if(isNaN(amount)){amount=0;}
+
+        //增加或减少数值
+        if(op=='+'){
+            amount++;
+            amount = Math.min(amount,upper);
+        }
+        else if (op=='-') {
+            amount--;
+            amount = Math.max(amount,lower);
+        }
+        else{
+            alert("error!");
+        }
+        input.val(amount)
+
+    }
+    function add_product(obj) {
+        let msg = '添加成功';
+        let isexist = 0;
+        obj = JSON.parse(decodeURIComponent(obj));
+        if(role_id === '5'){
+            targetframe.post_product.push(obj);
+            layer.msg(msg, {time: 1000}, function () {
+                targetframe.$("#ttbody").empty();
+                console.log([obj])
+                let show_probutton = false
+                if (targetframe.status === '0'){
+                    show_probutton = true;
+                }
+                targetframe.setTable(targetframe.post_product, show_probutton);
+                targetframe.$("#quantity_1").text(targetframe.post_product.length);
+                targetframe.getAjaxDate('/api/todoitem/' + targetframe.sq.getHashStringArgs()["id"] + '/cal/', 'patch', targetframe.send_data(), function (rel) {
+                    console.log(rel.data)
+                    targetframe.show_content(rel.data)
+                })
+                top.layer.closeAll()
+            })
+        }else{
+            for(let i=0;i<targetframe.post_product.length;i++){
+                if(obj.name === targetframe.post_product[i].name && obj.manufacturer === targetframe.post_product[i].manufacturer
+                    && obj.model === targetframe.post_product[i].model ){
+                    console.log("已存在！")
+                    msg = "商品已存在，请勿重复添加！";
+                    isexist =1
+                }
+            }
+            if(isexist === 0){
+                obj.quantity = 1;
+                targetframe.post_product.push(obj);
+            }else {
+                msg ="不能重复添加商品";
+            }
+            if(msg=="不能重复添加商品"){
+                layer.msg(msg)
+            }else {
+                layer.msg(msg, {time: 1000}, function () {
+                    targetframe.$("#ttbody").empty();
+                    console.log([obj])
+                    let show_probutton = false
+                    if (targetframe.status === '0'){
+                        show_probutton = true;
+                    }
+                    targetframe.setTable(targetframe.post_product, show_probutton);
+                    targetframe.$("#quantity_1").text(targetframe.post_product.length);
+                    targetframe.getAjaxDate('/api/todoitem/' + targetframe.sq.getHashStringArgs()["id"] + '/cal/', 'patch', targetframe.send_data(), function (rel) {
+                        console.log(rel.data)
+                        targetframe.show_content(rel.data)
+                    })
+                    top.layer.closeAll()
+                })
+            }
+        }
+    }
+    function batch_add() {
+
+        if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+
+        let msg = '添加成功';
+        let isexist = 0;
+        var obj_list =sq.getCheckBoxFromTable('#userListTable')
+        obj_list = obj_list.map((x)=>{return JSON.parse(decodeURIComponent(x))})
+        console.log(obj_list)
+        if(role_id === '5'){
+            for(let i=0;i<obj_list.length;i++){
+                obj = obj_list[i];
+                targetframe.post_product.push(obj);
+                layer.msg(msg,{time:2000}, function(){
+                    targetframe.$("#ttbody").empty();
+                    console.log([obj])
+                    let show_probutton = false
+                    if (targetframe.status === '0'){
+                        show_probutton = true;
+                    }
+                    targetframe.setTable(targetframe.post_product,show_probutton);
+                    targetframe.$("#quantity_1").text(targetframe.post_product.length);
+                    targetframe.getAjaxDate('/api/todoitem/'+targetframe.sq.getHashStringArgs()["id"]+'/cal/','patch',targetframe.send_data(),function (rel){
+                        console.log(rel.data)
+                        targetframe.show_content(rel.data)
+                    })
+                    top.layer.closeAll()
+                })
+            }
+        }else {
+            for(let i=0;i<obj_list.length;i++){
+                obj = obj_list[i];
+                for(let i=0;i<targetframe.post_product.length;i++){
+                    if(obj.name === targetframe.post_product[i].name && obj.specification === targetframe.post_product[i].specification
+                        && obj.model === targetframe.post_product[i].model ){
+                        console.log("已存在！")
+                        msg ="商品已存在，请勿重复添加！";
+                        isexist =1
+                    }
+                }
+                if(isexist === 0){
+                    targetframe.post_product.push(obj);
+                }else {
+                    msg = "不能重复添加商品";
+                }
+            }
+            if(msg=="不能重复添加商品"){
+                layer.msg(msg)
+            }else{
+            layer.msg(msg,{time:2000}, function(){
+                targetframe.$("#ttbody").empty();
+                console.log([obj])
+                let show_probutton = false
+                if (targetframe.status === '0'){
+                    show_probutton = true;
+                }
+                targetframe.setTable(targetframe.post_product,show_probutton);
+                targetframe.$("#quantity_1").text(targetframe.post_product.length);
+                targetframe.getAjaxDate('/api/todoitem/'+targetframe.sq.getHashStringArgs()["id"]+'/cal/','patch',targetframe.send_data(),function (rel){
+                    console.log(rel.data)
+                    targetframe.show_content(rel.data)
+                })
+                top.layer.closeAll()
+            })
+        }
+    }
+    }
+
+</script>
+</body>
+</html>

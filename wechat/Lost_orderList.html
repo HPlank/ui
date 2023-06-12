@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>项目申请</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="../../layui/css/layui.css" media="all">
+  <link rel="stylesheet" href="../../css/sq.css">
+  <style type="text/css">
+    #mainContent{
+      padding: 20px;
+      padding-bottom: 60px;
+    }
+    #topContainer{
+      text-align: center;
+      background-color: #003c97;
+      color: #FFF;
+      font-weight: bold;
+      font-size: 18px;
+      padding: 20px;
+    }
+    .iconContent{
+      float: left;
+      text-align: center;
+      font-size: 14px;
+    }
+    #myUL{
+      margin: 0;
+      /*padding: 20px;*/
+      background-color: #FFF;
+    }
+    #myUL li{
+      list-style: none;
+      background-color: #FFFFFF;
+      margin: 5px 0 0 1%;
+      padding: 0 0 10px 0;
+      border-radius: 5px;
+      cursor: pointer;
+      overflow: hidden;
+      border-bottom: 1px solid #efefef;
+    }
+    #myUL li p{
+      padding: 5px;
+    }
+    .lxdh{
+      margin-left: 10px;
+      color: #FD482C;
+    }
+    #footContainer{
+      font-size: 10px;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background-color: #efefef;
+      text-align: center;
+    }
+    .sqsel{
+      padding: 3px;
+      border: 1px solid #003c97;
+      color: #003c97;
+      font-size: 18px;
+      width: 100px;
+    }
+    .summaryContent  label{
+      font-weight: bold;
+      text-align: left;
+    }
+    .layui-input, .layui-textarea{
+      border: none;
+      outline: none;
+      display: inline;
+      margin-right: 20px;
+
+    }
+    .layui-form-item .layui-inline{
+      margin-bottom: 0;
+    }
+    .sq-lm{
+      margin: 10px auto;
+      text-align: left;padding: 10px;
+      border: 1px solid #003c97;
+      position: relative;
+      height: 180px;
+    }
+    .sq-lm-title{
+      position: absolute;
+      top: -15px;
+      background-color: #003c97;
+      border-radius: 3px;
+      padding: 3px 8px;
+      font-size: 14px;
+      color: #FFF;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+<div id="topContainer">
+  丢单管理(<span id="num_res" style="color: #FFB800;">99+</span>)
+</div>
+<div id="mainContent" class="layui-form">
+  <div class="sq-lm" style="">
+    <span class="sq-lm-title" style="">数据总览</span>
+    <div class="summaryContent" style="margin: 0 auto">
+      <form class="layui-form">
+        <div class="layui-form-item">
+          <div class="layui-inline">
+            <label class="layui-form-label">丢单数量：</label>
+            <div class="layui-input-inline">
+              <input type="text" class="layui-input" id="count" readonly>
+            </div>
+          </div>
+          <div class="layui-inline" >
+            <label class="layui-form-label">丢单金额：</label>
+            <div class="layui-input-inline">
+              <input type="text" class="layui-input" id="total_protrans_price" readonly>
+            </div>
+          </div>
+          <div class="layui-inline" >
+            <label class="layui-form-label">亏损成本：</label>
+            <div class="layui-input-inline">
+              <input type="text" class="layui-input" id="total_cost_price" readonly>
+            </div>
+          </div>
+          <div class="layui-inline" >
+            <label class="layui-form-label">亏损费用：</label>
+            <div class="layui-input-inline">
+              <input type="text" class="layui-input" id="total_expend_price" readonly>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  <div class="layui-col-xs12">
+    <div class="layui-col-xs4">
+      <label class="layui-form-label" style="text-align: left;font-weight: bold">类型筛选:</label>
+    </div>
+    <div class="layui-col-xs8">
+      <div id="demo1" style="margin-left: 0px;margin-right: 32px"></div>
+    </div>
+  </div>
+  <div  id="sqselect_depdiv" style="text-align: left;padding: 10px;padding-left: 15px;"><span style="margin-right: 5px;font-weight: bold;">部门筛选：</span>
+    <select class="sqsel" id="sqSelect_dep" style="margin-top: 10px;margin-left: 13px;" lay-ignore>
+      <option value="">全部</option>
+    </select>
+  </div>
+
+    <ul id="myUL"></ul>
+
+  <div style="text-align: center;padding: 10px;">
+    <button class="layui-btn" id="loadMoreBT" style="background-color: #666;" onclick="getList(++cur_page)" >点击加载更多……</button>
+  </div>
+</div>
+<div id="footContainer">
+  <div style="width: 25%" class="iconContent" id="index_foot">
+    <div style="padding: 10px 0" onclick="sq.open('index.html')">
+      <i class="layui-icon layui-icon-home" style="font-size: 22px;font-weight: bold;"></i>
+      <br>
+      <span>首页</span>
+    </div>
+  </div>
+  <!--    <div style="width: 25%;color: #003c97;" class="iconContent" id="project_foot">-->
+  <!--        <div style="padding: 10px 0">-->
+  <!--            <i class="layui-icon layui-icon-form" style="font-size: 22px;font-weight: bold;"></i>-->
+  <!--            <br>-->
+  <!--            <span>项目</span>-->
+  <!--        </div>-->
+  <!--    </div>-->
+  <div style="width: 25%;color: #003c97;" class="iconContent" id="project_foot">
+    <div style="padding: 10px 0" id="project_dropdown">
+      <i class="layui-icon layui-icon-form" style="font-size: 22px;font-weight: bold;"></i>
+      <br>
+      <span >项目</span>
+    </div>
+  </div>
+  <div style="width: 25%" class="iconContent" id="execute_foot">
+    <div style="padding: 10px 0" onclick="sq.open('execute.html')">
+      <i class="layui-icon layui-icon-template-1" style="font-size: 22px;font-weight: bold;"></i>
+      <br>
+      <span>执行</span>
+    </div>
+  </div>
+  <div style="width: 25%;display: none;" class="iconContent" id="analyse_foot">
+    <div style="padding: 10px 0" id="analyse_dropdown">
+      <i class="layui-icon layui-icon-template-1" style="font-size: 22px;font-weight: bold;"></i>
+      <br>
+      <span>分析</span>
+    </div>
+  </div>
+  <div style="width: 25%" class="iconContent" id="msg_foot">
+    <div style="padding: 10px 0" onclick="sq.open('my.html')">
+      <i class="layui-icon layui-icon-notice" style="font-size: 22px;font-weight: bold;"></i>
+      <br>
+      <span>消息</span>
+    </div>
+  </div>
+</div>
+<div id="searchBT" style="background-color: #222;color: #FFF;position: fixed;right: 10px;bottom: 70px;width: 40px;height: 40px;border-radius: 20px;text-align: center;line-height: 40px;">
+  <i class="layui-icon layui-icon-search" style="font-size: 20px;"></i>
+</div>
+<!--下方为模板部分-->
+<!--用户登陆的模板-->
+</body>
+<script type="text/javascript" src="../../js/jquery-3.3.1.min.js" language="JavaScript"></script>
+<script src="/layui/layui.js"></script>
+<script src="/js/ajax.js"></script>
+<script src="/js/jszip.js"></script>
+<script src="/js/xlsx.js"></script>
+<script src="/js/jquery.cookie.js"></script>
+<script src="/js/echarts.min.js"></script>
+<script src="/js/xm-select.js"></script>
+<script>
+  var edit_project_window_index = -1;
+  $( window ).on( 'hashchange', function( event,data) {
+    if(event.originalEvent.oldURL.indexOf('#edit_project') > -1){
+      layer.close(edit_project_window_index)
+    }
+    console.log( 'hash changed' );
+  } );
+  var demo1 = xmSelect.render({
+    el: '#demo1',
+    language: 'zn',
+    // data:select_data,
+    data: [
+      {name: '全部', value: ''},
+      {name: '立项', value: '40'},
+      {name: '丢单审批', value: '30'},
+      {name: '丢单', value: '60'},
+    ],
+    on: function(data){
+      //可以return一个数组, 代表想选中的数据
+
+      //arr:  当前多选已选中的数据
+      var arr = data.arr;
+      //change, 此次选择变化的数据,数组
+      var change = data.change;
+      //isAdd, 此次操作是新增还是删除
+      var isAdd = data.isAdd;
+      console.log(change)
+
+      $("#loadMoreBT").show();
+      cur_page = 1;
+      $("#myUL").empty()
+      getList(cur_page,arr)
+      if(isAdd){
+        var allItem = change.find(function(item){
+          return item.value === '';
+        })
+        if(allItem){
+          return [allItem];
+        }
+        allItem = arr.find(function(item){
+          return item.value === '';
+        })
+        if(allItem){
+          return change;
+        }
+      }
+    }
+
+  });
+  if(window.sessionStorage.getItem('role_id') == 3){
+    $("#execute_foot").hide()
+    $("#index_foot").css('width','34%')
+    $("#project_foot").css('width','33%')
+    $("#msg_foot").css('width','33%')
+  }
+  if(window.sessionStorage.getItem('role_id') == 4){
+    $("#execute_foot").hide()
+    $("#analyse_foot").show()
+  }
+  layui.use('dropdown', function(){
+    var dropdown = layui.dropdown
+    dropdown.render({
+      elem: '#project_dropdown' //可绑定在任意元素中，此处以上述按钮为例
+      ,align: 'center'
+      ,data: [{
+        title: '立项申请'
+        ,id: 100
+        ,href: 'approvalList.html'
+      },{
+        title: '立项修改'
+        ,id: 101
+        ,href: 'approval_editList.html' //开启超链接
+        // ,target: '_blank' //新窗口方式打开
+      },{
+        title: '丢单'
+        ,id: 102
+        ,href: 'Lost_orderList.html'
+      },]
+      ,id: 'project_dropdown'
+      //菜单被点击的事件
+      ,click: function(obj){
+        console.log(obj);
+        // layer.msg('回调返回的参数已显示再控制台');
+      }
+    });
+  });
+  layui.use('dropdown', function(){
+    var dropdown = layui.dropdown
+    dropdown.render({
+      elem: '#analyse_dropdown' //可绑定在任意元素中，此处以上述按钮为例
+      ,align: 'center'
+      ,data: [{
+        title: '销售分析'
+        ,id: 200
+        ,href: 'sales_analysis.html'
+      },{
+        title: '财务分析'
+        ,id: 201
+        ,href: 'financial_analysis.html' //开启超链接
+        // ,target: '_blank' //新窗口方式打开
+      },{
+        title: '开票分析'
+        ,id: 202
+        ,href: 'bill_analysis.html'
+      },]
+      ,id: 'analyse_dropdown'
+      //菜单被点击的事件
+      ,click: function(obj){
+        console.log(obj);
+        // layer.msg('回调返回的参数已显示再控制台');
+      }
+    });
+  });
+  var role_id = window.sessionStorage.getItem("role_id")
+  var cur_page = 1;
+  var sendObj = new Object();
+  sendObj.page_size = 5;
+
+  // if(sq.getHashStringArgs()["wait"] === undefined){
+  //   getList(cur_page);
+  //   demo1.setValue([''], null, true);
+  // }else {
+  //   demo1.setValue(['30'], null, true);
+  //   sendObj.search = sq.getHashStringArgs()["wait"]
+  //   getList(cur_page,[30]);
+  //   $("#pro_number").val(sq.getHashStringArgs()["wait"])
+  //   delete sendObj["search"];
+  //
+  // }
+
+  if(sq.getHashStringArgs()["number"] === undefined){
+    if(sq.getHashStringArgs()["wait"] === '1'){
+      console.log("wait_solve")
+      $("#sqSelect").val("wait_solve");
+      sendObj.wait_solve = "1";
+      getList(cur_page);
+      sendObj.wait_solve = "";
+    }else {
+      getList(cur_page);
+    }
+  }else {
+    sendObj.search = sq.getHashStringArgs()["number"]
+    getList(cur_page);
+    $("#pro_number").val(sq.getHashStringArgs()["number"])
+    delete sendObj["search"];
+  }
+
+  function getList(cur_page,type_data) {
+    sendObj.page = cur_page;
+    if(type_data == undefined){
+      var selectArr = demo1.getValue();
+    }else{
+      var selectArr = type_data;
+    }
+    sendObj.status_list = [];
+    console.log(selectArr)
+    if(selectArr.length == 0 || (selectArr.length==1 && selectArr[0].value =='')){
+      sendObj.status_list.push('30')
+      sendObj.status_list.push('60')
+      sendObj.status_list.push('40')
+    }else{
+      for(let i =0;i<selectArr.length;i++){
+        sendObj.status_list.push(selectArr[i].value)
+      }
+    }
+    sendObj.status_list = JSON.stringify(Array.from(sendObj.status_list))
+    console.log($("#sqSelect").val())
+    getAjaxDate("/api/lossitem/","get",sendObj, function(rel){
+          if(rel.code == 1){
+            console.log(rel.data.total_items - cur_page * rel.data.page_size)
+            $("#loadMoreBT").show();
+            if (rel.data.total_items - cur_page * rel.data.page_size <= 0) {
+              $("#loadMoreBT").hide();
+            }
+            summary_data = rel.data.sum
+            $("#count").val(summary_data.count)
+            $("#total_protrans_price").val(numFormat(summary_data.total_protrans_price))
+            $("#total_cost_price").val(numFormat(summary_data.total_cost_price))
+            $("#total_expend_price").val(numFormat(summary_data.total_expend_price))
+            if(rel.data.total_items > 99){
+              $("#num_res").text('99+')
+            }else {
+              $("#num_res").text(rel.data.total_items)
+            }
+            setul(rel.data.results);
+            if(rel.data.results.length===0){
+              layer.msg("暂无项目或项目状态已更新！")
+            }
+            } else{
+            layer.msg(rel.msg)
+          }
+
+    }
+    );
+
+  }
+  function setul(infoList) {
+    /**1
+     *@infoList 是一个数组
+     *  **/
+    infoList.forEach(function (value) {
+      //显示的按钮
+      //将数据插入表格中
+      if ((role_id ==='1' || role_id ==='2') && value.modify === null && value.status === '40'){
+        var str = '<button id='+value.id+'_del type="button" class="layui-btn layui-btn-danger layui-btn-sm" onclick="del_project('+value.id+')"><i class="layui-icon layui-icon-close"></i></button>'
+      }else {
+        var str = ''
+      }
+      let overdue = ''
+      if(value.overdue===1){
+        overdue= '是'
+      }else if(value.overdue===0){
+        overdue = '否'
+      }
+      $("#myUL").append('<li>'+'<div class="layui-col-md12 layui-col-xs12">'+'<p style="text-align: left;">'
+              +'<strong>项目名称:  </strong>'
+              +'<span id="project">'+value.name+'</span>'
+              +'<span  style="float: right;">'
+              +'<button class="layui-btn layui-btn-normal layui-btn-sm" onclick="edit_project('+value.id+','+value.status+',\''+value.project_status+'\',\''+value.modify+'\')" style="background-color: #2D93CA;padding: 0px 10px;" type="button"><i class="layui-icon"></i>'
+              +'</button>'+str+'</span>'
+              +'</p><div style="padding: 10px 5px;">'
+              +'<div class="layui-col-xs6"><span class="xm">状态：</span><span class="lxdh" style="color: #01AAED">'+color_losedict[value.status]+'</span></div>'
+              +'<div class="layui-col-xs6" style="text-align: right;"><span class="sqtime">'+value.time+'</span></div></div> </div> </li>'
+      );
+
+      $("#"+value.id+"_del").hover(function () {
+        layer.tips('丢单审批',"#"+value.id+"_del",{tips:3})
+      })
+    })
+  }
+  function edit_project(id,status,status_name,modify) {
+    if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+    // sq.open('Lost_orderApproval.html#id='+id+'&status='+status+'&status_name='+status_name+'&modify='+modify);
+    window.location.hash = 'edit_project';
+    edit_project_window_index = layer.open({
+      title:'',
+      type: 2,
+      shadeClose: true,
+      shade: 0.7,
+      closeBtn: 0,
+      // 遮罩：默认：0.3透明度的黑色背景（'#000'）
+      // maxmin: true, //开启最大化最小化按钮
+      area: ['100%', '100%'],
+      content: 'Lost_orderApproval.html#id='+id+'&status='+status+'&status_name='+status_name+'&modify='+modify
+    });
+  }
+
+  function del_project(id) {
+    if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+    layer.confirm('丢单将提交总监审批，确定提交吗？', {
+      btn: ['确定','取消'] //按钮
+      ,btn1: function () {
+        getAjaxDate("/api/lossitem/" + id + "/draft/", "patch", {remark:""},
+                function (rel) {
+                  cur_page = 1;
+                  $("#myUL").empty()
+                  getList(cur_page)
+                  layer.closeAll();
+                  layer.msg(rel.msg)
+                })},
+      btn2: function () {
+        layer.msg("取消成功")
+      }
+    })
+  }
+
+  //从后台获取部门信息
+  get_dep();
+  function get_dep() {
+    getAjaxDate('/api/department/','get',"",function (rel) {
+      console.log(rel.data)
+      setselect(rel.data.results)
+    });
+  }
+
+  function setselect(infoList){
+    infoList.forEach(function (value) {
+      //显示的按钮
+      //将数据插入表格中
+      $("#sqSelect_dep").append(new Option(value.name, value.id));
+    })
+  }
+  $("#sqSelect_dep").on("change",function () {
+    cur_page = 1;
+    sendObj.department = $(this).val();
+    $("#myUL").empty();
+    getList(cur_page)
+  });
+  $("#searchBT").click(function () {
+    sq.inputWindow({
+      title: {
+        text: "项目搜索",//标题
+        titleColor: "#FFFFFF"//弹窗文字颜色
+      },
+      closeBtn: 1,
+      width: "90%",
+      shadeClose: false,
+      form: {
+        pro_number: {
+          label: "项目编号",
+          type: "text",
+          value: "",
+          tip: "请输入项目编号",
+          allowNull: true
+        },
+      },
+      sure: function (rel) {
+        cur_page = 1;
+        sendObj.search = rel.pro_number;
+        $("#myUL").html("");
+        layer.closeAll();
+        layer.msg('搜索成功!',{time: 500},function () {});
+        getList(cur_page)
+      }
+    })
+  })
+</script>
+</html>

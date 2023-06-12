@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>项目申请</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="/css/sq.css">
+    <style type="text/css">
+        body{
+            padding-bottom: 50px;
+        }
+        #mainContent{
+            padding: 20px;
+        }
+        #myUL li{
+            list-style: none;
+            background-color: #FFFFFF;
+            margin: 5px 0 0 1%;
+            padding: 0 0 10px 0;
+            border-radius: 5px;
+            cursor: pointer;
+            overflow: hidden;
+            border-bottom: 1px solid #efefef;
+        }
+        #myUL li p{
+            padding: 5px;
+        }
+        .headAddLeft{
+            overflow: hidden;
+            background-color: #efefef;
+            padding: 10px 0 5px 20px;
+            border-left: 5px solid #003c97;
+        }
+        .sqsel{
+            padding: 3px;
+            border: 1px solid #003c97;
+            color: #003c97;
+            font-size: 18px;
+            margin-right: 20px;
+        }
+        .layui-form-switch{
+            margin-top: 0px;
+
+        }
+        .layui-input, .layui-textarea{
+            display: inline;
+            margin-right: 20px;
+        }
+
+    </style>
+</head>
+<body>
+<div id="mainContent">
+    <div class="articleContent">
+        <div class="layui-col-md12" style="font-size: 22px;font-weight: bold;line-height: 38px;text-align: center;margin-bottom: 30px;"><span style="padding: 10px 40px;border-bottom: 3px solid #003c97;">立项修改</span></div>
+        <div class="headAddLeft" style="padding: 15px">
+            <div class="layui-form">
+                <label style="font-size: 14px;font-weight: bold;">项目编号:</label>
+                <input type="text" class="layui-input" id="pro_number" placeholder="请输入项目编号" style="width: 160px;">
+                <div class="layui-inline">
+                    <div  id="sqselect_depdiv" style="text-align: right;"><span style="margin-right: 5px;font-size: 16px;margin-bottom: 15px">角色切换：</span>
+                        <input type="checkbox" checked="" id="switch" name="open" lay-skin="switch" lay-filter="switchTest" lay-text="部门|个人">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <div  style="text-align: left;"><span style="margin-right: 5px;font-size: 18px;margin-bottom: 15px">状态:</span>
+                        <select class="sqsel" id="sqSelect" lay-ignore>
+                            <option value="">全部</option>
+                            <option value="wait_solve">代办</option>
+                        </select>
+                        <span style="margin-right: 30px;font-size: 16px;">总计: <strong id="totalnum" style="color: #008fb8;"></strong> 条</span>
+                    </div>
+                </div>
+                <div style="float: right;">
+                    <div class="layui-inline" >
+                        <a class="layui-btn layui-btn-primary"  id="reset" onclick="reset_data()">重置</a>
+<!--                        <div  class="layui-inline" id="btn_apply" style="text-align: right;">-->
+<!--                            <button  class="layui-btn layui-btn-normal" onclick="addApproval()" style="background-color: #FD482C;" type="button">新建项目</button>-->
+<!--                        </div>-->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <table class="layui-table" id="infoList">
+            <colgroup>
+                <col>
+                <col>
+                <col>
+                <col>
+                <col>
+                <col>
+            </colgroup>
+            <thead>
+            <tr>
+                <th style="text-align: center">项目名称</th>
+                <th style="text-align: center">项目编号</th>
+                <th style="text-align: center">状态</th>
+                <th style="text-align: center">立项时间</th>
+                <th style="text-align: center">管理</th>
+            </tr>
+            </thead>
+            <tbody id="listTbody">
+            </tbody>
+        </table>
+    </div>
+</div>
+<!--下方为模板部分-->
+<!--用户登陆的模板-->
+</body>
+<script type="text/javascript" src="/js/jquery-3.3.1.min.js" language="JavaScript"></script>
+<script src="/layui/layui.js"></script>
+<script src="/js/ajax.js"></script>
+<script src="/js/jquery.cookie.js"></script>
+<script>
+    var role_id = window.sessionStorage.getItem("role_id")
+    var cur_page = 1;
+    var sendObj = new Object();
+    if($.cookie(window.location.href) == undefined){
+        sendObj.page_size = 10;
+        $.cookie(window.location.href, sendObj.page_size);
+    }else{
+        sendObj.page_size= $.cookie(window.location.href);
+
+    }
+    if(sq.getHashStringArgs()["number"] === undefined){
+        if(sq.getHashStringArgs()["wait"] === '1'){
+            console.log("wait_solve")
+            $("#sqSelect").val("wait_solve");
+            sendObj.wait_solve = "1";
+            getList(cur_page);
+            sendObj.wait_solve = "";
+        }else {
+            getList(cur_page);
+        }
+    }else {
+        console.log('##############')
+        sendObj.search = sq.getHashStringArgs()["number"]
+        getList(cur_page);
+        $("#pro_number").val(sq.getHashStringArgs()["number"])
+        delete sendObj["search"];
+    }
+    function getList(cur_page) {
+        sendObj.page = cur_page;
+        if (role_id === "1"){
+            $("#sqselect_depdiv").hide()
+            get_data()
+        }
+        if (role_id === "2"){
+            get_data()
+            $("#btn_apply").show()
+            if (sendObj.get_type === 'department' || sendObj.get_type === undefined){
+                $("#btn_apply").hide()
+            }
+
+        }
+        if (role_id === "3"){
+            $("#btn_apply").hide()
+            $("#sqselect_depdiv").hide()
+            get_data()
+        }
+        if(role_id === '4'){
+            get_data()
+            $("#btn_apply").hide()
+            $("#sqselect_depdiv").hide()
+        }
+    }
+    $("#sqSelect").on("change",function () {
+        $("#loadMoreBT").show();
+        cur_page = 1;
+        sendObj.status = $(this).val();
+        if($(this).val() === "wait_solve"){
+            sendObj.wait_solve = "1";
+            sendObj.status = ''
+        }
+        $("#listTbody").empty();
+        getList(cur_page)
+        sendObj.wait_solve = '';
+    });
+    function get_data() {
+        if($("#sqSelect").val() === "wait_solve"){
+            sendObj.wait_solve = "1";
+        }
+        getAjaxDate("/api/item/","get",sendObj,
+            function(rel){
+                console.log(rel.data.total_items - cur_page*rel.data.page_size);
+                $("#loadMoreBT").show();
+                if (rel.data.total_items - cur_page*rel.data.page_size <= 0){
+                    $("#loadMoreBT").hide();
+                }
+                console.log(rel.data)
+                $("#totalnum").text(rel.data.total_items)
+                $("#depName").text(window.sessionStorage.getItem("department"));
+                $("#listTbody").empty();
+                setul(rel.data.results);
+                if(rel.data.results.length===0){
+                    layer.msg("暂无项目或项目状态已更新！")
+                }
+                sq.page({
+                    count : ((rel.data.total_items === undefined) ? 0 : rel.data.total_items),
+                    page : ((rel.data.page === undefined) ? 1 : rel.data.page),
+                    size : sendObj.page_size,
+                    jump : function(obj){
+                        sendObj.page = obj.curr;
+                        sendObj.page_size = obj.limit;
+                        $.cookie(window.location.href, obj.limit);
+                        // $("#listTbody").empty()
+                        getList(obj.curr);
+                    },
+                    bro : "#infoList"
+                });
+            }
+        );
+    }
+    function setul(infoList) {
+        /**1
+         *@infoList 是一个数组
+         *  **/
+        infoList.forEach(function (value) {
+            //显示的按钮
+            //将数据插入表格中
+            if (value.status ==='0'){
+                var str = '<button type="button" class="layui-btn layui-btn-sm" onclick="del_project('+value.id+')"><i class="layui-icon layui-icon-return"></i></button>'
+            }else {
+                var str = ''
+            }
+            console.log(value);
+            $("#infoList").append('<tr>' +
+                '<td style="text-align: center">'+value.name+'</td>' +
+                '<td style="text-align: center">'+value.number+'</td>' +
+                // '<td>'+color_editdict[value.status]+'</td>' +
+                '<td style="text-align: center">'+value.project_status+'</td>' +
+                '<td style="text-align: center">'+value.approval_time+'</td>' +
+                '<td style="text-align: center">'+'<button class="layui-btn layui-btn-normal layui-btn-sm" onclick="edit_project('+value.id+','+value.status+',\''+value.project_status+'\')" style="background-color: #2D93CA;padding: 0px 10px;" type="button"><i class="layui-icon layui-icon-edit"></i>   </button>'+str+ '</td>' +
+                '</tr>');
+            console.log("project"+value.id)
+        })
+    }
+    function edit_project(id,status,status_name) {
+        if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+        console.log(status_name)
+        layer.open({
+            title: '项目管理'
+            ,content: 'approval_edit.html#id='+id+'&status='+status+'&status_name='+status_name
+            ,type:2
+            ,area:['100%','100%']
+            ,yes: function(index, layero){
+            }
+            ,btn2: function(index, layero){
+            }
+            ,cancel: function(){
+                layer.msg("取消成功")
+            }
+        });
+    }
+
+    function del_project(id) {
+        if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+        layer.confirm('取消立项修改？', {
+            btn: ['确定','取消'] //按钮
+            ,btn1: function () {
+                getAjaxDate("/api/item/" + id + "/", "patch", {on_delete: 1},
+                    function (rel) {
+                        console.log(id)
+                        cur_page = 1;
+                        // $("#myUL").empty()
+                        $("#listTbody").empty()
+                        getList(cur_page)
+                        parent.layer.closeAll();
+                        layer.msg(rel.msg)
+                    })},
+            btn2: function () {
+                layer.msg("取消成功")
+            }
+        })
+    }
+    layui.use('form', function(){
+        var form = layui.form;
+        form.on('switch(switchTest)', function(data){
+            console.log(this.checked ? 'department' : 'personal');
+            cur_page = 1;
+            sendObj.get_type = this.checked ? 'department' : 'personal';
+            if($("#sqSelect").val() === 'wait_solve'){
+                sendObj.wait_solve = "1";
+            }
+            $("#listTbody").empty();
+            getList(cur_page);
+            sendObj.wait_solve = "";
+            layer.msg('角色已切换至：'+ (this.checked ? '部门' : '个人'), {
+                offset: '6px'
+            });
+            // layer.tips('温馨提示：请注意开关状态的文字可以随意定义，而不仅仅是ON|OFF', data.othis)
+        })});
+    function keypress_search(search_data) {
+        let send_data;
+        send_data = sendObj;
+        send_data.page = cur_page
+        send_data.search = search_data;
+        getAjaxDate("/api/item/","get",send_data,function (rel) {
+            console.log(rel.data)
+            $("#listTbody").empty();
+            setul(rel.data.results);
+            sq.page({
+                count : ((rel.data.total_items === undefined) ? 0 : rel.data.total_items),
+                page : ((rel.data.page === undefined) ? 1 : rel.data.page),
+                size : sendObj.page_size,
+                jump : function(obj){
+                    sendObj.page = obj.curr;
+                    sendObj.page_size = obj.limit;
+                    $.cookie(window.location.href, obj.limit);
+
+                    getList(obj.curr);
+                },
+                bro : "#infoList"
+            });
+        })
+    }
+    $(function(){
+        $('#pro_number').bind('keypress',function(event){
+            if(event.keyCode == "13")
+            {
+                keypress_search( $("#pro_number").val())
+            }
+
+        });
+    });
+    function reset_data() {
+        if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+        delete sendObj["search"];
+        $("#listTbody").empty()
+        $("#pro_number").val("")
+        getList(cur_page)
+    }
+</script>
+</html>

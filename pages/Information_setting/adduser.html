@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title></title>
+    <link rel="stylesheet" href="/layui/css/layui.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <style type="text/css">
+        .layui-table th{
+            font-weight: bold;
+        }
+        #mainContent{
+            padding: 20px;
+        }
+        .layui-input{
+            margin-bottom: 20px;
+            width: 160px;
+        }
+        .redtext{
+            color: #fe2213;
+            margin-right: 2px;
+        }
+        #roleContainer input{
+            margin: 10px;
+            line-height: 50px;
+        }
+    </style>
+</head>
+<body>
+<div id="mainContent">
+    <div class="layui-form">
+        <div class="layui-row">
+            <div class="layui-col-md4">
+                <div class="layui-inline">
+                    <label class="layui-form-label"><span class="redtext"></span>用户名</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="loginpass" id="username" lay-verify="title" autocomplete="off" placeholder="最多20位" class="layui-input sq-username" min-length="1" max-length="20" tip_name="用户名">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-md4" id="password_div">
+                <div class="layui-inline">
+                    <label class="layui-form-label">密码</label>
+                    <div class="layui-input-inline">
+                        <div style="position: relative;">
+                            <input type="password" id="password" autocomplete="off" placeholder="请输入密码"class="layui-input sq-password" tip_name="密码" maxlength="18">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-md4">
+                <div class="layui-inline">
+                    <label class="layui-form-label"><span class="redtext"></span>姓名</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="nickname" name="title" lay-verify="title" autocomplete="off" placeholder="最多20位" class="layui-input sq-length" min-length="1" max-length="20" tip_name="昵称" maxlength="20">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-row">
+            <div class="layui-col-md4">
+                <div class="layui-inline">
+                    <label class="layui-form-label">性别</label>
+                    <div class="layui-input-block">
+                        <select name="gender" id="gender" class="sq-select" tip_name="性别">
+                            <option value=""></option>
+                            <option value="0">女</option>
+                            <option value="1">男</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">部门</label>
+                <div class="layui-input-block">
+                    <select name="interest" id="department" lay-filter="department"  class="sq-select" tip_name="部门">
+                        <option value=""></option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-col-md4">
+                <div class="layui-inline">
+                    <label class="layui-form-label">角色</label>
+                    <div class="layui-input-block">
+                        <select name="labid" id="role_id" lay-filter="role_id" class="sq-select" tip_name="角色">
+                            <option value=""></option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-row">
+            <div class="layui-col-md4">
+                <div class="layui-inline">
+                    <label class="layui-form-label">电话</label>
+                    <div class="layui-input-inline">
+                        <div style="position: relative;">
+                            <input type="tel" id="tel" autocomplete="off" class="layui-input "  placeholder="请输入电话" >
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-md4">
+                <div class="layui-inline" >
+                    <label class="layui-form-label">头像照片</label>
+                    <div class="layui-input-block">
+                        <div class="layui-upload">
+                            <button type="button" class="layui-btn layui-btn-danger" id="test1">上传图片</button>
+                            <div class="layui-upload-list">
+                                <img class="layui-upload-img " src="/img/no.png" style="height: 100px;" id="demo1">
+                                <p id="demoText"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item" style="text-align: center;">
+            <div class="layui-input-block">
+                <a class="layui-btn" onclick="saveUserInfo()" lay-filter="demo1">立即提交</a>
+                <a type="reset" class="layui-btn layui-btn-primary" onclick="reset_data()" id="reset_btn">重置</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/js/jquery-3.3.1.min.js"></script>
+<script src="/layui/layui.js"></script>
+<script src="/js/ajax.js"></script>
+<script>
+    /***
+     * @sq.getHashStringArgs()
+     * 返回结果是一个字典。
+     * 如果#id=199，则sq.getHashStringArgs()[id]的值就是199
+     * ***/
+    var form = layui.form;
+    var curObj = new Object();
+    curObj.imgpath = "/img/no.png";
+    $("#demo1").attr("src",curObj.imgpath);
+
+    var sale_departs = [];//保存所有的销售部门信息
+    getrole();
+    getdep();
+
+
+    //加载列表
+    layui.use(['upload','form'], function() {
+        var $ = layui.jquery
+            , upload = layui.upload;
+        //普通图片上传
+        var uploadInst = upload.render({
+            elem: '#test1'
+            , url: _url+'/api/image/'
+            , before: function (obj) {
+                //预读本地文件示例，不支持ie8
+                obj.preview(function (index, file, result) {
+                    $('#demo1').attr('src', result); //图片链接（base64）
+                });
+            }
+            , done: function (res) {
+                //如果上传失败
+                console.log(res);
+                if (res.code != 1) {
+                    return layer.msg('上传失败');
+                }
+                if (res.code == 1) {
+                    curObj.pic = res.data.pic;
+                    return layer.msg('上传成功');
+
+                }
+                //上传成功
+            }
+            , error: function () {
+                //演示失败状态，并实现重传
+                var demoText = $('#demoText');
+                demoText.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-xs demo-reload">重试</a>');
+                demoText.find('.demo-reload').on('click', function () {
+                    uploadInst.upload();
+                });
+            }
+        });
+
+
+        //选择角色后更新部门
+        form.on('select(role_id)', function(data){
+            var deps = role2dep(data.value)
+            console.log(deps)
+            $("#department").empty()//清空后更新
+            setselect(deps,'department')
+            form.render('select')//更新部门
+        });
+    });
+    function setselect(infoList,select_id){
+        infoList.forEach(function (value) {
+            //显示的按钮
+            //将数据插入表格中
+            $("#"+select_id).append(new Option(value.name, value.id));
+        })
+        form.render('select')
+    }
+
+    function getrole() {
+        getAjaxDate("/api/role/","get","",
+            function (rel) {
+                data = rel.data.results;
+                setselect(rel.data.results,"role_id")
+            }
+        )
+    }
+    function getdep() {
+        getAjaxDate("/api/department/","get","",
+            (rel)=> {
+                console.log(rel.data.results)
+                sale_departs = rel.data.results;
+                console.log(sale_departs)
+                 // setselect(sale_departs,"department")
+            }
+        )
+    }
+    function saveUserInfo() {
+        if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+        if(sq.getHashStringArgs()["id"] !== 'undefined'){
+
+            $("#password").attr("class",'layui-input')
+        }
+        if(check_from()){
+            curObj.nickname = $("#nickname").val();
+            curObj.tel = $("#tel").val();
+            curObj.user_name = $("#username").val();
+            curObj.role = $("#role_id").val();
+            curObj.department = $("#department").val();
+            curObj.gender = $("#gender").val()
+
+            if(sq.getHashStringArgs()["id"] === 'undefined'){
+                curObj.user_password = $("#password").val();
+                console.log(curObj);
+                getAjaxDate("/api/user/","post", curObj,
+                    function (rel) {
+                        layer.msg(rel.msg,{time: 500},function () {
+                            parent.layer.closeAll();
+                            parent.getList();
+                        });
+                    }
+                )
+            }else{
+                let obj = JSON.parse(decodeURIComponent(sq.getHashStringArgs()["id"]))
+                getAjaxDate("/api/user/"+obj.id+"/","put", curObj,
+                    function (rel) {
+                        layer.msg(rel.msg,{time: 500},function () {
+                            parent.layer.closeAll();
+                            parent.getList();
+                        });
+                    }
+                )
+            }
+        }
+    }
+    if (sq.getHashStringArgs()["id"] !== 'undefined'){
+        setTimeout(function () {
+            var obj = JSON.parse(decodeURIComponent(sq.getHashStringArgs()["id"]));
+            console.log(obj)
+            $("#password_div").hide();
+            $("#nickname").val(obj.nickname) ;
+            $("#gender").val(obj.gender);
+            $("#username").val(obj.user_name);
+            $("#tel").val(obj.tel);
+            $("#role_id").val(obj.role);
+            console.log( $("#role_id").val())
+            form.render('select')//更新部门
+            // 点击修改后初始化部门列表
+            var deps = role2dep(obj.role)
+            console.log(deps)
+            $("#department").empty()//清空后更新
+            setselect(deps,'department')
+
+            $("#demo1").attr("src",imgurl+obj.pic);
+            $("#department").val(obj.department);
+            form.render('select')//更新部门
+        },100)
+    }else{
+        $("#reset_btn").hide()
+    }
+
+    function role2dep(roleid) {
+        console.log(sale_departs)
+        if(roleid=='1'||roleid=='2' || roleid=='7'){//销售人员
+            return sale_departs
+        }
+        else if(roleid=='3' || roleid=='4' || roleid=='6'){ //财务部门
+            return [{id:1,name:'财务部门'}]
+        }
+        else if(roleid=='5'){ //信息部门
+            return [{id:0,name:'信息部'}]
+        }
+        else{
+            return []
+        }
+
+    }
+    function reset_data() {
+        if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+        if (sq.getHashStringArgs()["id"] !== undefined){
+            var obj = JSON.parse(decodeURIComponent(sq.getHashStringArgs()["id"]));
+            $("#password_div").hide()
+            $("#nickname").val(obj.nickname) ;
+            $("#gender").val(obj.gender);
+            $("#username").val(obj.user_name);
+            $("#tel").val(obj.tel);
+            $("#department").val(obj.department);
+            $("#role_id").val(obj.role);
+            $("#demo1").attr("src",imgurl+obj.pic);
+        }
+    }
+    $("#username").focus(function () {
+        layer.tips('用户名由数字、英文字母或者下划线组成','#username',{tips:3})
+    })
+    $("#password").focus(function () {
+        layer.tips('密码由以字母开头、长度在6-18之间，只能包括字符、数字和下划线','#password',{tips:3})
+    })
+
+</script>
+</body>
+</html>

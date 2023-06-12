@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>湛德财务项目管理系统</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="/layui/css/layui.css" media="all" type="text/css">
+  <link rel="stylesheet" href="/css/sq.css">
+  <style type="text/css">
+    body{
+      padding-bottom: 70px;
+    }
+    #mainContainer{
+      overflow: hidden;;
+    }
+    #topContainer{
+      text-align: center;
+      background-color: #003c97;
+      color: #FFF;
+      font-weight: bold;
+      font-size: 18px;
+      padding: 20px;
+    }
+    .iconContent{
+      float: left;
+      text-align: center;
+      font-size: 14px;
+    }
+    #myUL{
+      margin: 0;
+      padding: 20px;
+      background-color: #FFF;
+    }
+    #myUL li{
+      list-style: none;
+      background-color: #FFFFFF;
+      margin: 5px 0 0 1%;
+      padding: 0 0 10px 0;
+      border-radius: 5px;
+      cursor: pointer;
+      overflow: hidden;
+      border-bottom: 1px solid #efefef;
+    }
+    #myUL li p{
+      padding: 5px;
+    }
+    .lxdh{
+      margin-left: 10px;
+      color: #FD482C;
+    }
+    #footContainer{
+      font-size: 10px;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background-color: #efefef;
+      text-align: center;
+    }
+    .sq-one-line{
+      line-height: 30px;
+      padding:10px;
+      overflow: hidden;
+      font-size: 14px;
+      border-bottom: 1px solid #efefef;
+      width: 90%;
+      display: inline-block;
+      margin-left: 2%;
+    }
+    .sq-one-line_1{
+      line-height: 30px;
+      padding:10px;
+      overflow: hidden;
+      font-size: 14px;
+      border-bottom: 1px solid #efefef;
+    }
+    #mainContent{
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+<div id="topContainer">
+  项目管理(<span id="statusName" style="color: #FFB800;">部门名称</span>)
+</div>
+
+
+<div id="mainContainer" class="layui-form">
+  <div style="padding: 10px;overflow: hidden;">
+    <div class="sq-one-line">
+      <div class="layui-col-xs10">
+        <span style="" id="span_1">项目名称：</span>
+        <strong class="sq-length" min-length="1" max-length="20" tip_name="项目名称" id="totalnum1" style="color: #003c97;">新建时弹窗填写</strong>
+      </div>
+      <div class="layui-col-xs2" style="text-align: right;">
+        <button id="name" class="layui-btn layui-btn-sm"  onclick="edit('1')" style="background-color: #003c97; display: none" type="button"><i class="layui-icon layui-icon-edit"></i></button>
+      </div>
+    </div>
+    <div class="sq-one-line">
+      <div class="layui-col-xs10">
+        <span style="" id="span_2">项目编号：</span>
+        <strong class="sq-length min-length=1" max-length="20" tip_name="项目编号" id="totalnum2" style="color: #003c97;">13255</strong>
+      </div>
+      <div class="layui-col-xs2" style="text-align: right;">
+        <button id="dep_no" class="layui-btn layui-btn-sm"  onclick="edit('2')" style="background-color: #003c97; display: none;" type="button"><i class="layui-icon layui-icon-edit"></i></button>
+      </div>
+    </div>
+    <div class="sq-one-line">
+      <div class="layui-col-xs6">
+        <span style="" id="span_19">负责人：</span><strong id="totalnum19" style="color: #003c97;">13255</strong>
+      </div>
+    </div>
+    <!--        <div class="sq-one-line">-->
+    <!--            <div class="layui-col-xs6">-->
+    <!--                <span style="" id="span_4">税费：</span><strong id="totalnum4" style="color: #003c97;"></strong><span>元</span>-->
+    <!--            </div>-->
+    <!--        </div>-->
+
+    <div class="sq-one-line">
+      <div class="layui-col-xs10">
+        <span style="line-height: 30px;" id="span_5">拟成交价：</span><strong class="sq-number" tip_name="拟成交价" input_type="float" id="totalnum5" style="color: #003c97;">12654.12</strong><span>元</span>
+      </div>
+      <div class="layui-col-xs2" style="text-align: right;">
+        <button id="protrans_price" class="layui-btn layui-btn-sm" onclick="edit('5')" style="display: none;background-color: #003c97;" type="button"><i class="layui-icon layui-icon-edit"></i></button>
+      </div>
+    </div>
+    <div class="sq-one-line">
+      <div class="layui-col-xs10">
+        <span  style="line-height: 30px;" id="span_7">回款期限(月)：</span><strong class="sq-number" tip_name="回款期限(月)" input_type="int" id="totalnum7" style="color: #003c97;">10</strong>
+      </div>
+      <div class="layui-col-xs2" style="text-align: right;">
+        <button id="payment_term" class="layui-btn layui-btn-sm" onclick="edit('7')" style="background-color: #003c97;display: none" type="button"><i class="layui-icon layui-icon-edit"></i></button>
+      </div>
+    </div>
+    <div class="sq-one-line">
+      <div class="layui-col-xs10">
+        <span  style="line-height: 30px;" id="span_22">付款期限(月)：</span><strong class="sq-number" tip_name="付款期限(月)" input_type="int" id="totalnum22" style="color: #003c97;">10</strong>
+      </div>
+      <div class="layui-col-xs2" style="text-align: right;">
+        <button id="remittance_term" class="layui-btn layui-btn-sm" onclick="edit('22')" style="background-color: #003c97;display: none" type="button"><i class="layui-icon layui-icon-edit"></i></button>
+      </div>
+    </div>
+    <div class="sq-one-line">
+      <div class="layui-col-xs10">
+        <span style="line-height: 30px;" id="span_8">差旅费：</span><strong class="sq-number" tip_name="差旅费" input_type="float" id="totalnum8" style="color: #003c97;">10</strong><span>元</span>
+      </div>
+      <div class="layui-col-xs2" style="text-align: right;">
+        <button id="travel" class="layui-btn layui-btn-sm" onclick="edit('8')" style="background-color: #003c97;display: none" type="button"><i class="layui-icon layui-icon-edit"></i></button>
+      </div>
+    </div>
+    <div class="sq-one-line">
+      <div class="layui-col-xs10">
+        <span  style="line-height: 30px;" id="span_9">交际费：</span><strong class="sq-number" tip_name="交际费" input_type="float" id="totalnum9" style="color: #003c97;">10</strong><span>元</span>
+      </div>
+      <div class="layui-col-xs2" style="text-align: right;">
+        <button id="communication" class="layui-btn layui-btn-sm" onclick="edit('9')" style="background-color: #003c97;display: none" type="button"><i class="layui-icon layui-icon-edit"></i></button>
+      </div>
+    </div>
+    <div class="sq-one-line">
+      <div class="layui-col-xs10">
+        <span style="line-height: 30px;" id="span_10">招标费：</span><strong class="sq-number" tip_name="招标费" input_type="float" id="totalnum10" style="color: #003c97;">10</strong><span>元</span>
+      </div>
+      <div class="layui-col-xs2" style="text-align: right;">
+        <button id="tender" class="layui-btn layui-btn-sm" onclick="edit('10')" style="background-color: #003c97;display: none" type="button"><i class="layui-icon layui-icon-edit"></i></button>
+      </div>
+    </div>
+    <div class="sq-one-line">
+      <div class="layui-col-xs10">
+        <span style="line-height: 30px;" id="span_20">市场投入：</span><strong class="sq-number" tip_name="市场投入" input_type="float" id="totalnum20" style="color: #003c97;">暂无</strong><span>元</span>
+      </div>
+      <div class="layui-col-xs2" style="text-align: right;">
+        <button id="market_investment" class="layui-btn layui-btn-sm" onclick="edit('20')" style="background-color: #003c97;display: none" type="button"><i class="layui-icon layui-icon-edit"></i></button>
+      </div>
+    </div>
+    <!--        <div class="sq-one-line">-->
+    <!--            <div class="layui-col-xs10">-->
+    <!--                <span style="line-height: 30px;" id="span_11">采购成本：</span><strong class="sq-number" tip_name="采购成本" input_type="float" id="totalnum11" style="color: #003c97;">10</strong><span>元</span>-->
+    <!--            </div>-->
+    <!--            <div class="layui-col-xs2" style="text-align: right;">-->
+    <!--                <button id="purchasing_cost" class="layui-btn layui-btn-sm" onclick="edit('11')" style="background-color: #003c97;display: none" type="button"><i class="layui-icon layui-icon-edit"></i></button>-->
+    <!--            </div>-->
+    <!--        </div>-->
+    <div class="sq-one-line">
+      <div class="layui-col-xs10">
+        <span style="line-height: 30px;" id="span_12">产品维修：</span><strong class="sq-number" tip_name="产品维修" input_type="float" id="totalnum12" style="color: #003c97;"></strong><span>元</span>
+      </div>
+      <div class="layui-col-xs2" style="text-align: right;">
+        <button id="product_maintenance" class="layui-btn layui-btn-sm" onclick="edit('12')" style="background-color: #003c97;display: none" type="button"><i class="layui-icon layui-icon-edit"></i></button>
+      </div>
+    </div>
+    <div class="sq-one-line">
+      <div class="layui-col-xs10">
+        <span style="line-height: 30px;" id="span_13">经销商维修：</span><strong class="sq-number" tip_name="经销商维修" input_type="float" id="totalnum13" style="color: #003c97;"></strong><span>元</span>
+      </div>
+      <div class="layui-col-xs2" style="text-align: right;">
+        <button id="dealer_maintenance" class="layui-btn layui-btn-sm" onclick="edit('13')" style="background-color: #003c97;display: none" type="button"><i class="layui-icon layui-icon-edit"></i></button>
+      </div>
+    </div>
+    <div class="sq-one-line">
+      <div class="layui-col-xs10">
+        <span style="line-height: 30px;" id="span_23">利息：</span><strong class="sq-number" tip_name="利息" input_type="float" id="totalnum23" style="color: #003c97;"></strong><span>元</span>
+      </div>
+      <div class="layui-col-xs2" style="text-align: right;">
+        <button id="interest" class="layui-btn layui-btn-sm" onclick="edit('23')" style="background-color: #003c97;display: none" type="button"><i class="layui-icon layui-icon-edit"></i></button>
+      </div>
+    </div>
+    <div class="sq-one-line">
+      <div class="layui-col-xs10">
+        <span style="line-height: 30px;" id="span_24">上缴金额：</span><strong class="sq-number" tip_name="上缴金额" input_type="float" id="totalnum24" style="color: #003c97;"></strong><span>元</span>
+      </div>
+      <div class="layui-col-xs2" style="text-align: right;">
+        <button id="pro_profit" class="layui-btn layui-btn-sm" onclick="edit('24')" style="background-color: #003c97;display: none" type="button"><i class="layui-icon layui-icon-edit"></i></button>
+      </div>
+    </div>
+    <div class="sq-one-line">
+      <div class="layui-col-xs10">
+        <span style="line-height: 30px;" id="span_25">部门上提：</span><strong class="sq-number" tip_name="部门上提" input_type="float" id="totalnum25" style="color: #003c97;"></strong><span>元</span>
+      </div>
+      <div class="layui-col-xs2" style="text-align: right;">
+        <button id="dep_promotion" class="layui-btn layui-btn-sm" onclick="edit('25')" style="background-color: #003c97;display: none" type="button"><i class="layui-icon layui-icon-edit"></i></button>
+      </div>
+    </div>
+    <div class="sq-one-line">
+      <div class="layui-col-xs10">
+        <span style="line-height: 30px;" id="span_26">行政上提：</span><strong class="sq-number" tip_name="行政上提" input_type="float" id="totalnum26" style="color: #003c97;"></strong><span>元</span>
+      </div>
+      <div class="layui-col-xs2" style="text-align: right;">
+        <button id="adms_promotion" class="layui-btn layui-btn-sm" onclick="edit('26')" style="background-color: #003c97;display: none" type="button"><i class="layui-icon layui-icon-edit"></i></button>
+      </div>
+    </div>
+    <div class="sq-one-line">
+      <div class="layui-col-xs10">
+        <span style="line-height: 30px;" id="span_27">代付税息：</span><strong class="sq-number" tip_name="代付税息" input_type="float" id="totalnum27" style="color: #003c97;"></strong><span>元</span>
+      </div>
+      <div class="layui-col-xs2" style="text-align: right;">
+        <button id="tax_interest" class="layui-btn layui-btn-sm" onclick="edit('27')" style="background-color: #003c97;display: none" type="button"><i class="layui-icon layui-icon-edit"></i></button>
+      </div>
+    </div>
+    <div class="sq-one-line" id="turn_ratio_div" style="display: none">
+      <div class="layui-col-xs10">
+        <span style="line-height: 30px;" id="span_14">上缴比例：</span><strong id="totalnum14" style="color: #003c97;">11</strong>
+      </div>
+      <div class="layui-col-xs2" style="text-align: right;">
+        <button id="turn_ratio" class="layui-btn layui-btn-sm" onclick="edit('14')" style="background-color: #003c97;display: none" type="button"><i class="layui-icon layui-icon-edit"></i></button>
+      </div>
+    </div>
+    <div class="sq-one-line" id="department_promotion_div" style="display: none">
+      <div class="layui-col-xs10">
+        <span style="line-height: 30px;" id="span_15">部门上提比例：</span><strong id="totalnum15" style="color: #003c97;">10</strong>
+      </div>
+      <div class="layui-col-xs2" style="text-align: right;">
+        <button id="department_promotion" class="layui-btn layui-btn-sm" onclick="edit('15')" style="background-color: #003c97;display: none" type="button"><i class="layui-icon layui-icon-edit"></i></button>
+      </div>
+    </div>
+    <div class="sq-one-line" id="proportion_promotion_div" style="display: none">
+      <div class="layui-col-xs10">
+        <span style="line-height: 30px;" id="span_16">行政上提比例：</span><strong id="totalnum16" style="color: #003c97;">10</strong>
+      </div>
+      <div class="layui-col-xs2" style="text-align: right;">
+        <button id="proportion_promotion" class="layui-btn layui-btn-sm" onclick="edit('16')" style="background-color: #003c97;display: none" type="button"><i class="layui-icon layui-icon-edit"></i></button>
+      </div>
+    </div>
+  </div>
+  <div class="layui-col-xs6" style="font-size: 16px;">
+    <span style="line-height: 40px;padding-left: 40px;" id="span_18">产品数：</span><strong id="quantity_1">0</strong>
+  </div>
+  <div class="layui-col-xs6" >
+    <button id="add_goods" class="layui-btn layui-btn-normal" onclick="addGoods()" style="background-color: #FD482C;display: none" type="button">添加产品</button>
+  </div>
+
+</div>
+
+<div id="mainContent">
+  <ul id="project_table" style=""></ul>
+</div>
+<div class="sq-one-line">
+  <div class="layui-col-xs11" style="text-align: right">
+    <span style="line-height: 30px;text-align: right" id="span_11">采购成本：</span><strong class="sq-number" tip_name="采购成本" input_type="float" id="totalnum11" style="color: #003c97;"></strong><span>元</span>
+  </div>
+  <div class="layui-col-xs2" style="text-align: right;">
+    <button id="purchasing_cost" class="layui-btn layui-btn-sm" onclick="edit('11')" style="background-color: #003c97;display: none" type="button"><i class="layui-icon layui-icon-edit"></i></button>
+  </div>
+</div>
+<div class="sq-one-line">
+  <div class="layui-col-xs11" style="text-align: right">
+    <span style="line-height: 30px;text-align: right" id="span_4">税费：</span><strong class="sq-number" tip_name="税费" input_type="float" id="totalnum4" style="color: #003c97;"></strong><span>元</span>
+  </div>
+</div>
+<div class="sq-one-line">
+  <div class="layui-col-xs11" style="text-align: right">
+    <span style="line-height: 30px;text-align: right" id="span_21">结余：</span><strong class="sq-number" tip_name="结余" input_type="float" id="totalnum21" style="color: #003c97;"></strong><span>元</span>
+  </div>
+</div>
+<div class="sq-one-line">
+  <div class="layui-col-xs11" style="text-align: right">
+    <span style="line-height: 30px;text-align: right" id="span_3">报价合计：</span><strong class="sq-number" tip_name="报价合计" input_type="float" id="totalnum3" style="color: #003c97;"></strong><span>元</span>
+  </div>
+</div>
+<!--<div class="layui-col-xs12" style="margin-bottom: 30px;" >-->
+<!--  <div style="padding-left:1100px;">-->
+<!--    <span style="line-height: 30px;width: 100px;" id="span_11">采购成本：</span><strong class="sq-number" tip_name="采购成本" input_type="float" id="totalnum11" style="color: #003c97;">10</strong><span style="padding-left: 5px;">元</span>-->
+<!--    <div class="layui-inline" style="padding-left: 10px;">-->
+<!--      <button id="purchasing_cost" class="layui-btn layui-btn-sm" onclick="edit('11')" style="background-color: #003c97;display: none" type="button"><i class="layui-icon layui-icon-edit"></i></button>-->
+<!--    </div>-->
+<!--    <div></div>-->
+<!--    <span style="width: 100px;" id="span_4">税费：</span><strong id="totalnum4" style="color: #003c97;"></strong><span style="padding-left: 5px;">元</span>-->
+<!--    <div></div>-->
+<!--    <span style="line-height: 30px;width: 100px;" id="span_21">结余：</span><strong id="totalnum21" style="color: #003c97;">10</strong><span style="padding-left: 5px;">元</span>-->
+<!--    <div></div>-->
+<!--    <span style="width: 100px;" id="span_3">报价合计：</span> <strong id="totalnum3" style="color: #003c97;">13255.23</strong><span style="padding-left: 5px;">元</span>-->
+<!--  </div>-->
+<!--</div>-->
+<!--</div>-->
+<div class="layui-col-xs12" style="text-align:center;overflow: hidden;">
+  <button id="ageree" class="layui-btn layui-btn-normal" onclick="adjust('40')" style="background-color: #2ba245;display: none" type="button">同意丢单</button>
+  <button id="disagree" class="layui-btn layui-btn-normal" onclick="adjust('0')" style="background-color: #393D49;display: none" type="button">拒绝丢单</button>
+
+</div>
+<div class="layui-collapse" >
+  <div class="layui-colla-item" >
+    <h2 class="layui-colla-title">审核记录</h2>
+    <div class="layui-colla-content layui-show" style="padding: 1px 1px">
+      <div style= "width: 100%;">
+        <table class="layui-table" id="log_table"  style="width: 100%;">
+          <colgroup>
+            <col>
+            <col>
+            <col>
+            <col>
+            <col>
+            <col>
+          </colgroup>
+          <thead>
+          <tr>
+            <th id="log_msg">记录</th>
+          </tr>
+          </thead>
+          <tbody id="ttbody_1"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!--下方为模板部分-->
+<!--用户登陆的模板-->
+</body>
+<script type="text/javascript" src="/js/jquery-3.3.1.min.js" language="JavaScript"></script>
+<script type="text/javascript" src="/layui/layui.js"></script>
+<script type="text/javascript" src="/js/ajax.js"></script>
+
+<script>
+  var id = sq.getHashStringArgs()["id"];
+  var modify = sq.getHashStringArgs()["modify"];
+  var cur_page = 1;
+  var sendObj = new Object();
+  sendObj.item = id;
+  sendObj.page_size = 10;
+  // 用户权限限制
+  var show_probutton = false;
+  var status = sq.getHashStringArgs()["status"];
+  $("#statusName").text(sq.getHashStringArgs()["status_name"]);
+  var role_id = window.sessionStorage.getItem("role_id");
+  show_prolist();
+  getList(cur_page);
+  //获取项目数据
+  function getList(cur_page) {
+    sendObj.page = cur_page;
+    getAjaxDate("/api/lossitem/"+id+"/","get",
+            sendObj,
+            function(rel){
+              receive_data = rel.data;
+              post_data = JSON.parse(JSON.stringify(receive_data));
+              show_content(rel.data);
+              if (role_id === '4' && modify === '-2'){
+                $("#ageree").show()
+                $("#disagree").show()
+
+              }
+            });
+  }
+
+  // 增加产品
+
+  // 显示表中信息
+  function show_content(obj) {
+    $("#totalnum1").text(obj.name)
+    $("#totalnum2").text(obj.number)
+    $("#totalnum5").text(obj.protrans_price)
+    $("#totalnum4").text(obj.taxation)
+    $("#totalnum22").text(obj.remittance_term)
+    $("#totalnum7").text(obj.payment_term)
+    $("#totalnum8").text(obj.travel)
+    $("#totalnum9").text(obj.communication)
+    $("#totalnum10").text(obj.tender)
+    $("#totalnum11").text(obj.purchasing_cost)
+    $("#totalnum12").text(obj.product_maintenance)
+    $("#totalnum13").text(obj.dealer_maintenance)
+    $("#totalnum14").text(obj.department_promotion)
+    $("#totalnum15").text(obj.proportion_promotion)
+    $("#totalnum16").text(obj.tax_rate)
+    $("#totalnum20").text(obj.market_investment)
+    $("#totalnum21").text(obj.pro_surplus)
+    $("#totalnum19").text(obj.nickname)
+    $("#totalnum23").text(obj.interest)
+    $("#totalnum24").text(obj.pro_profit)
+    $("#totalnum25").text(obj.dep_promotion)
+    $("#totalnum26").text(obj.adms_promotion)
+    $("#totalnum27").text(obj.tax_interest)
+  }
+
+  // 获取商品列表
+  function show_prolist() {
+    getAjaxDate("/api/itemProduct/","get",
+            sendObj,
+            function(rel) {
+              console.log(rel.data.results);
+              $("#ttbody").empty();
+              $("#quantity_1").text(rel.data.total_items);
+              setTable(rel.data.results,show_probutton);
+              let total_price = 0;
+              let total_cost = 0;
+              for (let i = 0;i <rel.data.results.length;++i){
+                console.log(rel.data.results)
+                total_price +=  parseFloat(rel.data.results[i].all_offer)
+                total_cost += parseFloat(rel.data.results[i].cost)
+
+              }
+              console.log("total_price:",total_price)
+              $("#totalnum3").text(total_price.toFixed(2));
+              $("#totalnum11").text(total_cost.toFixed(2));
+            }
+    );
+  }
+  // 渲染商品列表
+  function setTable(infoList,is_button) {
+    console.log(infoList.length);
+    if(infoList.length < 1){
+      $("#totalnum3").text(0);
+      $("#totalnum11").text(0);
+    }else {
+      infoList.forEach(function (value) {
+        if (is_button === false){
+          var buttonStr = ''
+        }else {
+          var buttonStr = '<button id="btn_delpro" class="layui-btn layui-btn-danger layui-btn-sm delbt" onclick="openDeleteWindow(\''+encodeURIComponent(JSON.stringify(value))+'\')"><i class="layui-icon layui-icon-delete"></i>   </button>'}
+        // $("#project_table").append(
+        //         '<tr>' +
+        //         '<td style="display:none;">'+value.id+'</td>' +
+        //         '<td>'+value.name+'</td>' +
+        //         '<td>'+value.manufacturer+'</td>' +
+        //         '<td>'+value.specification+'</td>'+
+        //         '<td style="width: 100px;"><input readonly type="number" id='+value.id+'product_num  onkeyup="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,\'\')}else{this.value=this.value.replace(/\\D/g,\'\')}" oninput="if(value<=0)value=1;if(value.length>12) value=value.slice(0,12)" style="width: 100px" value="'+value.quantity+'"/></td>'+
+        //         '<td>'+value.unit+'</td>'+
+        //         '<td>'+value.offer+'</td>'+
+        //         '<td id='+value.id+'all_offer>'+value.all_offer+'</td>'+
+        //         '<td id='+value.id+'cost >'+value.cost+'</td>'+
+        //         '<td>'+buttonStr+'</td>' +
+        //         '</tr>'
+        // );
+        $("#project_table").append(
+                '<hr class="layui-border-black"><li style="padding-top: 10px;">'+'<div class="layui-col-md12 layui-col-xs12">'+'<p style="text-align: left;">'
+                +'<strong id="project">'+value.name+' ('+value.type+' '+value.subtype+')'+'</strong>'
+                +'<strong  style="float: right;">单价: ￥'+numFormat(value.offer)+' '+value.unit+'</strong>'
+                +'</p><div style="padding: 10px 5px;">'
+                +'<div class="layui-col-xs7"><span class="xm">型号：</span><span class="lxdh" style="color: #01AAED">'+value.model+'</span></div>'
+                +'<div class="layui-col-xs5" style="text-align: right;"><span class="lxdh" style="color: #01AAED">'+value.manufacturer+'</span></div></div>'
+                +'<div class="layui-col-xs7" style="padding-left: 4px;padding-top: 10px;"><span class="xm">数量：</span>'
+                +'<span class="lxdh" >'+value.quantity+'</span></div>'
+                +' <div class="layui-col-xs5" style="text-align: right;padding-top: 10px;"><span class="xm">总价：</span><span  class="lxdh" style="color: black">'+numFormat(value.all_offer)+'</span></div>'
+                +'<div style="padding: 17px 5px;"><div class="layui-col-xs8" style="padding-top: 10px;"><span class="xm">折扣：</span>'
+                +'<span class="lxdh" >'+value.discount+'</span></div>'+' <div class="layui-col-xs4" style="text-align: right;">'+buttonStr+'</div>'
+                +' <strong  class="layui-col-xs12" style="text-align: right;color: red;font-size: 17px;">成本: ￥'+numFormat(value.cost) +'</strong></div>'
+                +'</div> </li>');
+      }
+      )
+      $("#project_table").append('<hr class="layui-border-black">')
+    }
+  }
+  $("#span_2").hover(function () {
+    layer.tips('示例: XLXS21XXX,表示微创X部立项设备21年的第x个立项','#span_2',{tips:3})
+  })
+
+
+  getAjaxDate('/api/option/','get',{item_id:sq.getHashStringArgs()['id']},function (rel) {
+    console.log(rel.data)
+    set_LogTable(rel.data.results)
+  });
+  function set_LogTable(infoList) {
+    infoList.forEach(function (value) {
+      $("#log_table").append(
+              '<tr>' +
+              '<td>'+value.msg+'</td>' +
+              '</tr>'
+      )
+    })
+  }
+  // 撤回
+  function adjust(status) {
+    if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+    console.log(status)
+    if(modify === '-2'){
+      layer.confirm('您确定同意该项目的丢单操作吗？', {
+        btn: ['确定','取消'] //按钮
+        ,btn1: function () {
+          let send_status = new Object();
+          send_status.status = status;
+          getAjaxDate("/api/lossitem/"+id+"/","patch",send_status,
+                  function (rel) {
+                    if(rel.code === 1){
+                      console.log(rel.data)
+                      layer.msg(rel.msg,{time:300},function () {
+                        parent.layer.closeAll();
+                        window.parent.location.reload();
+                      })
+                    }else{
+                      layer.msg(rel.msg)
+                    }
+                  })
+        },
+        btn2: function () {
+          layer.msg("取消成功")}
+      })
+    }
+  }
+</script>
+</html>

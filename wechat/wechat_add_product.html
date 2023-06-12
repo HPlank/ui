@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>湛德财务项目管理系统</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/layui/css/layui.css" media="all" type="text/css">
+    <link rel="stylesheet" href="/css/sq.css">
+    <style type="text/css">
+        .layui-table th{
+            font-weight: bold;
+        }
+        #mainContent{
+            padding: 20px;
+        }
+        tr:hover{
+            color:#01AAED;
+            cursor: pointer;
+        }.iconContent{
+             float: left;
+             text-align: center;
+             font-size: 14px;
+         }
+        #myUL{
+            margin: 0;
+            padding: 10px;
+            background-color: #FFF;
+        }
+        #myUL li{
+            list-style: none;
+            background-color: #FFFFFF;
+            margin: 5px 0 0 1%;
+            padding: 0 0 10px 0;
+            border-radius: 5px;
+            cursor: pointer;
+            overflow: hidden;
+            border-bottom: 1px solid #efefef;
+        }
+        #myUL li p{
+            padding: 5px;
+        }
+        .lxdh{
+            margin-left: 10px;
+            color: #FD482C;
+        }
+        #footContainer{
+            font-size: 10px;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background-color: #efefef;
+            text-align: center;
+        }
+        .sqtime{
+            font-size: 12px;
+            color: #999999;
+        }
+        .sqsel{
+            padding: 3px;
+            border: 1px solid #003c97;
+            color: #003c97;
+            font-size: 14px;
+            margin-right: 20px;
+        }
+        #topContainer{
+            text-align: center;
+            background-color: #003c97;
+            color: #FFF;
+            font-weight: bold;
+            font-size: 18px;
+            padding: 20px;
+        }
+
+    </style>
+</head>
+<body>
+<div id="topContainer">
+    商品列表
+</div>
+<div id="mainContent">
+    <ul id="myUL" style=""></ul>
+</div>
+<div style="text-align: center;padding: 10px;">
+    <button class="layui-btn" id="loadMoreBT" style="background-color: #666;" onclick="getList(++cur_page)" >点击加载更多……</button>
+</div>
+<div id="searchBT" style="background-color: #222;color: #FFF;position: fixed;right: 10px;bottom: 70px;width: 40px;height: 40px;border-radius: 20px;text-align: center;line-height: 40px;">
+    <i class="layui-icon layui-icon-search" style="font-size: 20px;"></i>
+</div>
+<script src="/js/jquery.min.js"></script>
+<script src="/layui/layui.js"></script>
+<script src="/js/ajax.js"></script>
+<script>
+    var sendObj = new Object();
+    sendObj.page_size=5;
+    sendObj.sale = '1';
+    var cur_page = 1;
+    var role_id = window.sessionStorage.getItem("role_id");
+    var tgt =sq.getHashStringArgs()["tgt"];
+    var targetframe = parent;
+    var recieved_product = new Object();
+
+
+    getList(cur_page);
+    function getList(cur_page) {
+        sendObj.page = cur_page;
+        getAjaxDate("/api/product/","get",sendObj,
+            function(rel){
+                $("#loadMoreBT").show();
+                if (rel.data.total_items - cur_page * rel.data.page_size <= 0) {
+                    $("#loadMoreBT").hide();
+                }
+                if(rel.data.total_items == 0){
+                    layer.msg("没有查询到符合条件的商品！")
+                }
+                recieved_product = rel.data.results;
+                console.log(rel.data.results);
+                // $("#myUL").empty();
+                setTable(rel.data.results);
+            })
+
+    }
+
+    function setTable(infoList) {
+        /**
+         *@infoList 是一个数组
+         *  **/
+
+        infoList.forEach(function (value) {
+            //将数据插入表格中
+            $("#myUL").append('<li>'+'<div class="layui-col-md12 layui-col-xs12">'+'<p style="text-align: left;">'
+                +'<strong id="project">'+value.name+' ('+value.type+' '+value.subtype+')'+'</strong>'
+                +'<strong  style="float: right;color: red">￥'+numFormat(value.offer)+' '+value.unit+'</strong>'
+                +'</p><div style="padding: 10px 5px;">'
+                +'<div class="layui-col-xs7"><span class="xm">型号：</span><span class="lxdh" style="color: #01AAED">'+value.model+'</span></div>'
+                +'<div class="layui-col-xs5" style="text-align: right;"><span class="lxdh" style="color: #01AAED">'+value.manufacturer+'</span></div></div>'
+                +'<div style="padding: 20px 5px;"><div class="layui-col-xs6"><span class="xm">折扣：</span>'
+                +'<span class="lxdh" style="color: red">'+value.discount+'</span></div>'
+                +' <div class="layui-col-xs6" style="text-align: right;"><i class="layui-icon" style="font-size: 30px; color: #1E9FFF;" onclick="add_product(\''+encodeURIComponent(JSON.stringify(value))+'\')">&#xe624;</i> '
+                +' <div class="layui-col-xs12" style="text-align: right;"><span class="sqtime">'+value.time+'</span></div>'
+                +'</div></div> </li>'
+            );
+        });
+        layui.form.render()
+    }
+
+    function add_product(obj) {
+        let msg = '添加成功';
+        // console.log(targetframe.window.location.href)
+        let isexist = 0;
+        obj = JSON.parse(decodeURIComponent(obj));
+            for(let i=0;i<targetframe.post_product.length;i++){
+                if(obj.name === targetframe.post_product[i].name && obj.manufacturer === targetframe.post_product[i].manufacturer
+                    && obj.model === targetframe.post_product[i].model ){
+                    console.log("已存在！")
+                    isexist =1
+                }
+            }
+            if(isexist === 0){
+                obj.quantity = 1;
+                targetframe.post_product.push(obj);
+            }else {
+                msg ="不能重复添加商品";
+            }
+            if(msg=="不能重复添加商品"){
+                layer.msg(msg)
+            }else {
+                layer.msg(msg, {time: 1000}, function () {
+                    targetframe.$("#project_table").empty();
+                    console.log([obj])
+                    let show_probutton = false
+                    if (targetframe.status === '0'){
+                        show_probutton = true;
+                    }
+                    targetframe.setTable(targetframe.post_product, show_probutton);
+                    targetframe.$("#quantity_1").text(targetframe.post_product.length);
+                    targetframe.getAjaxDate('/api/todoitem/' + targetframe.id + '/cal/', 'patch', targetframe.send_data(), function (rel) {
+                        console.log(rel.data)
+                        targetframe.show_content(rel.data)
+                    })
+                    targetframe.layer.closeAll()
+                })
+            }
+    }
+    $("#searchBT").click(function () {
+        sq.inputWindow({
+            title: {
+                text: "搜索商品",//标题
+                titleColor: "#FFFFFF"//弹窗文字颜色
+            },
+            closeBtn: 1,
+            width: "90%",
+            shadeClose: true,
+            form: {
+                fuzzy_search: {
+                    label: "模糊搜索",
+                    type: "text",
+                    value: "",
+                    tip: "商品名、厂家、规格、型号",
+                    allowNull: true
+                },
+                min_discount: {
+                    label: "最高折扣",
+                    type: "text",
+                    value: "",
+                    tip: "0",
+                    allowNull: true
+                },
+                max_discount: {
+                    label: "最低折扣",
+                    type: "text",
+                    value: "",
+                    tip: "10",
+                    allowNull: true
+                },
+                start_time: {
+                    label: "开始时间",
+                    type: "datetime",
+                    value: "",
+                    tip: "",
+                    allowNull: true
+                },
+                end_time: {
+                    label: "结束时间",
+                    type: "datetime",
+                    value: "",
+                    tip: "",
+                    allowNull: true
+                },
+            },
+            sure: function (rel) {
+                cur_page = 1;
+                sendObj.search = rel.fuzzy_search;
+                sendObj.min_discount = rel.min_discount;
+                sendObj.max_discount = rel.max_discount;
+                sendObj.start_time = rel.start_time;
+                sendObj.end_time = rel.end_time;
+                if(rel.min_discount == ''){
+                    sendObj.min_discount = 0
+                }
+                if(rel.max_discount == ''){
+                    sendObj.max_discount = 10
+                }
+                console.log(0 <=parseFloat(sendObj.max_discount) <=10)
+                if(0 <=parseFloat(sendObj.min_discount) && parseFloat(sendObj.min_discount) <=10 &&
+                    0 <=parseFloat(sendObj.max_discount) && parseFloat(sendObj.max_discount) <=10 &&
+                    parseFloat(sendObj.min_discount) <= parseFloat(sendObj.max_discount)){
+                    $("#myUL").html("");
+                    layer.closeAll();
+                    layer.msg('搜索成功!',{time: 500},function () {});
+                    getList(cur_page)
+                }else{
+                    layer.msg("请输入正确的折扣！")
+                }
+
+            }
+        })
+    })
+</script>
+</body>
+</html>

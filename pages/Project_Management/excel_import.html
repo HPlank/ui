@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>湛德财务项目管理系统</title>
+    <link rel="stylesheet" href="/layui/css/layui.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/skin.css">
+    <link rel="stylesheet" href="/css/sq.css">
+    <script src="/js/jquery.min.js"></script>
+    <script src="/layui/layui.js"></script>
+    <script src="/js/ajax.js"></script>
+    <style type="text/css">
+    </style>
+</head>
+<body>
+<div class="layui-container">
+    <div class="layui-row" style="margin-top: 50px;padding-left: 20px">
+        <button type="button" class="layui-btn" id="test3"><i class="layui-icon"></i>上传文件</button>
+        <!--      <button id="file_import" class="layui-btn layui-btn-normal"  style="background-color: #003c97;" type="button">导入文件</button>-->
+        <a href="" download="导入样例.xlsx" id="download_example" class="layui-btn layui-btn-normal" style="background-color: #ff8a00;" type="button">下载导入样例</a>
+    </div>
+    <div style="padding: 10px 20px;margin-top: 5px">
+        只能上传excel文件(xls或xlsx格式)，且不超过10M
+    </div>
+    <div style="padding: 5px 20px">
+        先下载导入样例且按照样例中指定格式填写上传的文件
+    </div>
+    <div style="padding: 5px 20px">
+        文件上传自动过滤同名称、厂商、型号、机身编号产品
+    </div>
+</div>
+<script>
+    var cur_page = 1;
+    var targetframe = parent;
+    $("#download_example").attr("href",imgurl+"static/item_product_excel.xlsx")
+    //加载列表
+    layui.use(['upload','form'], function() {
+        var $ = layui.jquery
+            , upload = layui.upload
+            let msg = '添加成功';
+        //指定允许上传的文件类型
+        upload.render({
+                elem: '#test3'
+                ,method: 'post'
+                , url: _url+'/api/itemProduct/item_product_xls/' //改成您自己的上传接口
+                , accept: 'file' //普通文件
+                , headers: { Authorization:"JWT"+" "+window.sessionStorage.getItem("token")}
+                , done: function (res) {
+                    if(res.code == 1) {
+                        // layer.msg('上传成功');
+                  
+                    } else {
+                        layer.msg(res.msg);
+                    }					
+                    var obj_list = res.data;
+
+                    var flag = true;// 标记重复商品
+                    var a = 0;
+                    for(let j=0;j<obj_list.length;j++){
+                        obj = obj_list[j];
+                        console.log(obj)
+                        for(let i=0;i<targetframe.post_product.length;i++){
+                            // 名称 厂商 型号
+                            if(obj.name === targetframe.post_product[i].name && obj.specification === targetframe.post_product[i].specification
+                        && obj.model === targetframe.post_product[i].model && obj.device_number === targetframe.post_product[i].device_number ){
+                            layer.msg("以去除重复商品")
+                                flag = false;
+                            }
+                        }
+                        if(flag){
+                                targetframe.post_product.push(obj);
+                                a++;
+                            }
+
+                            flag = true;
+                            layer.msg(('上传产品数: '+a),{time:1000}, function(){
+                            targetframe.$("#ttbody").empty();
+                            let show_probutton = false
+                            if (targetframe.status === '0'){
+                                show_probutton = true;
+                            }
+                            targetframe.setTable(targetframe.post_product,show_probutton);
+                            targetframe.$("#quantity_1").text(targetframe.post_product.length);
+                            targetframe.getAjaxDate('/api/todoitem/'+targetframe.sq.getHashStringArgs()["id"]+'/cal/','patch',targetframe.send_data(),function (rel){
+                                console.log(rel.data)
+                                targetframe.show_content(rel.data)
+                            })
+                    })
+                    }
+                      top.layer.closeAll()
+
+                }
+            }
+        )
+    })
+
+</script>
+</body>
+</html>

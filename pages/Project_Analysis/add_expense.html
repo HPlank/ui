@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>湛德财务项目管理系统</title>
+  <link rel="stylesheet" href="../../layui/css/layui.css">
+  <link rel="stylesheet" href="../../css/main.css">
+  <link rel="stylesheet" href="../../css/skin.css">
+  <link rel="stylesheet" href="../../css/sq.css">
+  <style type="text/css">
+    .layui-table th{
+      font-weight: bold;
+    }
+    #mainContent{
+      padding: 20px;
+    }
+    .layui-layer-title {
+      padding: 0 80px 0 20px;
+      height: 42px;
+      line-height: 42px;
+      border-bottom: 1px solid #eee;
+      font-size: 14px;
+      color: #333;
+      overflow: hidden;
+      border-radius: 2px 2px 0 0;
+    }
+    .editinput{
+      padding: 10px;
+      width: 90%;
+      border: 1px solid #5FB878;
+    }
+    .edittd{
+      position: absolute;
+      left: 0;
+      right: 0;
+      top:0;
+      bottom: 0;
+      padding: 20px;
+    }
+    .edittd:hover{
+      cursor: pointer;
+      background-color: #dcf0e2;
+    }
+    .headAddLeft{
+      overflow: hidden;
+      background-color: #efefef;
+      padding: 15px 0 5px 20px;
+      border-left: 5px solid #003c97;
+    }
+    .sqsel{
+      padding: 3px;
+      border: 1px solid #003c97;
+      color: #003c97;
+      font-size: 18px;
+      margin-right: 20px;
+    }
+    .layui-form-select dl{
+      max-height: 230px;
+    }
+  </style>
+</head>
+<body>
+<div id="mainContent">
+  <div id="rightContent">
+    <div class="articleContent">
+      <div class="headAddLeft" style="padding-top:10px;">
+
+        <div class="layui-col-md12 layui-inline" style="font-size: 18px;font-weight: bold;line-height: 38px;">费用支出
+          <div class="layui-inline" style="font-weight: normal;margin-left: 100px">费用剩余: <label class="layui-inline" id="available">5</label>元</div>
+          <div  id="depselect_div" class="layui-inline" style="font-weight: normal;margin-left: 100px">筛选部门:  <select class="sqsel" id="sqSelect_dep" lay-ignore >
+            <option value="">所有部门</option>
+          </select></div>
+          <button class="layui-btn layui-inline" onclick="add()" style="float:right;margin-top:-3px;margin-right: 20px;">增加条目</button></div>
+      </div>
+      <table class="layui-table" id="infoList" >
+        <colgroup>
+          <col>
+          <col>
+          <col>
+          <col>
+          <col>
+          <col>
+        </colgroup>
+        <thead>
+        <tr>
+          <th style="text-align: center">录入人</th>
+          <th style="text-align: center">类型</th>
+          <th style="text-align: center" id="dep_th">部门</th>
+          <th style="text-align: center">金额</th>
+          <th style="text-align: center">时间</th>
+          <th style="text-align: center">备注</th>
+          <th style="text-align: center">管理</th>
+        </tr>
+        </thead>
+        <tbody id="listTbody">
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<script src="/js/jquery.min.js"></script>
+<script src="/layui/layui.js"></script>
+<script src="/js/ajax.js"></script>
+<script src="/js/jquery.cookie.js"></script>
+<script>
+  var cur_page = 1;
+  var sendObj = new Object();
+  sendObj.page = 1;
+  if($.cookie(window.location.href) == undefined){
+    sendObj.page_size = 10;
+    $.cookie(window.location.href, sendObj.page_size);
+  }else{
+    sendObj.page_size= $.cookie(window.location.href);
+  }
+  var tgt =sq.getHashStringArgs()["tgt"];
+  var targetframe = parent;
+  if ( tgt in  top.frameset) {
+    targetframe = top.frameset[tgt].contentWindow
+    var page_type = targetframe.page_type
+    delete  top.frames[tgt]
+  }
+
+  var dep_turn_price = new Array();
+
+  var input_type =[{ label: "请选择类型", value: "" }];
+  var dep_list =[{ label: "请选择类型", value: "" }];
+  if(targetframe.page_type === 'dep_expenses') {
+    show_table(1)
+    getAjaxDate('/api/get_manage_cost_type/', 'get', '', function (res) {
+      for (let i = 0; i < res.data.length; i++) {
+        input_type.push({label: res.data[i], value: res.data[i]});
+      }
+    })
+    getAjaxDate('/api/department/', 'get', '', function (res) {
+      for (let i = 0; i < res.data.results.length; i++) {
+        dep_list.push({label: res.data.results[i].name, value: res.data.results[i].id});
+        dep_turn_price[res.data.results[i].id] = res.data.results[i].total_turn_price
+      }
+      setselect(res.data.results)
+    })
+  }else if(targetframe.page_type === 'admin_expenses'){
+    show_table(1)
+    getAjaxDate('/api/get_manage_cost_type/', 'get', {department:1}, function (res) {
+      for (let i = 0; i < res.data.length; i++) {
+        input_type.push({label: res.data[i], value: res.data[i]});
+      }
+    })
+    dep_list.push({label: '财务部', value: 1});
+    $("#available").text(targetframe.admin_remain)
+    $("#depselect_div").hide()
+  }
+
+  function setTable(infoList) {
+    /**
+     *@infoList 是一个数组
+     *  **/
+
+    infoList.forEach(function (value) {
+      //显示的按钮
+      if(page_type === 'dep_expenses'){
+        str = '<td style="text-align: center">'+value.department_name+'</td>'
+      }else if(page_type === 'admin_expenses'){
+        str = ''
+        $("#dep_th").hide()
+      }
+      var buttonStr = '<button class="layui-btn editbt layui-btn-sm" onclick="openEditWindow(\''+encodeURIComponent(JSON.stringify(value))+'\')"><i class="layui-icon layui-icon-edit "></i>   </button>'+
+              '<button type="button" class="layui-btn layui-btn-danger layui-btn-sm" onclick="del_project('+value.id+')"><i class="layui-icon"></i></button>';
+      //将数据插入表格中
+      $("#infoList").append('<tr>' +
+              '<td style="text-align: center">'+value.nickname+'</td>' +
+              '<td style="text-align: center">'+value.type+'</td>' +
+              str +
+              '<td style="text-align: right">'+numFormat(value.price)+'</td>' +
+              '<td style="text-align: center">'+value.time+'</td>' +
+              '<td style="text-align: center">'+value.remark+'</td>' +
+              '<td style="text-align: center">'+buttonStr+'</td>' +
+              '</tr>');
+    })
+  }
+  function openEditWindow(data) {
+    if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+    console.log(JSON.parse(decodeURIComponent(data)))
+    sq.inputWindow({
+      title: {
+        text: "修改成本条目",//标题
+        titleColor: "#FFFFFF"//弹窗文字颜色
+      },
+      closeBtn: 1,
+      width: "350px",
+      shadeClose: false,
+      form: {
+        // input_type: {
+        //   label: "类型",
+        //   type: "select",
+        //   value: input_type,
+        //   tip: input_type,
+        //   allowNull: false
+        // },
+        // department: {
+        //   label: "部门",
+        //   type: "select",
+        //   value: dep_list,
+        //   tip: dep_list,
+        //   allowNull: false
+        // },
+        price: {
+          label: "金额",
+          type: "text",
+          value: "",
+          tip: JSON.parse(decodeURIComponent(data)).price,
+          allowNull: false
+        },
+        remark: {
+          label: "备注",
+          type: "textarea",
+          value: "",
+          tip: JSON.parse(decodeURIComponent(data)).remark,
+          allowNull: true
+        },
+      },
+      sure: function (rel) {
+        cur_page = 1;
+        console.log(rel);
+        let sendObj_1 =new Object();
+        sendObj_1.price = rel.price;
+        sendObj_1.remark = rel.remark;
+        if(parseFloat(rel.price) >0) {
+          getAjaxDate("/api/manage_cost/"+JSON.parse(decodeURIComponent(data)).id+"/","patch",sendObj_1,function (rel) {
+            console.log(rel.data)
+            if(rel.code == 1){
+              layer.msg(rel.msg,{time:1000}, function(){
+                $("#listTbody").empty()
+                show_table()
+                window.targetframe.location.reload()
+                layer.closeAll()
+              });
+            }else if(rel.code == 0){
+              layer.msg(rel.msg,{time:2000})
+            }
+          });
+        }else{
+          layer.msg("请输入正确的金额 ！")
+        }
+      }
+    })
+  }
+  function add() {
+    if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+    if(targetframe.page_type === 'dep_expenses') {
+      var form_data ={
+        input_type: {
+          label: "类型",
+          type: "select",
+          value: input_type,
+          tip: input_type,
+          allowNull: false
+        },
+        department: {
+          label: "部门",
+          type: "select",
+          value: dep_list,
+          tip: dep_list,
+          allowNull: false
+        },
+        price: {
+          label: "金额",
+          type: "text",
+          value: "",
+          tip: "请输入金额",
+          allowNull: false
+        },
+        seldatetime: {
+          label: "时间",
+          type: "datetime",
+          value: sq.fmtDate(new Date().getTime()/1000),
+          tip: "请输入时间",
+          allowNull: true
+        },
+        remark: {
+          label: "备注",
+          type: "textarea",
+          value: "",
+          tip: '请输入备注信息',
+          allowNull: true
+        }
+    }
+    }else if(targetframe.page_type === 'admin_expenses'){
+        var form_data ={
+          input_type: {
+            label: "类型",
+            type: "select",
+            value: input_type,
+            tip: input_type,
+            allowNull: false
+          },
+          price: {
+            label: "金额",
+            type: "text",
+            value: "",
+            tip: "请输入金额",
+            allowNull: false
+          },
+          seldatetime: {
+            label: "时间",
+            type: "datetime",
+            value: sq.fmtDate(new Date().getTime()/1000),
+            tip: "请输入时间",
+            allowNull: true
+          },
+          remark: {
+            label: "备注",
+            type: "textarea",
+            value: "",
+            tip: '请输入备注信息',
+            allowNull: true
+          }
+      }
+    }
+    sq.inputWindow({
+      title: {
+        text: "添加成本条目",//标题
+        titleColor: "#FFFFFF"//弹窗文字颜色
+      },
+      closeBtn: 1,
+      width: "500px",
+      offset:'5px',//高度坐标
+      shadeClose: true,
+      form: form_data,
+      sure: function (rel) {
+        cur_page = 1;
+        let sendObj_1 =new Object();
+        sendObj_1.type = rel.input_type;
+        sendObj_1.price = rel.price;
+        if(targetframe.page_type === 'admin_expenses'){
+          sendObj_1.department = 1;
+        }else if(targetframe.page_type === 'dep_expenses'){
+          sendObj_1.department = rel.department;
+        }
+        sendObj_1.remark = rel.remark;
+        sendObj_1.time = rel.seldatetime;
+        cur_year = parseInt(sendObj_1.time.split(' ')[0].split('-')[0]);
+        cur_sysyear = new Date().getFullYear();
+        if(parseFloat(sendObj_1.price) >0){
+          if(cur_year == cur_sysyear){
+            getAjaxDate("/api/manage_cost/","post",sendObj_1,function (rel) {
+              console.log(rel.data)
+              if(rel.code == 1){
+                layer.msg(rel.msg,{time:700}, function(){
+                  $("#listTbody").empty()
+                  show_table(1)
+                  window.targetframe.location.reload()
+                  layer.closeAll()
+                });
+              }else if(rel.code == 0){
+                layer.msg(rel.msg,{time:1000})
+              }
+            });
+          }else{
+            layer.msg("录入时间仅限当年！")
+          }
+        }else{
+          layer.msg("请输入正确的金额！")
+        }
+      }
+    })
+  }
+  function show_table(cur_page) {
+    if(targetframe.page_type === 'dep_expenses') {
+      getAjaxDate('/api/department/','get','{}',function (res) {
+        for (let i = 0; i < res.data.results.length; i++) {
+          dep_turn_price[res.data.results[i].id] = res.data.results[i].total_turn_price
+        }
+        $("#available").text(dep_turn_price[$("#sqSelect_dep").val()])
+      })
+      sendObj.page = cur_page
+      sendObj.department = $("#sqSelect_dep").val()
+    }else if(targetframe.page_type === 'admin_expenses') {
+      getAjaxDate('/api/department/1/','get','',function (res) {
+        $("#available").text(res.data.total_turn_price)
+      })
+      sendObj.department = 1
+    }
+    getAjaxDate('/api/manage_cost/','get', sendObj,function (rel) {
+      console.log(rel)
+      $("#listTbody").empty()
+      setTable(rel.data.results)
+      sq.page({
+        count : ((rel.data.total_items === undefined) ? 0 : rel.data.total_items),
+        page : ((rel.data.page === undefined) ? 1 : rel.data.page),
+        size : sendObj.page_size,
+        jump : function(obj){
+          sendObj.page = obj.curr;
+          sendObj.page_size = obj.limit
+          $.cookie(window.location.href, obj.limit);
+          // $("#listTbody").empty()
+          show_table(obj.curr);
+        },
+        bro : "#infoList"
+      });
+    })
+    if($("#sqSelect_dep").val() === '' && targetframe.page_type === 'dep_expenses'){
+      $("#available").text(numFormat(targetframe.department_sum))
+    }
+    if(targetframe.department_sum < 10000 && targetframe.page_type === 'dep_expenses' && targetframe.department_sum > 0){
+      layer.msg("请注意！费用即将用尽！")
+    }
+    if(targetframe.department_sum <= 0 && targetframe.page_type === 'dep_expenses'){
+      layer.msg("请注意！费用已经用尽！")
+    }
+  }
+  function del_project(id) {
+    if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+    layer.confirm('确定删除本条目吗？', {
+      btn: ['确定','取消'] //按钮
+    }, function(){
+      getAjaxDate('/api/manage_cost/'+id+'/','patch',{on_delete:1},function (rel) {
+        console.log(rel.data)
+        if(rel.code == 1){
+          layer.msg(rel.msg,{time:700}, function(){
+            $("#listTbody").empty()
+            show_table()
+            window.targetframe.location.reload()
+            layer.closeAll()
+          });
+        }else if(rel.code ==0){
+          layer.msg(rel.msg,{time:700})
+        }
+      })
+    }, function(){
+      layer.msg('取消成功', {time: 300},function (){
+        targetframe.layer.closeAll()
+      });
+    });
+
+  }
+
+  function setselect(infoList){
+    infoList.forEach(function (value) {
+      //显示的按钮
+      //将数据插入表格中
+      $("#sqSelect_dep").append(new Option(value.name, value.id));
+    })
+  }
+  $("#sqSelect_dep").on("change",function () {
+    dept = $(this).val();
+    console.log(dept)
+    $("#listTbody").empty();
+    show_table(1);
+  });
+</script>
+</body>
+</html>

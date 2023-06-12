@@ -1,0 +1,372 @@
+<!--            <p>用户名:<input id="username" type="text" onblur="check_username()"><label id="name_trip" ></label></p>-->
+<!--            <p>密码:  <input id="password" type="password" onblur="check_password()"><label id="password_trip"></label></p>-->
+
+<!--            <div style="text-align: center;margin-top: 30px;">-->
+<!--                <button type="button" class="button" onclick="submit()">登录</button>-->
+<!--                <button type="reset" class="button" onclick="reset()">重置</button>-->
+<!--&lt;!&ndash;                <button type="button" class="button" onclick="jumpRe()">注册</button>&ndash;&gt;-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+
+
+<!--</body>-->
+<!--</html>-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="utf-8">
+    <title>湛德财务项目管理系统</title>
+    <link rel="stylesheet" href="layui/css/layui.css" media="all">
+    <style type="text/css">
+        body {
+
+            font-size: 16px;
+            padding: 0;
+            margin: 0;
+            color: #444;
+            background-color: #efefef;
+        }
+
+        .fixedWidth {
+            width: 570px;
+            margin: 0 auto;
+            color: #FFF;
+        }
+
+        .newsListULTab i {
+            color: coral;
+        }
+
+        .newsListULTab li {
+            list-style: none;
+            padding: 8px 0 8px 0px;
+            overflow: hidden;
+            font-size: 14px;
+            border-bottom: 1px dashed #ccc;
+        }
+
+        .newsListULTab li:hover {
+            background-color: #efefef;
+            color: #ca1c1d;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .newsListULTab li span {
+            float: right;
+            line-height: 20px;
+            overflow: hidden;
+        }
+        .qr_scan_Invalid {
+            z-index: 10;
+            /*background: rgba(0, 60, 155, 0.8);*/
+            background: rgba(0, 0, 0, 0.8);
+            filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#e5ffffff, endColorstr=#e5ffffff);
+            text-align: center;
+            margin: 0;
+            position: absolute;
+           /*margin: 45px 0 0 74px;*/
+        }
+        .layui-tab-title{
+            border: 0;
+        }
+        .layui-tab-title li{
+            font-size: 18px;
+            color: #ddd;
+        }
+        .layui-tab-title .layui-this{
+            color: #00ff7a;
+            font-weight: 400;
+        }
+        .layui-tab-title .layui-this:after{
+            border: 0;
+            color: #c5dcff;
+
+        }
+        .layui-tab-bar{
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div style="width: 1000px;overflow: hidden;margin: 0 auto;box-shadow: 10px 10px 5px #888888;margin-top: 150px;border-radius: 10px;">
+    <div class="layui-col-md6 layui-col-xs6">
+        <img src="img/logimg.jpg" style="width: 108%;" />
+    </div>
+    <div class="layui-col-md6 layui-col-xs6">
+        <div class="fixedWidth" style="background-color: #003c97;height:530px;">
+            <div style="padding: 20px;">
+                <div style="padding: 10px;width: 85%;">
+                    <div style="padding: 10px;">
+                        <div style="width: 230px;overflow: hidden;margin: 0 auto;padding: 0 0 0 30px;">
+                            <img src="img/zzb_logo.png"/>
+                        </div>
+
+                    </div>
+                    <div class="layui-tab">
+                        <ul class="layui-tab-title" style="width:70%;margin: 0 auto;text-align: center;">
+                            <li  style="width: 43%;border-right: 3px solid #efefef;">密码登录</li>
+                            <li  class="layui-this"  style="width: 43%" >微信登录</li>
+                        </ul>
+                        <div class="layui-tab-content" >
+                            <div class="layui-tab-item" style="overflow: hidden;margin-top: 60px;">
+                                <div style="overflow: hidden;line-height: 36px;padding: 10px;">
+                                    <div class="layui-col-md3 layui-col-xs3" style="text-align: right;font-weight: bold;">用户名：</div>
+                                    <div class="layui-col-md7 layui-col-xs7">
+                                        <input class="layui-input" id="username" type="text">
+                                    </div>
+                                </div>
+                                <div style="overflow: hidden;line-height: 36px;padding: 10px;">
+                                    <div class="layui-col-md3 layui-col-xs3" style="text-align: right;font-weight: bold;">密　码：</div>
+                                    <div class="layui-col-md7 layui-col-xs7">
+                                        <input class="layui-input" id="password" type="password">
+                                    </div>
+                                </div>
+                                <!--                        <div style="overflow: hidden;line-height: 36px;padding: 10px;">-->
+                                <!--                            <div class="layui-col-md3 layui-col-xs3" style="text-align: right;font-weight: bold;">验证码：</div>-->
+                                <!--                            <div class="layui-col-md7 layui-col-xs7">-->
+                                <!--                                <input class="layui-input" id="yanzhengma" type="password">-->
+                                <!--                            </div>-->
+                                <!--                        </div>-->
+                                <div style="overflow: hidden;line-height: 36px;padding: 10px;text-align: center;margin-top: 50px;">
+                                    <button class="layui-btn" id="submit" onclick="submit()" style="background-color: #0065ff;">登录</button>
+                                    <button class="layui-btn" id="clearbutton" onclick="reset()" style="background-color: #717171;">清空</button>
+                                </div>
+                            </div>
+                            <div  class="layui-tab-item layui-show " style="margin-top: 10px;margin-left: 80px; width: 280px;height: 320px; text-align: center;position: relative;" >
+                                <div id="qr_code" style="width: 280px;height: 280px;">
+
+                                </div>
+                                <div id="qr_timeout" class="qr_scan_Invalid" style="display: none; top:0;left:0;height: 280px;width: 280px;position: absolute"
+                                     onclick="refreshQRCode()">
+                                    <div style="padding-top: 42%;margin: 0;cursor: pointer;"><i class="layui-icon"  >&#xe669;</i>
+                                    验证码失效，点击刷新
+                                        </div>
+                                </div>
+                                <div id="qr_success" class="qr_scan_Invalid" style="display: none; top:0;left:0;height: 280px;width: 280px;;position: absolute" >
+                                    <div style="padding-top: 42%;margin: 0">
+                                    扫码成功，正在跳转
+                                        <i class="layui-icon layui-icon-loading layui-anim layui-anim-rotate layui-anim-loop"></i>
+                                    </div>
+                                </div>
+                                <div  style="margin-top: 30px;">请使用微信扫描二维码登录</div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script src="js/jquery-3.3.1.min.js"></script>
+<script src="layui/layui.js"></script>
+<script src="js/ajax.js"></script>
+<script src="js/qrcode.min.js"></script>
+<script src="js/myqr.js" ></script>
+<script type="text/javascript">
+
+
+
+    function checkLogin(){
+        checked_times = checked_times + 1
+        if(checked_times>60){//超过60次验证就不再验证
+            clearTimeout(qr_time)
+            qr_time = 0;
+            return ;
+        }
+        //读取数据 并settimeout
+    }
+
+
+
+    layui.use('element', function(){
+        var element = layui.element;
+
+        //…
+    });
+
+
+    var myqr = null
+    function refreshQRCode(){
+        $(".qr_scan_Invalid").hide();
+
+        let qrurl = '/api/wechat/wechat_login_code/?t='+new Date().getTime()
+        getAjaxDate(qrurl,'get','',function (rel){
+            if(rel.code==1){
+                if (myqr!=null){
+                    myqr.uuid=rel.data.state;
+                    myqr.refresh_url(rel.data.url)
+                }else{
+                    myqr=new MyQr({
+                        qr_container:'qr_code',
+                        uuid:rel.data.state,
+                        qr_url : rel.data.url,
+                        check_url : '/api/wechat/login_refresh/?state=',
+                        check:function (rel){ //如果范围成功则不再刷新
+                            if(rel.data===0){ //尚未扫码
+                                return false
+                            }else if('user_name' in rel.data){ //扫码成功
+                                $("#qr_success").show()
+                                savelogin(rel.data)
+                                window.sessionStorage.setItem("login_type",'微信登录');
+                                sq.open("index.html")
+                                return true
+                            }
+                            $("#qr_timeout").show()
+                            layer.msg('未知错误', {time:1000});
+                            return true
+
+                        },
+                        timeout:function (){
+                            $("#qr_timeout").show()
+
+                        }
+                    });
+                }
+                myqr.start_scan()
+
+
+            }
+            else{//已经绑定，询问是否清清除后重新绑定?
+                let content ='当前用户已经绑定微信！ 是否解除绑定？'
+                layer.confirm(content, {icon: 3, title:'提示'}, function(index){
+                    layer.close(index);
+                    //清除绑定关系后重新绑定
+                    getAjaxDate('/api/wechat/wechat_unbinding/','get','',function (rel){
+
+                        layer.msg('解除操作成功！',{time:1000})
+
+                    });
+
+                });
+            }
+        })
+
+    }
+    function jumpRe(){
+        sq.open("register.html");
+    }
+    function check_username() {
+        //获取用户名输入项
+        let username = $("#username").val()
+        if (username.length === 0) {layer.tips("请输入用户名！","#username")}
+        else if (username.length < 1 || username.length > 20) {
+            layer.tips("用户的长度在1-10之间！",'#username');
+            return false;
+        }
+        else {
+            return true
+        }
+    }
+    function check_password() {
+        //密码长度大于6 和确认必须一致
+        let userPass = $("#password").val();
+        if (userPass.length === 0){layer.tips("请输入密码!","#password")}
+        else if (userPass.length < 6) {
+            layer.tips("密码要大于6位！","#password");
+            return false;
+        } else {
+            return true;
+        }
+
+    }
+
+    function savelogin(data){
+        window.sessionStorage.setItem("token",data.token);
+        window.sessionStorage.setItem("realname",data.nickname)
+        window.sessionStorage.setItem("loginname",data.user_name)
+        window.sessionStorage.setItem("sex",data.gender)
+        window.sessionStorage.setItem("tel",data.tel)
+        window.sessionStorage.setItem("department",data.department_name)
+        window.sessionStorage.setItem("role_name",data.role_name)
+        window.sessionStorage.setItem("role_id",data.role_id)
+        window.sessionStorage.setItem("user_id",data.id)
+        window.sessionStorage.setItem("pic",data.pic)
+        window.sessionStorage.setItem("historyUpdateDeadline", data.historyUpdateDeadline)
+    }
+    // function submit() {
+    //     if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+    //     let username = $("#username").val();
+    //     let password = $("#password").val();
+    //     if (check_username() && check_password() ) {
+    //         getAjaxDate("/login/", "post",{"user_name": username, "user_password": password},
+    //             function (rel) {
+    //
+    //                 console.log(rel);
+    //                 if (rel.code ===1) {
+    //
+    //
+    //
+    //                     savelogin(rel.data)
+    //                     window.sessionStorage.setItem("login_type",'账号登录');
+    //                     layer.msg("登录成功！");
+    //                     sq.open("index.html")
+    //                 } else {
+    //                     layer.msg(rel.msg)
+    //                 }
+    //             });
+    //         return true;
+    //     } else{
+    //         if (password.length === 0) {layer.tips("请输入密码!","#password")}
+    //         if (username.length === 0) {layer.tips("请输入用户名！","#username")}
+    //         return false;
+    //     }
+    // }
+    function submit() {
+        if (tooFastCall(window.location.href, arguments.callee.name)) return;//防止快速点击
+        let username = $("#username").val();
+        let password = $("#password").val();
+        if (check_username() && check_password()) {
+            getAjaxDate("/login/", "post", { "user_name": username, "user_password": password },
+                function (rel) {
+
+                    if (rel.code === 1) {
+                        // 根据传回deadline判断是否关闭反结账
+                        //当前时间
+                        let d1=new Date();
+                        //到期时间
+                       
+                        let d2=rel.data.historyUpdateDeadline;
+                        //转换为标准时间"2019/12/29 23:59:59"
+                        d2=d2.replaceAll("T"," ");
+                        d2 = Date.parse(new Date(d2).toString());
+                        //如果当前时间大于到期时间
+                        //valueOf() 函数返回指定对象的原始值,这里返回以毫秒数存储的时间值
+                        // if(d1.valueOf()<d2.valueOf()){
+                            // console.log('当前时间小于到期时间') // 未过期
+                            // window.sessionStorage.setItem("historyUpdate", rel.data.historyUpdate)  // 反结账权限标识
+                            window.sessionStorage.setItem("historyUpdate", 1)  
+                        // }else{ // 权限过期
+                            // console.log("权限过期")
+                            // window.sessionStorage.setItem("historyUpdate", 0 )  // 反结账权限标识
+                        // }
+                        savelogin(rel.data)
+                        window.sessionStorage.setItem("login_type", '账号登录'); 
+                        layer.msg("登录成功！");
+                        sq.open("index.html")
+                    } else {
+                        layer.msg(rel.msg)
+                    }
+                });
+            return true;
+        } else {
+            if (password.length === 0) { layer.tips("请输入密码!", "#password") }
+            if (username.length === 0) { layer.tips("请输入用户名！", "#username") }
+            return false;
+        }
+    }
+    function reset() {
+        if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+        $("#username").val('')
+        $("#password").val('')
+    }
+    $(()=>{
+        refreshQRCode();
+    });
+</script>
+</body>
+</html>

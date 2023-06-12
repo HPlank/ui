@@ -1,0 +1,1548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>湛德财务项目管理系统</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/layui/css/layui.css" media="all" type="text/css">
+    <link rel="stylesheet" href="/css/sq.css">
+    <style type="text/css">
+        body{
+            padding-bottom: 70px;
+        }
+        #mainContainer{
+            overflow: hidden;;
+        }
+        #topContainer{
+            text-align: center;
+            background-color: #003c97;
+            color: #FFF;
+            font-weight: bold;
+            font-size: 18px;
+            padding: 20px;
+        }
+        .iconContent{
+            float: left;
+            text-align: center;
+            font-size: 14px;
+        }
+        #myUL{
+            margin: 0;
+            padding: 20px;
+            background-color: #FFF;
+        }
+        #myUL li{
+            list-style: none;
+            background-color: #FFFFFF;
+            margin: 5px 0 0 1%;
+            padding: 0 0 10px 0;
+            border-radius: 5px;
+            cursor: pointer;
+            overflow: hidden;
+            border-bottom: 1px solid #efefef;
+        }
+        #myUL li p{
+            padding: 5px;
+        }
+        .lxdh{
+            margin-left: 10px;
+            color: #FD482C;
+        }
+        #footContainer{
+            font-size: 10px;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background-color: #efefef;
+            text-align: center;
+        }
+        .sq-one-line{
+            line-height: 30px;
+            padding:10px;
+            overflow: hidden;
+            font-size: 14px;
+            border-bottom: 1px solid #efefef;
+            width: 28%;
+            display: inline-block;
+            margin-left: 2%;
+        }
+        .sq-one-line_1{
+            line-height: 30px;
+            padding:10px;
+            overflow: hidden;
+            font-size: 14px;
+            border-bottom: 1px solid #efefef;
+        }
+        .layui-col-xs2{
+
+        }
+        .editedcss{
+            color:red;
+        }
+    </style>
+</head>
+<body>
+<div id="topContainer">
+    项目管理(<span id="statusName" style="color: #FFB800;">部门名称</span>)
+</div>
+
+
+<div id="mainContainer" class="layui-form">
+    <div id="goods_div" style="padding: 10px;overflow: hidden;">
+        <div class="sq-one-line">
+            <div class="layui-col-xs10">
+                <span style="" id="span_1">项目名称：</span>
+                <strong class="sq-length" min-length="1" max-length="20" tip_name="项目名称" id="totalnum1" style="color: #003c97;">新建时弹窗填写</strong>
+            </div>
+            <div class="layui-col-xs2" style="text-align: right;">
+                <button id="name" class="layui-btn layui-btn-sm"  onclick="edit('1')" style="background-color: #003c97; display: none" type="button"><i class="layui-icon layui-icon-edit"></i></button>
+            </div>
+        </div>
+        <div class="sq-one-line">
+            <div class="layui-col-xs10">
+                <span style="" id="span_2">项目编号：</span>
+                <strong class="sq-length min-length=1" max-length="20" tip_name="项目编号" id="totalnum2" style="color: #003c97;">13255</strong>
+            </div>
+            <div class="layui-col-xs2" style="text-align: right;">
+                <button id="dep_no" class="layui-btn layui-btn-sm"  onclick="edit('2')" style="background-color: #003c97;display: none; " type="button"><i class="layui-icon layui-icon-edit"></i></button>
+            </div>
+        </div>
+        <div class="sq-one-line">
+            <div class="layui-col-xs10">
+                <span style="" id="span_19">负责人：</span><strong id="totalnum19" style="color: #003c97;">13255</strong>
+            </div>
+            <div class="layui-col-xs2" style="text-align: right;">
+                <button id="nickname" class="layui-btn layui-btn-sm"  onclick="select_user()" style="background-color: #003c97;display: none; " type="button"><i class="layui-icon layui-icon-edit"></i></button>
+            </div>
+        </div>
+        <div class="sq-one-line">
+            <div class="layui-col-xs10">
+                <span style="line-height: 30px;" id="span_5">拟成交价：</span><strong class="sq-number" tip_name="拟成交价" input_type="float" id="totalnum5" style="color: #003c97;">12654.12</strong><span>元</span>
+            </div>
+            <div class="layui-col-xs2" style="text-align: right;">
+                <button id="protrans_price" class="layui-btn layui-btn-sm" onclick="edit('5')" style="display: none;background-color: #003c97;" type="button"><i class="layui-icon layui-icon-edit"></i></button>
+            </div>
+        </div>
+        <div class="sq-one-line">
+            <div class="layui-col-xs10">
+                <span  style="line-height: 30px;" id="span_7">回款期限(月)：</span><strong class="sq-number" tip_name="回款期限(月)" input_type="int" id="totalnum7" style="color: #003c97;">10</strong>
+            </div>
+            <div class="layui-col-xs2" style="text-align: right;">
+                <button id="payment_term" class="layui-btn layui-btn-sm" onclick="edit('7')" style="background-color: #003c97;display: none" type="button"><i class="layui-icon layui-icon-edit"></i></button>
+            </div>
+        </div>
+        <div class="sq-one-line">
+            <div class="layui-col-xs10">
+                <span  style="line-height: 30px;" id="span_22">付款期限(月)：</span><strong class="sq-number" tip_name="付款期限(月)" input_type="int" id="totalnum22" style="color: #003c97;">10</strong>
+            </div>
+            <div class="layui-col-xs2" style="text-align: right;">
+                <button id="remittance_term" class="layui-btn layui-btn-sm" onclick="edit('22')" style="background-color: #003c97;display: none" type="button"><i class="layui-icon layui-icon-edit"></i></button>
+            </div>
+        </div>
+        <div class="sq-one-line">
+            <div class="layui-col-xs10">
+                <span style="line-height: 30px;" id="span_8">差旅费：</span><strong class="sq-number" tip_name="差旅费" input_type="float" id="totalnum8" style="color: #003c97;">10</strong><span>元</span>
+            </div>
+            <div class="layui-col-xs2" style="text-align: right;">
+                <button id="travel" class="layui-btn layui-btn-sm" onclick="edit('8')" style="background-color: #003c97;display: none" type="button"><i class="layui-icon layui-icon-edit"></i></button>
+            </div>
+        </div>
+        <div class="sq-one-line">
+            <div class="layui-col-xs10">
+                <span  style="line-height: 30px;" id="span_9">交际费：</span><strong class="sq-number" tip_name="交际费" input_type="float" id="totalnum9" style="color: #003c97;">10</strong><span>元</span>
+            </div>
+            <div class="layui-col-xs2" style="text-align: right;">
+                <button id="communication" class="layui-btn layui-btn-sm" onclick="edit('9')" style="background-color: #003c97;display: none" type="button"><i class="layui-icon layui-icon-edit"></i></button>
+            </div>
+        </div>
+        <div class="sq-one-line">
+            <div class="layui-col-xs10">
+                <span style="line-height: 30px;" id="span_10">招标费：</span><strong class="sq-number" tip_name="招标费" input_type="float" id="totalnum10" style="color: #003c97;">10</strong><span>元</span>
+            </div>
+            <div class="layui-col-xs2" style="text-align: right;">
+                <button id="tender" class="layui-btn layui-btn-sm" onclick="edit('10')" style="background-color: #003c97;display: none" type="button"><i class="layui-icon layui-icon-edit"></i></button>
+            </div>
+        </div>
+        <div class="sq-one-line">
+            <div class="layui-col-xs10">
+                <span style="line-height: 30px;" id="span_20">市场投入：</span><strong class="sq-number" tip_name="市场投入" input_type="float" id="totalnum20" style="color: #003c97;">暂无</strong><span>元</span>
+            </div>
+            <div class="layui-col-xs2" style="text-align: right;">
+                <button id="market_investment" class="layui-btn layui-btn-sm" onclick="edit('20')" style="background-color: #003c97;display: none" type="button"><i class="layui-icon layui-icon-edit"></i></button>
+            </div>
+        </div>
+        <div class="sq-one-line">
+            <div class="layui-col-xs10">
+                <span style="line-height: 30px;" id="span_12">产品维修：</span><strong class="sq-number" tip_name="产品维修" input_type="float" id="totalnum12" style="color: #003c97;"></strong><span>元</span>
+            </div>
+            <div class="layui-col-xs2" style="text-align: right;">
+                <button id="product_maintenance" class="layui-btn layui-btn-sm" onclick="edit('12')" style="background-color: #003c97;display: none" type="button"><i class="layui-icon layui-icon-edit"></i></button>
+            </div>
+        </div>
+        <div class="sq-one-line">
+            <div class="layui-col-xs10">
+                <span style="line-height: 30px;" id="span_13">经销商维修：</span><strong class="sq-number" tip_name="经销商维修" input_type="float" id="totalnum13" style="color: #003c97;"></strong><span>元</span>
+            </div>
+            <div class="layui-col-xs2" style="text-align: right;">
+                <button id="dealer_maintenance" class="layui-btn layui-btn-sm" onclick="edit('13')" style="background-color: #003c97;display: none" type="button"><i class="layui-icon layui-icon-edit"></i></button>
+            </div>
+        </div>
+        <div class="sq-one-line">
+            <div class="layui-col-xs10">
+                <span style="line-height: 30px;" id="span_23">利息：</span><strong class="sq-number" tip_name="利息" input_type="float" id="totalnum23" style="color: #003c97;"></strong><span>元</span>
+            </div>
+            <div class="layui-col-xs2" style="text-align: right;">
+                <button id="interest" class="layui-btn layui-btn-sm" onclick="edit('23')" style="background-color: #003c97;display: none" type="button"><i class="layui-icon layui-icon-edit"></i></button>
+            </div>
+        </div>
+        <div class="sq-one-line">
+            <div class="layui-col-xs10">
+                <span style="line-height: 30px;" id="span_24">上缴金额：</span><strong class="sq-number" tip_name="上缴金额" input_type="float" id="totalnum24" style="color: #003c97;"></strong><span>元</span>
+            </div>
+            <div class="layui-col-xs2" style="text-align: right;">
+                <button id="pro_profit" class="layui-btn layui-btn-sm" onclick="edit('24')" style="background-color: #003c97;display: none" type="button"><i class="layui-icon layui-icon-edit"></i></button>
+            </div>
+        </div>
+        <div class="sq-one-line">
+            <div class="layui-col-xs10">
+                <span style="line-height: 30px;" id="span_25">部门上提：</span><strong class="sq-number" tip_name="部门上提" input_type="float" id="totalnum25" style="color: #003c97;"></strong><span>元</span>
+            </div>
+            <div class="layui-col-xs2" style="text-align: right;">
+                <button id="dep_promotion" class="layui-btn layui-btn-sm" onclick="edit('25')" style="background-color: #003c97;display: none" type="button"><i class="layui-icon layui-icon-edit"></i></button>
+            </div>
+        </div>
+        <div class="sq-one-line">
+            <div class="layui-col-xs10">
+                <span style="line-height: 30px;" id="span_26">行政上提：</span><strong class="sq-number" tip_name="行政上提" input_type="float" id="totalnum26" style="color: #003c97;"></strong><span>元</span>
+            </div>
+            <div class="layui-col-xs2" style="text-align: right;">
+                <button id="adms_promotion" class="layui-btn layui-btn-sm" onclick="edit('26')" style="background-color: #003c97;display: none" type="button"><i class="layui-icon layui-icon-edit"></i></button>
+            </div>
+        </div>
+        <div class="sq-one-line">
+            <div class="layui-col-xs10">
+                <span style="line-height: 30px;" id="span_27">代付税息：</span><strong class="sq-number" tip_name="代付税息" input_type="float" id="totalnum27" style="color: #003c97;"></strong><span>元</span>
+            </div>
+            <div class="layui-col-xs2" style="text-align: right;">
+                <button id="tax_interest" class="layui-btn layui-btn-sm" onclick="edit('27')" style="background-color: #003c97;display: none" type="button"><i class="layui-icon layui-icon-edit"></i></button>
+            </div>
+        </div>
+        <div class="sq-one-line" id="turn_ratio_div">
+            <div class="layui-col-xs10">
+                <span style="line-height: 30px;" id="span_14">上缴比例：</span><strong id="totalnum14" style="color: #003c97;">11</strong>
+            </div>
+            <div class="layui-col-xs2" style="text-align: right;">
+                <button id="turn_ratio" class="layui-btn layui-btn-sm" onclick="edit('14')" style="background-color: #003c97;display: none" type="button"><i class="layui-icon layui-icon-edit"></i></button>
+            </div>
+        </div>
+        <div class="sq-one-line" id="department_promotion_div">
+            <div class="layui-col-xs10">
+                <span style="line-height: 30px;" id="span_15">部门上提比例：</span><strong id="totalnum15" style="color: #003c97;">10</strong>
+            </div>
+            <div class="layui-col-xs2" style="text-align: right;">
+                <button id="department_promotion" class="layui-btn layui-btn-sm" onclick="edit('15')" style="background-color: #003c97;display: none" type="button"><i class="layui-icon layui-icon-edit"></i></button>
+            </div>
+        </div>
+        <div class="sq-one-line" id="proportion_promotion_div">
+            <div class="layui-col-xs10">
+                <span style="line-height: 30px;" id="span_16">行政上提比例：</span><strong id="totalnum16" style="color: #003c97;">10</strong>
+            </div>
+            <div class="layui-col-xs2" style="text-align: right;">
+                <button id="proportion_promotion" class="layui-btn layui-btn-sm" onclick="edit('16')" style="background-color: #003c97;display: none" type="button"><i class="layui-icon layui-icon-edit"></i></button>
+            </div>
+        </div>
+        <div class="sq-one-line" id="tax_rate_div">
+            <div class="layui-col-xs10">
+                <span style="line-height: 30px;" id="span_17">税率：</span><strong id="totalnum17" style="color: #003c97;"></strong>
+            </div>
+            <div class="layui-col-xs2" style="text-align: right;">
+                <button id="tax_rate" class="layui-btn layui-btn-sm" onclick="edit('17')" style="background-color: #003c97;display: none" type="button"><i class="layui-icon layui-icon-edit"></i></button>
+            </div>
+        </div>
+        <div class="sq-one-line" id="time_div">
+            <div class="layui-inline layui-col-xs10">
+                <div class="layui-col-xs3 layui-inline">
+                    <span style="line-height: 30px;" id="33">立项时间：</span><strong id="totalnum33" style="color: #003c97;"></strong>
+                </div>
+                <div class="layui-input-inline">
+                    <input name="approval_time" type="text" class="layui-input" id="test5" placeholder="yyyy-MM-dd HH:mm:ss">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="layui-col-xs6" style="font-size: 16px;">
+        <span style="line-height: 40px;padding-left: 40px;" id="span_18">产品数：</span><strong id="quantity_1">0</strong>
+    </div>
+    <div class="layui-col-xs6" >
+        <button id="add_goods" class="layui-btn layui-btn-normal" onclick="addGoods()" style="background-color: #FD482C;display: none" type="button">添加产品</button>
+        <button id="add_excels" class="layui-btn layui-btn-normal" onclick="excelImport()" style="background-color: #02AAED;display: none" type="button">批量添加</button>
+        <button id="del_product" class="layui-btn layui-btn-normal" onclick="delProduct()" style="background-color: #40b1b9;display: none" type="button">全部清空</button>
+    </div>
+
+</div>
+
+<div style= "width: 100%; overflow: scroll">
+    <table class="layui-table" id="project_table"  style="width: 100%;">
+        <colgroup>
+            <col>
+            <col>
+            <col>
+            <col>
+            <col>
+            <col>
+        </colgroup>
+        <thead>
+        <tr>
+            <th id="th_id" style="display: none">ID</th>
+            <th style="text-align: center">商品名</th>
+            <th style="text-align: center">厂家</th>
+            <th style="text-align: center">型号</th>
+            <th style="text-align: center">机身编号</th>
+            <th style="text-align: center">数量</th>
+            <th style="text-align: center">单位</th>
+            <th style="text-align: center">单价</th>
+            <th style="text-align: center">总价</th>
+            <th id="discount_th" style="text-align: center">折扣</th>
+            <th style="text-align: center">成本</th>
+            <th id="operation" style="display:none;text-align: center">操作</th>
+        </tr>
+        </thead>
+        <tbody id="ttbody">
+        <!--            <tr>-->
+        <!--                <td>某某物品1</td>-->
+        <!--                <td>XZ-9901</td>-->
+        <!--                <td>12</td>-->
+        <!--                <td>778.00</td>-->
+        <!--            </tr>-->
+        </tbody>
+    </table>
+</div>
+<!--<hr >-->
+<div class="layui-col-xs12" style="margin-bottom: 30px;" id="show_tip">
+    <div style="padding-left:1050px;">
+        <span style="line-height: 30px;width: 100px;" id="span_11">采购成本：</span><strong class="sq-number" tip_name="采购成本" input_type="float" id="totalnum11" style="color: #003c97;">10</strong><span style="padding-left: 5px;">元</span>
+        <!-- <div class="layui-inline" style="padding-left: 10px;">
+            <button  id="purchasing_cost" class="layui-btn layui-btn-sm" onclick="edit('11')" style="background-color: #003c97;display: none" type="button"><i class="layui-icon layui-icon-edit"></i></button>
+        </div> -->
+        <div></div>
+        <span style="width: 100px;" id="span_4">税费：</span><strong id="totalnum4" style="color: #003c97;"></strong><span style="padding-left: 5px;">元</span>
+        <div></div>
+        <span style="line-height: 30px;width: 100px;" id="span_21">结余：</span><strong id="totalnum21" style="color: #003c97;">10</strong><span style="padding-left: 5px;">元</span>
+        <div></div>
+        <span style="width: 100px;" id="span_3">报价合计：</span> <strong id="totalnum3" style="color: #003c97;">13255.23</strong><span style="padding-left: 5px;">元</span>
+    </div>
+</div>
+<div style="text-align: center;padding: 10px 20px">
+    <textarea id="perspective" style="border-radius:5px;background-color:rgba(241,241,241,.98);width: 80%;height: 100px;padding: 10px;resize: none;" placeholder="备注:" ></textarea>
+</div>
+<div class="layui-col-xs12" style="text-align:center;overflow: hidden;">
+    <button id="save" class="layui-btn layui-btn-warm" onclick="saveApproval()" style="display: none" type="button">草稿</button>
+    <button id="send" class="layui-btn layui-btn-normal" onclick="sendApproval()" style="background-color: #003c97;display: none;" type="button">提交</button>
+    <button id="reset" class="layui-btn layui-btn-normal" onclick="reset_data()" style="background-color: #2E2D3C;display: none;" type="button">重置</button>
+    <button id="withdrawal" class="layui-btn layui-btn-normal" onclick="withdrawal(status)" style="background-color: #393D49;display: none" type="button">撤回</button>
+    <button id="reject" class="layui-btn layui-btn-normal" onclick="reject()" style="background-color: #fe2213;display: none" type="button">驳回</button>
+    <button id="revise" class="layui-btn layui-btn-normal" onclick="revise()" style="background-color: #ff8a00;display: none" type="button">审改</button>
+    <button id="accept" class="layui-btn layui-btn-normal" onclick="accept()" style="background-color: #2ba245;display: none" type="button">接受</button>
+    <button id="refuse" class="layui-btn layui-btn-normal" onclick="refuse()" style="background-color: #fe2213;display: none" type="button">拒绝</button>
+    <button id="pass" class="layui-btn layui-btn-normal" onclick="pass()" style="background-color: #2ba245;display: none" type="button">通过</button>
+    <button id="approval" class="layui-btn layui-btn-normal" onclick="approval()" style="background-color: #003c97;display: none" type="button">立项</button>
+</div>
+<div class="layui-collapse" >
+    <div class="layui-colla-item" >
+        <h2 class="layui-colla-title">审核记录</h2>
+        <div class="layui-colla-content layui-show" style="padding: 1px 1px">
+            <div style= "width: 100%;">
+                <table class="layui-table" id="log_table"  style="width: 100%;">
+                    <colgroup>
+                        <col>
+                        <col>
+                        <col>
+                        <col>
+                        <col>
+                        <col>
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th id="log_msg">记录</th>
+                    </tr>
+                    </thead>
+                    <tbody id="ttbody_1"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<!--下方为模板部分-->
+<!--用户登陆的模板-->
+</body>
+<script type="text/javascript" src="/js/jquery-3.3.1.min.js" language="JavaScript"></script>
+<script type="text/javascript" src="/layui/layui.js"></script>
+<script type="text/javascript" src="/js/ajax.js"></script>
+
+<script>
+    // 负责修改框中的文本与html—id的映射
+    var mapping_data = {"#totalnum1":'name', "#totalnum2":'number', "#totalnum5":'protrans_price', "#totalnum4":'taxation',
+        "#totalnum22":'remittance_term', "#totalnum8":'travel', "#totalnum9":'communication', "#totalnum10":'tender',
+        "#totalnum11":'purchasing_cost', "#totalnum12":'product_maintenance', "#totalnum13":'dealer_maintenance',
+        "#totalnum14":'turn_ratio', "#totalnum15":'department_promotion', "#totalnum16":'proportion_promotion',
+        "#totalnum20":'market_investment', "#totalnum21":'pro_surplus',"#totalnum19":"nickname","#totalnum7":"payment_term",
+        "#totalnum23":"interest","#totalnum24":"pro_profit","#totalnum25":"dep_promotion","#totalnum26":"adms_promotion",
+        "#totalnum27":"tax_interest",
+    };
+    var mapping_data_transform = {"name":'#totalnum1', "number":'#totalnum2',"total_price":'#totalnum3', "taxation":'#totalnum4',
+        "protrans_price":'#totalnum5', "payment_term":"#totalnum7", "travel":'#totalnum8', "communication":'#totalnum9',
+        "tender":'#totalnum10', "purchasing_cost":'#totalnum11', "product_maintenance":'#totalnum12',
+        "dealer_maintenance":'#totalnum13', "turn_ratio":'#totalnum14', "department_promotion":'#totalnum15',
+        "proportion_promotion":'#totalnum16',"tax_rate":'#totalnum17',"nickname":"#totalnum19", "market_investment":'#totalnum20',
+        "pro_surplus":'#totalnum21',"remittance_term":'#totalnum22', "interest":"#totalnum23","pro_profit":"#totalnum24",
+        "dep_promotion":"#totalnum25","adms_promotion":"#totalnum26", "tax_interest":"#totalnum27",
+    };
+    var map_rowid = new Array();
+    var send_user = ''
+    var showcontent = '';
+    var send_time;
+    var delete_product_list = new Set(); //删除的商品列表
+    var tip_data;
+    var edited_field = [];
+    var receive_data = new Object();
+    var post_data = new Object();
+    var receive_product = new Object();
+    // var orign_product_list = new Object();
+    var post_product = new Object();
+    // 用户权限限制
+    var status = sq.getHashStringArgs()["status"];
+    $("#statusName").text(sq.getHashStringArgs()["status_name"]);
+    var role_id = window.sessionStorage.getItem("role_id");
+    var role_authority = {
+        "1":["name","dep_no","protrans_price","trans_price","remittance_term","travel","communication","tender","product_maintenance","dealer_maintenance","market_investment","payment_term"],
+        "2":["name","dep_no","protrans_price","trans_price","remittance_term","travel","communication","tender","product_maintenance","dealer_maintenance","market_investment","payment_term"],
+        "3":["name","dep_no","protrans_price","trans_price","remittance_term","travel","communication","tender","product_maintenance","dealer_maintenance","market_investment","payment_term"],
+        "4":["name","dep_no","protrans_price","trans_price","remittance_term","travel","communication","tender","product_maintenance","dealer_maintenance","market_investment","payment_term"],
+        "5":["name","nickname","dep_no","protrans_price","trans_price","remittance_term","travel","communication","tender","product_maintenance","dealer_maintenance","market_investment","payment_term"],};
+    if(role_id === '1' || role_id === '2'|| role_id === '3'|| role_id === '4'){
+        var hide_list = ["turn_ratio_div","department_promotion_div","proportion_promotion_div","tax_rate_div","time_div"]
+        for (let i=0;i<hide_list.length;i++){
+            $("#"+hide_list[i]).hide()
+        }
+    }
+    function show_button(role_id) {
+        if(role_id in role_authority){
+            for(let i= 0;i < role_authority[role_id].length;i++){
+                $("#"+role_authority[role_id][i]).show()
+            }
+        }
+    }
+    var id = sq.getHashStringArgs()["id"];
+    var sendObj = new Object();
+    sendObj.item = id;
+    sendObj.page_size = 100;
+    var tax_rate;
+    var department_promotion;
+    var proportion_promotion;
+    var turn_ratio;
+    var payment_rate;
+    var cur_page = 1;
+    var recieved_prodict = new Array();
+    var old_data = new Object();
+    show_prolist();
+    setTimeout(function () {
+        getList(cur_page);
+    },90)
+
+    //获取项目数据
+    function getList(cur_page) {
+        sendObj.page = cur_page;
+        getAjaxDate("/api/item/"+id+"/","get",
+            sendObj,
+            function(rel){
+                tax_rate = parseFloat(rel.data.tax_rate);
+                department_promotion = parseFloat(rel.data.department_promotion);
+                proportion_promotion = parseFloat(rel.data.proportion_promotion);
+                turn_ratio = parseFloat(rel.data.turn_ratio);
+                payment_rate = parseFloat(rel.data.payment_rate);
+                receive_data = rel.data;
+                if(status === '10' || status === '15' || status === '20' || status === '25' || status === '30' || status === '35'){
+                    old_data = rel.old_data;
+                }
+                post_data = JSON.parse(JSON.stringify(receive_data));
+                show_content(rel.data);
+                if (rel.data.status === '0' ){
+                    show_button(role_id)
+                    $("#save").show();
+                    $("#send").show();
+                    $("#operation").show();
+                    $("#add_goods").show();
+                    $('#add_excels').show();
+                    $('#del_product').show();
+                    $("#reset").show()
+                }
+                if (role_id === '1'){
+                    if(rel.data.status === '0'){
+                        $("#operation").show()
+                    }
+                    if(rel.data.status === '10'){ $("#withdrawal").show();}
+                    else if (rel.data.status === '15'||rel.data.status === '25'||rel.data.status === '35'){
+                        $("#refuse").show();
+                        $("#accept").show();
+                    }else if(rel.data.status === '40' && rel.data.modify == null){$("#approval_edit").show()}
+                }
+                if (role_id === '2'){
+                    if (rel.data.status === '10'){
+                        if(rel.data.user_name !== window.sessionStorage.getItem("loginname")){
+                            $("#revise").show()
+                            $("#reject").show()
+                            $("#reset").show()
+                        }else {
+                            $("#withdrawal").show()
+                            $("#add_goods").show()
+                            $('#add_excels').show();
+                            $('#del_product').show();
+                            $("#operation").show()
+                        }
+                        show_button(role_id)
+                        $("#pass").show()
+                    }else if (rel.data.status === '15'|| rel.data.status==='20'){
+                        $("#withdrawal").show()
+                    }else if (rel.data.status === '15'||rel.data.status === '25'||rel.data.status === '35'){
+                        $("#refuse").show();
+                        $("#accept").show();}
+                    else if(rel.data.status === '40' && rel.data.modify == null){$("#approval_edit").show()}
+                }
+                if (role_id === '3'){
+                    if(rel.data.status === '20'){
+                        show_button(role_id)
+                        $("#reject").show()
+                        $("#revise").show()
+                        $("#pass").show()
+                        $("#reset").show()
+                    }else if(rel.data.status === '25'|| rel.data.status==='30'){
+                        $("#withdrawal").show()
+                    }
+                }
+                if (role_id === '4'){
+                    if (rel.data.status === '30'){
+                        show_button(role_id)
+                        $("#reject").show()
+                        // $("#revise").show()
+                        $("#pass").show()
+                        $("#reset").show()
+                    }else if(rel.data.status === '35'){
+                        $("#withdrawal").show()
+                    }
+                }
+                $('input').attr("readonly","readonly")
+                if(status === '0'){
+                    $("input[name='nameof_num']").removeAttr("readonly")
+                    // $("input[name='nameof_devnum']").removeAttr("readonly")
+                }else if (role_id === '4' && status === '30'){
+                    $("input[name='nameof_discount']").removeAttr("readonly")
+                    // $("input[name='nameof_devnum']").removeAttr("readonly")
+                }
+                if(role_id === '1'){
+                    if(status === '10' || status === '20' || status === '30'){
+                        $("#perspective").hide()
+                    }
+                }
+                if(role_id === '5'){
+                    if(status === '0'){
+                        $("#save").show()
+                        $("#approval").show()
+                    }
+                    if(status === '40'){
+                        $("#withdrawal").show()
+                    }
+                    // $("#save").hide()
+                    $("#send").hide()
+                    $("#reset").hide()
+                    $("input[name='nameof_num']").removeAttr("readonly")
+                    $("input[name='nameof_discount']").removeAttr("readonly")
+                    $("input[name='nameof_offer']").removeAttr("readonly")
+                    // $("input[name='nameof_devnum']").removeAttr("readonly")
+                }
+                if(status === '40'){
+                    $("#perspective").hide()
+                    $('input').attr("readonly","readonly")
+                }
+            }
+        );
+    }
+
+    // 增加产品
+    function addGoods() {
+        if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+        let tgt = Math.random();//随机
+        top.frameset[tgt]=self.frameElement;
+        top.layer.open({
+            type: 2,
+            shadeClose: true,
+            shade: 0.7,
+            maxmin: true, //开启最大化最小化按钮
+            area: ['1300px', '600px'],
+            content: 'pages/Project_Management/add_product.html#tgt='+tgt,
+        });
+    }
+
+    	// 导入Excel
+        function excelImport() {
+        if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+        layer.open({
+            type: 2,
+            title: '批量导入',
+            shadeClose: true,
+            shade: 0.7,
+            maxmin: true, //开启最大化最小化按钮
+            area: ['600px', '300px'],
+            content: 'excel_import.html#'
+        });
+    }
+
+    // 显示表中信息
+    function show_content(obj) {
+        if(obj.remittance_term == 0){
+            $("#totalnum22").css('color','red')
+            $("#totalnum22").css('font-weight','bold')
+        }
+        if(obj.payment_term == 0){
+            $("#totalnum7").css('color','red')
+            $("#totalnum7").css('font-weight','bold')
+        }
+        if(status === '10' || status === '15' || status === '20' || status === '25' || status === '30' || status === '35'){
+            // console.log(mapping_data_transform[old_data])
+            for(let key in old_data){
+                if(key == 'product_list'){
+                    for(let i=0;i<old_data['product_list'].length;i++){
+                        let row_id = map_rowid[old_data['product_list'][i][0]]
+                        if(old_data['product_list'][i][1] === 'create'){
+                            $("#"+row_id+"tr").css('color','red')
+                            $("#"+row_id+"tr").css('font-weight','bold')
+                            $("#"+row_id+"product_num").css('color','red')
+                            $("#"+row_id+"discount").css('color','red')
+                            $("#"+row_id+"product_num").css('font-weight','bold')
+                            $("#"+row_id+"discount").css('font-weight','bold')
+                        }else if(old_data['product_list'][i][0] === 'delete'){
+                            showcontent = showcontent+old_data['product_list'][i][1]
+                        }
+                        else{
+                            $("#"+row_id+"product_num").hover(function () {
+                                layer.tips('修改前的值为： '+old_data['product_list'][i][1],"#"+row_id+"product_num",{tips:3})
+                            })
+                            $("#"+row_id+"product_num").css('color','red')
+                            $("#"+row_id+"product_num").css('font-weight','bold')
+                        }
+                    }
+                }
+                let domid = mapping_data_transform[key]
+                $(domid).hover(function () {
+                    layer.tips('修改前的值为： '+old_data[key],domid,{tips:3})
+                })
+                $(domid).css('color','red')
+            }
+        }
+        $("#totalnum1").text(obj.name)
+        $("#totalnum2").text(obj.number)
+        $("#totalnum5").text(numFormat(obj.protrans_price))
+        $("#totalnum4").text(numFormat(obj.taxation))
+        $("#totalnum22").text(obj.remittance_term)
+        $("#totalnum7").text(obj.payment_term)
+        $("#totalnum8").text(numFormat(obj.travel))
+        $("#totalnum9").text(numFormat(obj.communication))
+        $("#totalnum10").text(numFormat(obj.tender))
+        $("#totalnum11").text(numFormat(obj.purchasing_cost))
+        $("#totalnum12").text(numFormat(obj.product_maintenance))
+        $("#totalnum13").text(numFormat(obj.dealer_maintenance))
+        $("#totalnum14").text(numFormat(obj.turn_ratio))
+        $("#totalnum15").text(numFormat(obj.department_promotion))
+        $("#totalnum16").text(numFormat(obj.proportion_promotion))
+        $("#totalnum20").text(numFormat(obj.market_investment))
+        $("#totalnum21").text(numFormat(obj.pro_surplus))
+        $("#totalnum19").text(obj.nickname)
+        $("#totalnum23").text(numFormat(obj.interest))
+        $("#totalnum24").text(numFormat(obj.pro_profit))
+        $("#totalnum25").text(numFormat(obj.dep_promotion))
+        $("#totalnum26").text(numFormat(obj.adms_promotion))
+        $("#totalnum27").text(numFormat(obj.tax_interest))
+        $("#totalnum17").text(numFormat(obj.tax_rate))
+        $("#test5").val(obj.approval_time)
+        send_user = obj.user
+        if(status === '0'){
+            $("#perspective").val(obj.remark)
+        }
+    }
+
+    // 获取商品列表
+    function show_prolist() {
+        let show_probutton = false
+        if (status === '0'){
+            show_probutton = true;
+        }
+        getAjaxDate("/api/itemProduct/","get",
+            sendObj,
+            function(rel) {
+                console.log(rel.data)
+                receive_product = rel.data.results;
+                for (let k in receive_product) {
+                    let v = receive_product[k]
+                    if ('detail_id' in v){
+                        v['id']=v['detail_id']
+                    }
+                    recieved_prodict.push({['detail_id']:receive_product[k]['detail_id'],["quantity"]:receive_product[k]['quantity']})
+                }
+                console.log("recieved_prodict:",recieved_prodict)
+                post_product = JSON.parse(JSON.stringify(receive_product));
+                $("#ttbody").empty();
+                $("#quantity_1").text(rel.data.total_items);
+                setTable(rel.data.results,show_probutton);
+                console.log(rel.data.edit)
+                if(rel.data.edit === '有修改'){
+                    layer.msg("请注意！部分商品的折扣已被修改!")
+                }
+            }
+        );
+    }
+    // 渲染商品列表
+    function setTable(infoList,is_button) {
+        let total_price = 0;
+        let total_cost = 0;
+      
+        if(infoList.length < 1){
+            $("#totalnum3").text(0);
+            $("#totalnum11").text(0);
+        }else {
+            for(let row_id = 0;row_id< infoList.length;++row_id){
+                let value = infoList[row_id]
+                if(value.quantity == undefined){
+                    value.quantity = 1
+                }
+
+                if(value.device_number == undefined){
+                    value.device_number = ''
+                }
+
+                value.row_id = row_id;
+                map_rowid[value.id] = row_id;
+                let rowcss = null;
+                if('remark' in value){
+                    rowcss='editedcss';
+                }
+                let price = ''
+                if(role_id === '5'){
+                    price = '<td id='+'offer'+' style="width: 100px;"><input type="offer" name="nameof_offer" id='+row_id+'offer onchange="num_change(\''+encodeURIComponent(JSON.stringify(value))+'\')"  style="width: 100px" value="'+numFormat(value.offer)+'"/></td>'
+                }else{
+                    price = '<td style="text-align: center">'+numFormat(value.offer)+'</td>'
+                }
+                let discount_col = '<td id='+'discount_input'+' style="width: 100px;"><input type="discount" name="nameof_discount" id='+row_id+'discount onchange="num_change(\''+encodeURIComponent(JSON.stringify(value))+'\')"  style="width: 100px" value="'+value.discount+'"/></td>'
+
+                if (is_button === false){
+                    var buttonStr = ''
+                }else {
+                    var buttonStr = '<td style="text-align: center"><button id="btn_delpro" class="layui-btn layui-btn-danger layui-btn-sm delbt" onclick="openDeleteWindow(\''+encodeURIComponent(JSON.stringify(value))+'\')"><i class="layui-icon layui-icon-delete"></i>   </button></td>'
+                }
+                $("#project_table").append(
+                    '<tr id='+row_id+'tr class="'+rowcss+'">' +
+                    '<td style="display:none;text-align: center">'+row_id+'</td>' +
+                    '<td style="text-align: center">'+value.name+'</td>' +
+                    '<td style="text-align: center">'+value.manufacturer+'</td>' +
+                    '<td style="text-align: center">'+value.model+'</td>'+
+                    '<td style="text-align: center">'+value.device_number+'</td>'+
+                    // '<td style="width: 100px;"><input type="text" name="nameof_devnum" id='+row_id+'dev_num onchange="myFunction(\''+encodeURIComponent(JSON.stringify(value))+'\')"  style="width: 100px" value="'+value.device_number+'"/></td>'+
+
+                    '<td style="width: 100px;"><input type="number" name="nameof_num" id='+row_id+'product_num onchange="num_change(\''+encodeURIComponent(JSON.stringify(value))+'\')" onkeyup="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,\'\')}else{this.value=this.value.replace(/\\D/g,\'\')}" oninput="if(value<=0)value=1;if(value.length>12) value=value.slice(0,12)" style="width: 100px" value="'+value.quantity+'"/></td>'+
+                    '<td style="text-align: center">'+value.unit+'</td>'+ price+
+                    '<td id='+row_id+'all_offer style="text-align: center">'+numFormat(value.all_offer)+'</td>'+discount_col+
+                    '<td id='+row_id+'cost style="text-align: center">'+numFormat(value.cost)+'</td>'+buttonStr+ '</tr>'
+                );
+                $('input').attr("readonly","readonly")
+                if(status === '0'){
+                    $("input[name='nameof_num']").removeAttr("readonly")
+                    // $("input[name='nameof_devnum']").removeAttr("readonly")
+                }else if (role_id === '4' && status === '30'){
+                    $("input[name='nameof_discount']").removeAttr("readonly")
+                    // $("input[name='nameof_devnum']").removeAttr("readonly")
+                }
+                if(role_id === '5' && status === '0'){
+                    $('input').attr("readonly","readonly")
+                    $("input[name='nameof_num']").removeAttr("readonly")
+                    $("input[name='nameof_discount']").removeAttr("readonly")
+                    $("input[name='nameof_offer']").removeAttr("readonly")
+                    // $("input[name='nameof_devnum']").removeAttr("readonly")
+                }
+
+                if($("#"+row_id+"product_num").val() === '1'){
+                    $("#"+row_id+"all_offer").text(numFormat(parseFloat(value.offer)*parseInt($("#"+row_id+"product_num").val())));
+                    $("#"+row_id+"cost").text(numFormat(parseFloat(value.offer)*parseInt($("#"+row_id+"product_num").val())*parseFloat(value.discount)*0.1))
+                }
+
+                if(infoList.length != 0) {
+                    if(role_id === '5'){
+                        for (let i = 0; i < post_product.length; i++) {
+                            if(row_id == i){
+                          
+                                post_product[i].offer = value.offer;
+                                post_product[i].all_offer = (parseFloat(value.offer) * parseInt($("#" + row_id + "product_num").val())).toFixed(2);
+                                post_product[i].cost = (parseFloat(value.offer) * parseInt($("#" + row_id + "product_num").val()) * parseFloat(value.discount) * 0.1).toFixed(2);
+                                post_product[i].quantity = parseInt($("#" + row_id + "product_num").val())
+                                post_product[i].row_id = row_id
+                                total_price += parseFloat(post_product[i].all_offer)
+                                total_cost += parseFloat(post_product[i].cost)
+                            }
+                        }
+                    }else {
+                        for (let i = 0; i < post_product.length; i++) {
+                            
+                            if (value.name === post_product[i].name && value.manufacturer === post_product[i].manufacturer && value.model === post_product[i].model && value.device_number === post_product[i].device_number) {
+                                post_product[i].offer = value.offer;
+                                post_product[i].all_offer = (parseFloat(value.offer) * parseInt($("#" + row_id + "product_num").val())).toFixed(2);
+                                post_product[i].cost = (parseFloat(value.offer) * parseInt($("#" + row_id + "product_num").val()) * parseFloat(value.discount) * 0.1).toFixed(2);
+                                post_product[i].quantity = parseInt($("#" + row_id + "product_num").val())
+                                post_product[i].row_id = row_id
+                                total_price += parseFloat(post_product[i].all_offer)
+                                total_cost += parseFloat(post_product[i].cost)
+                            }
+                        }
+                    }
+                }
+            }
+            $("#totalnum3").text(numFormat(total_price));
+            $("#totalnum11").text(numFormat(total_cost));
+            if(showcontent != ''){
+            $("#goods_div").hover(function () {
+            layer.tips(showcontent,"#goods_div",{tips:3,time:0})
+            })}
+        console.log(post_product);
+        }
+    }
+    // data
+    function send_data(status) {
+        var saveobj = new Object();
+        saveobj.name = $("#totalnum1").text();
+        saveobj.number = $("#totalnum2").text();
+        saveobj.total_price = parseNum($("#totalnum3").text());
+        saveobj.taxation = parseNum($("#totalnum4").text());
+        saveobj.protrans_price = parseNum($("#totalnum5").text());
+        saveobj.payment_term = $("#totalnum7").text();
+        saveobj.remittance_term = $("#totalnum22").text();
+        saveobj.travel = parseNum($("#totalnum8").text());
+        saveobj.communication = parseNum($("#totalnum9").text());
+        saveobj.tender = parseNum($("#totalnum10").text());
+        saveobj.purchasing_cost = parseNum($("#totalnum11").text());
+        saveobj.product_maintenance = parseNum($("#totalnum12").text());
+        saveobj.dealer_maintenance = parseNum($("#totalnum13").text());
+        saveobj.market_investment = parseNum($("#totalnum20").text());
+        saveobj.pro_surplus = parseNum($("#totalnum21").text());
+        saveobj.remittance_term = parseNum($("#totalnum22").text());
+        // saveobj.user = $("#totalnum19").text()
+        if(role_id === '5'){
+            saveobj.user = send_user
+        }
+        saveobj.interest = parseNum($("#totalnum23").text())
+        saveobj.pro_profit = parseNum($("#totalnum23").text())
+        saveobj.dep_promotion = parseNum($("#totalnum23").text())
+        saveobj.adms_promotion = parseNum($("#totalnum23").text())
+        saveobj.tax_interest = parseNum($("#totalnum23").text())
+        saveobj.remark = $("#perspective").val()
+        saveobj.status = status
+        saveobj.product_list  = JSON.stringify(post_product);
+        saveobj.delete_product_list = JSON.stringify(Array.from(delete_product_list));
+        saveobj.approval_time = send_time;
+        return saveobj
+    }
+    $("#span_2").hover(function () {
+        layer.tips('示例: XLXS21XXX,表示微创X部立项设备21年的第x个立项','#span_2',{tips:3})
+    })
+
+    // 修改字段
+    function edit(span_id) {
+        if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+        let old_data = $("#totalnum"+span_id).text()
+        sq.inputWindow({
+            title: {
+                text: "修改"+$("#span_"+span_id).text(),//标题
+                titleColor: "#FFFFFF"//弹窗文字颜色
+            },
+            closeBtn: 1,
+            width: "60%",
+            shadeClose: false,
+            form: {
+                pname: {
+                    label: $("#span_"+span_id).text(),
+                    type: "text",
+                    value: $("#totalnum"+span_id).text(),
+                    tip: "请输入"+$("#span_"+span_id).text(),
+                    allowNull: false
+                },
+            },
+            sure: function (rel) {
+                let pass_code = 1
+                if(parseInt(span_id) > 3){
+                    rel.pname = parseNum(rel.pname)
+                    if(parseInt(rel.pname) >= 0){
+                        pass_code = 1
+                    }else{
+                        pass_code = 0
+                    }
+                }
+                if(pass_code === 1){
+                    let span = "#totalnum"+span_id;
+                    let field = mapping_data[span];
+                    $(span).text(rel.pname);
+                    post_data[field] = rel.pname;
+                    edited_field.push(field);
+                    getAjaxDate('/api/todoitem/'+sq.getHashStringArgs()["id"]+'/cal/','patch',send_data(),function (rel){
+                        console.log(rel.data)
+                        let wait_time;
+                        if(rel.code === 1){
+                            wait_time = 700;
+                        }else{
+                            wait_time = 1000;
+                        }
+                        layer.msg(rel.msg,{time:wait_time},function () {
+                            if(rel.code === 1){
+                                show_content(rel.data)
+                                layer.closeAll()
+                            }else if(rel.code === 0){
+                                $("#totalnum"+span_id).text(old_data)
+                            }
+                        })
+                    })
+                }else{
+                    layer.msg('请输入正确的数值！')
+                }
+            }
+        })
+    }
+
+    // 提交函数
+    function sendApproval() {
+        if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+        if(check_info()){
+            console.log($("#totalnum1").text());
+            layer.confirm('确定要提交么？', {
+                    btn: ['确定','取消'] //按钮
+                }, function(){
+                    let send_data = new Object();
+                    let product_list =JSON.parse(JSON.stringify(post_product));
+                    //如果包含detial_id字段则自动删除id字段
+                    for (let k in product_list) {
+                        let v = product_list[k]
+                        if ('detail_id' in v){ //当发现有detail_id的时候说明id是前端增加的，所有需要手动删除id
+                            delete v['id']
+                        }
+                    }
+               
+                    send_data.product_list  = JSON.stringify(product_list)
+                    send_data.delete_product_list = JSON.stringify(Array.from(delete_product_list));
+                    compare(receive_data,post_data);
+                    for(let i=0;i<tip_data.length;i++){
+                        send_data[tip_data[i][0]] = tip_data[i][2]
+                    }
+                    send_data.status = 10;
+                    send_data.remark = $("#perspective").val()
+                    send_data.purchasing_cost =  parseNum($("#totalnum11").text());
+                    console.log(send_data)
+                    getAjaxDate("/api/item/"+id+"/","patch",
+                        send_data,
+                        function(rel){
+                        if(rel.code === 1){
+                            layer.msg(rel.msg,{time: 1000},function () {
+                                parent.layer.closeAll();
+                                window.parent.location.reload();
+                            })
+                        }else{
+                            layer.msg(rel.msg)
+                        }
+                        }
+                    );
+                }
+            );
+        }
+    }
+    // 驳回
+    function reject() {
+        if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+        layer.confirm('驳回后，将清空已修改内容', {
+                btn: ['驳回','取消'] //按钮
+            }, function(){
+                let send_data = receive_data
+                send_data.remark =  $("#perspective").val()
+                console.log(status === '20')
+                if (status === '10'){
+                    send_data.status = 0
+                } else if (status === '20'){
+                    send_data.status = 10
+                } else if (status === '30'){
+                    send_data.status = 20
+                }
+                if (send_data.status === ''){
+                    layer.msg("项目状态为空！！")
+                }else {
+                    getAjaxDate("/api/item/"+id+"/","patch",send_data,
+                        function (rel) {
+                            if(rel.code === 1){
+                                layer.msg(rel.msg,{time: 1000},function () {
+                                    parent.layer.closeAll();
+                                    window.parent.location.reload();
+                                })
+                            }else{
+                                layer.msg(rel.msg)
+                            }
+                        })
+                }}
+        );
+
+    }
+    // 审改
+    function revise() {
+        if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+        compare(receive_data,post_data);
+        if(tip_data.length === 0){
+            layer.msg("您没有修改任何字段，请修改后再点击审改按钮。")
+        }else {
+            layer.confirm('确定要进行审改吗？', {
+                btn: ['确定','取消'] //按钮
+                ,btn1: function () {
+                    let send_data = new Object();
+                    if (status === '10'){
+                        send_data.status = 15
+                    } else if (status === '20'){
+                        send_data.status = 25
+                    } else if (status === '30'){
+                        send_data.status = 35
+                    }
+                    if (send_data.status === ''){
+                        layer.msg("项目状态为空！！")
+                    }else {
+                        for(let i=0;i<tip_data.length;i++){
+                            send_data[tip_data[i][0]] = tip_data[i][2]
+                        }
+                        console.log(send_data)
+                        send_data.remark = $("#perspective").val()
+                        if(check_info()){
+                            getAjaxDate("/api/item/"+id+"/","patch",send_data,
+                                function (rel) {
+                                    if(rel.code === 1){
+                                        layer.msg(rel.msg,{time: 1000},function () {
+                                            parent.layer.closeAll();
+                                            window.parent.location.reload();
+                                        })
+                                    }else{
+                                        layer.msg(rel.msg)
+                                    }
+                                })
+                        }
+                    }
+                },
+                btn2: function () {
+                    layer.msg("取消成功")}
+            })}
+    }
+    // 撤回
+    function withdrawal(status) {
+        if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+        console.log(status)
+        layer.confirm('确定要撤回吗？', {
+            btn: ['确定','取消'] //按钮
+            ,btn1: function () {
+                let send_status = new Object();
+                send_status.status = '';
+                if (status === '10'){
+                    send_status.status = '0'
+                }else if (status === '15'){
+                    send_status.status = '10'
+                }else if (status === '20'){
+                    send_status.status = '10'
+                }else if (status === '25'){
+                    send_status.status = '20'
+                }else if (status === '30'){
+                    send_status.status = '20'
+                }else if (status === '35'){
+                    send_status.status = '30'
+                }else if (status === '40'){
+                    send_status.status = '30'
+                }
+                if(role_id === '5'){
+                    send_status.status = '0'
+                }
+                getAjaxDate("/api/item/"+id+"/","patch",send_status,
+                    function (rel) {
+                    if(rel.code === 1){
+                        layer.msg(rel.msg,{time:700},function () {
+                            parent.layer.closeAll();
+                            window.parent.location.reload();
+                        })
+                    }else{
+                        layer.msg(rel.msg)
+                    }
+                })
+            },
+            btn2: function () {
+                layer.msg("取消成功")}
+        })
+    }
+    // 保存
+    function saveApproval() {
+        getAjaxDate("/api/item/"+id+"/","patch",send_data(0),
+            function (rel) {
+                if(rel.code != '1'){ // 失败
+                    layer.msg(rel.msg)
+                }else{
+                    layer.msg(rel.msg)
+                    parent.layer.closeAll();
+                    window.parent.location.reload();
+                }
+            })
+    }
+    // 通过
+    function pass() {
+        if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+        compare(receive_data,post_data);
+        // compare(receive_product,post_product)
+        if(role_id === '4' && status === '30'){
+            layer.confirm('确定要通过吗？', {
+                btn: ['确定','取消'] //按钮
+                ,btn1: function () {
+                    let send_status = send_data(40)
+                    send_status.product_list  = JSON.stringify(post_product);
+                    send_status.purchasing_cost =  parseNum($("#totalnum11").text());
+                    send_status.total_price =  parseNum($("#totalnum3").text());
+                    send_status.remark = $("#perspective").val()
+                    if(check_info()){
+                        getAjaxDate("/api/item/"+id+"/","patch",send_status,
+                            function (rel) {
+                                if(rel.code === 1 ){
+                                    console.log(rel.data)
+                                    layer.msg(rel.msg,{time:500},function () {
+                                        parent.layer.closeAll();
+                                        window.parent.location.reload();
+                                    })
+                                }else {
+                                    layer.msg(rel.msg)
+                                }
+                            })}},
+                btn2: function () {
+                    layer.msg("取消成功")}
+            })
+        }else{
+            if(tip_data.length !== 0){
+                layer.msg("您已修改，请点击审改后通过。")
+            }else {
+                layer.confirm('确定要通过吗？', {
+                    btn: ['确定','取消'] //按钮
+                    ,btn1: function () {
+                        let send_status = new Object()
+                        send_status.status = ''
+                        if (status === '10'){
+                            send_status.status = '20'
+                        }else if (status === '20'){
+                            send_status.status = '30'
+                        } else if (status === '30'){
+                            send_status.status = '40'
+                        } else if (status === '40'){
+                            send_status.status = '50'
+                        }
+                        send_status.product_list  = JSON.stringify(post_product);
+                        send_status.purchasing_cost =  parseNum($("#totalnum11").text());
+                        send_status.total_price =  parseNum($("#totalnum3").text());
+                        send_status.remark = $("#perspective").val()
+                        if(check_info()){
+                            getAjaxDate("/api/item/"+id+"/","patch",send_status,
+                                function (rel) {
+                                    if(rel.code === 1){
+                                        layer.msg(rel.msg,{time:500},function () {
+                                            parent.layer.closeAll();
+                                            window.parent.location.reload();
+                                        })
+                                    }else{
+                                        layer.msg(rel.msg)
+                                    }
+
+                                })}},
+                    btn2: function () {
+                        layer.msg("取消成功")}
+                })
+            }
+        }
+    }
+    // 接受审改
+    function accept() {
+        if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+        layer.confirm('确定要接受吗？', {
+            btn: ['确定','取消'] //按钮
+            ,btn1: function () {
+                let send_status = new Object()
+                send_status.status = ''
+                if (status === '15'){
+                    send_status.status = '20'
+                }else if (status === '25'){
+                    send_status.status = '30'
+                } else if (status === '35'){
+                    send_status.status = '40'
+                }
+                console.log(status)
+                console.log(send_status)
+                send_status.remark = $("#perspective").val()
+                getAjaxDate("/api/item/"+id+"/","patch",send_status,
+                    function (rel) {
+                        console.log(rel.data)
+                        layer.msg("操作成功！")
+                        parent.layer.closeAll();
+                        window.parent.location.reload();
+                    })},
+            btn2: function () {
+                layer.msg("取消成功")}
+        })
+    }
+    function refuse() {
+        if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+        layer.confirm('确定要拒绝吗？', {
+            btn: ['确定','取消'] //按钮
+            ,btn1: function () {
+                let send_status = new Object()
+                send_status.status = '0'
+                getAjaxDate("/api/item/"+id+"/","patch",send_status,
+                    function (rel) {
+                        console.log(rel.data)
+                        layer.msg("操作成功！")
+                        parent.layer.closeAll();
+                        window.parent.location.reload();
+                    })},
+            btn2: function () {
+                layer.msg("取消成功")}
+        })
+    }
+
+    // 全部清空
+    function delProduct(){
+        if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+        let show_probutton = false
+        if (status === '0'){
+            show_probutton = true;
+        }
+        layer.confirm('确定要清空吗？', {
+            btn: ['确定','取消'] //按钮
+            ,btn1: function () {
+            // 回传删除数据id
+            for(i=0;i<post_product.length;i++){
+
+                    if(post_product[i].detail_id !== undefined){
+                        delete_product_list.add(post_product[i].id)
+                    }
+            }
+                post_product.splice(0,post_product.length); // 全部清空列表数据
+                $("#ttbody").empty();
+                setTable(post_product,show_probutton);
+                getAjaxDate('/api/todoitem/'+sq.getHashStringArgs()["id"]+'/cal/','patch',send_data(),function (rel){
+                    console.log(rel.data)
+                    show_content(rel.data)
+                })
+                $("#quantity_1").text(post_product.length);
+                layer.closeAll(); 
+            },
+            btn2: function () {
+                layer.msg("取消成功")}
+        })
+    }
+
+    // 删除商品
+    function openDeleteWindow(obj){
+        if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+        let show_probutton = false
+        if (status === '0'){
+            show_probutton = true;
+        }
+        var obj = JSON.parse(decodeURIComponent(obj));
+
+        console.log(obj)
+        let index = -1;
+        for(i=0;i<post_product.length;i++){
+            if(post_product[i].row_id === obj.row_id){
+                index = i;
+            }
+        }
+        console.log("1111111111111111111111111111111111")
+        console.log(index)
+        layer.confirm('确定要删除吗？', {
+            btn: ['确定','取消'] //按钮
+            ,btn1: function () {
+                if(obj.detail_id !== undefined){
+                    delete_product_list.add(obj.detail_id)
+                }
+                post_product.splice(index,1);
+                $("#ttbody").empty();
+                setTable(post_product,show_probutton);
+                getAjaxDate('/api/todoitem/'+sq.getHashStringArgs()["id"]+'/cal/','patch',send_data(),function (rel){
+                    show_content(rel.data)
+                })
+                $("#quantity_1").text(post_product.length);
+                layer.closeAll();
+            },
+            btn2: function () {
+                layer.msg("取消成功")}
+        })
+    }
+
+    function compare(recieve_data,post_data) {
+        tip_data = [];
+        for(let i=0;i<edited_field.length;i++){
+            console.log(edited_field[i]);
+            console.log(recieve_data[edited_field[i]]);
+            console.log(post_data[edited_field[i]]);
+            if (recieve_data[edited_field[i]] !== post_data[edited_field[i]]){
+                tip_data.push([edited_field[i],recieve_data[edited_field[i]],post_data[edited_field[i]]])
+            }
+        }
+    }
+    function reset_data() {
+        if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+        edited_field = [];
+        tip_data = [];
+        for(let key in post_data){
+            delete post_data[key];
+        }
+        post_product = new Object([]);
+        post_product = JSON.parse(JSON.stringify(receive_product));
+        console.log(post_product)
+        $("#ttbody").empty();
+        console.log(receive_product)
+        let show_probutton = false
+        if (status === '0'){
+            show_probutton = true;
+        }
+        setTable(receive_product,show_probutton);
+        let total_price = 0;
+        let total_cost = 0;
+        for(let i=0;i<receive_product.length;i++){
+            total_price +=  parseFloat(receive_product[i].all_offer)
+            total_cost +=  parseFloat(receive_product[i].cost)
+        }
+        $("#totalnum3").text(numFormat(total_price))
+        $("#totalnum11").text(numFormat(total_cost))
+        show_content(receive_data);
+
+    }
+    // device_number数值改变
+    function myFunction(obj){
+        obj = JSON.parse(decodeURIComponent(obj));
+
+        for(let i=0;i<post_product.length;i++){
+            if(obj.row_id === post_product[i].row_id){
+                post_product[i].device_number = $("#"+obj.row_id+"dev_num").val()
+            }
+        }
+    }
+
+    function num_change(obj) {
+        obj = JSON.parse(decodeURIComponent(obj));
+        console.log(obj);
+        console.log(post_product)
+        obj.discount = $("#"+obj.row_id+"discount").val()
+        if(role_id === '5'){
+            obj.offer = parseNum($("#"+obj.row_id+"offer").val())
+        } else{
+            obj.offer = obj.offer
+        }
+
+
+        $("#"+obj.row_id+"all_offer").text(numFormat(parseFloat(obj.offer)*parseInt($("#"+obj.row_id+"product_num").val())));
+        $("#"+obj.row_id+"cost").text(numFormat(parseFloat(obj.offer)*parseInt($("#"+obj.row_id+"product_num").val())*parseFloat(obj.discount)*0.1))
+        let total_price = 0;
+        let total_cost = 0;
+        for(let i=0;i<post_product.length;i++){
+            if(obj.row_id === post_product[i].row_id){
+                post_product[i].quantity = $("#"+obj.row_id+"product_num").val();
+                post_product[i].offer = obj.offer;
+                post_product[i].all_offer = parseNum($("#"+obj.row_id+"all_offer").text());
+                post_product[i].cost = parseNum($("#"+obj.row_id+"cost").text());
+                post_product[i].discount = $("#"+obj.row_id+"discount").val();
+               
+            }
+            total_price +=  parseFloat(post_product[i].all_offer)
+            total_cost +=  parseFloat(post_product[i].cost)
+            console.log(post_product[i].cost)
+            
+        }
+        console.log(total_cost)
+        $("#totalnum3").text(numFormat(total_price));
+        $("#totalnum11").text(numFormat(total_cost));
+        getAjaxDate('/api/todoitem/'+sq.getHashStringArgs()["id"]+'/cal/','patch',send_data(),function (rel){
+            console.log(rel.data)
+            show_content(rel.data)
+        })
+    }
+    function approval_edit(id) {
+        // layer.msg("正在进行功能调试，请之后再来。")
+        console.log(id)
+        getAjaxDate('/api/item/'+id+'/','patch',{modify:-1,remark:$("#perspective").val()},function (rel) {
+            if(rel.code === 1){
+                console.log(rel.data)
+                layer.msg(rel.msg,{time:500},function () {
+                    layer.closeAll();
+                    window.parent.location.reload();
+                })
+            }
+        })
+    }
+    function check_info() {
+        if(parseFloat(parseNum($("#totalnum21").text())) < 0){
+            layer.msg("结余不能为负，请检查后再提交！")
+            return false
+        }
+        if(parseFloat(parseNum($("#totalnum4").text())) < 0){
+            layer.msg("税费不能为负，请检查后再提交！")
+            return false
+        }
+        let check_len = $(".sq-length");
+        for(let i=0;i<check_len.length;i++){
+            let obj = $(check_len[i])
+            let min_length = obj.attr("min-length");
+            let max_length = obj.attr("max-length");
+            let cur_length = obj.text().length;
+            if(cur_length === 0){
+                layer.msg("请输入"+obj.attr("tip_name"));
+                obj.focus();
+                return false
+            }
+            if(cur_length < min_length ||cur_length > max_length){
+                layer.msg(obj.attr("tip_name")+"的长度在"+min_length+"到"+ max_length+"个字符。")
+                return false
+            }
+        }
+        let check_type = $(".sq-number");
+        for(let i=0;i<check_type.length;i++){
+            let obj = $(check_type[i]);
+            let cur_length = obj.text().length;
+            if(cur_length === 0){
+                layer.msg("请输入"+obj.attr("tip_name"));
+                obj.focus();
+                return false
+            }
+            if(cur_length > 15){
+                layer.msg(obj.attr("tip_name")+"最长15位");
+                obj.focus();
+                return false
+            }
+            if(obj.attr("input_type") !==null){
+                let input_type = obj.attr("input_type");
+                switch (input_type){
+                    default: break;
+                    case "float":
+                        let a = /^\d+(\.\d+)?$/;
+                        // console.log(a.test(obj.val()))
+                        if(!a.test(parseNum(obj.text()))){
+                            layer.msg(obj.attr("tip_name")+"应为整数或小数");
+                            obj.focus();
+                            return false
+                        }
+                        break;
+                    case "int":
+                        let b = /^-?\d+$/;
+                        // console.log(b.test(obj.val()))
+                        if(!b.test(parseNum(obj.text()))){
+                            layer.msg(obj.attr("tip_name")+"为整数");
+                            obj.focus();
+                            return false
+                        }
+                        break;
+                }
+            }
+        }
+        if(post_product.length === 0){
+            layer.msg("产品列表不能为空！！")
+            return false;
+        }
+        return true;
+    }
+    getAjaxDate('/api/option/','get',{item_id:sq.getHashStringArgs()['id']},function (rel) {
+        console.log(rel.data)
+        set_LogTable(rel.data.results)
+    });
+    function set_LogTable(infoList) {
+        infoList.forEach(function (value) {
+            $("#log_table").append(
+                '<tr>' +
+                '<td>'+value.msg+'</td>' +
+                '</tr>'
+            )
+        })
+    }
+    function approval() {
+        if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+        if(check_info()){
+            layer.confirm('确定要立项么？', {
+                    btn: ['确定','取消'] //按钮
+                }, function(){
+                    let send_data = new Object();
+                    let product_list =JSON.parse(JSON.stringify(post_product));
+                    //如果包含detial_id字段则自动删除id字段
+                    for (let k in product_list) {
+                        let v = product_list[k]
+                        if ('detail_id' in v){ //当发现有detail_id的时候说明id是前端增加的，所有需要手动删除id
+                            delete v['id']
+                        }
+                    }
+                    send_data.product_list  = JSON.stringify(product_list)
+                    send_data.delete_product_list = JSON.stringify(Array.from(delete_product_list));
+                    compare(receive_data,post_data);
+                    for(let i=0;i<tip_data.length;i++){
+                        send_data[tip_data[i][0]] = tip_data[i][2]
+                    }
+                    send_data.nickname = $("#totalnum19").text()
+                    send_data.status = 40;
+                    send_data.remark = $("#perspective").val()
+                    send_data.purchasing_cost =  parseNum($("#totalnum11").text());
+                    send_data.approval_time = send_time
+                    send_data.user = send_user
+                    console.log(send_data)
+                    getAjaxDate("/api/item/"+id+"/","patch",
+                        send_data,
+                        function(rel){
+                            console.log(rel.data);
+                            parent.layer.closeAll();
+                            window.parent.location.reload();
+                        }
+                    );
+                }
+            );
+        }
+    }
+    layui.use('laydate', function(){
+        var laydate = layui.laydate;
+        laydate.render({
+            elem: '#test5'
+            ,type: 'datetime'
+            ,change: function(value, date){
+                send_time = value
+            },
+            done: function(value, date){
+                send_time = value
+            }
+        });
+
+    })
+    function select_user() {
+        let tgt = Math.random();//随机
+        top.frameset[tgt]=self.frameElement;
+        top.layer.open({
+            title: '选择负责人'
+            ,content: 'pages/Project_Management/select_user.html#tgt='+tgt
+            ,type:2
+            ,shadeClose: true,
+            shade: 0.7
+            ,area:['1100px','600px']
+            ,yes: function(index, layero){
+            }
+            ,btn2: function(index, layero){
+            }
+            ,cancel: function(){
+                layer.msg("取消成功")
+            }
+        });
+    }
+
+</script>
+</html>

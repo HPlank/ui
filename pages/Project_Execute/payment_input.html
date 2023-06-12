@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>湛德财务项目管理系统</title>
+    <link rel="stylesheet" href="/layui/css/layui.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="../css/skin.css">
+    <link rel="stylesheet" href="/css/sq.css">
+    <style type="text/css">
+        .layui-table th{
+            font-weight: bold;
+        }
+        #mainContent{
+            padding: 20px;
+        }
+        .layui-layer-title {
+            padding: 0 80px 0 20px;
+            height: 42px;
+            line-height: 42px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+            color: #333;
+            overflow: hidden;
+            border-radius: 2px 2px 0 0;
+        }
+        .editinput{
+            padding: 10px;
+            width: 90%;
+            border: 1px solid #5FB878;
+        }
+        .edittd{
+            position: absolute;
+            left: 0;
+            right: 0;
+            top:0;
+            bottom: 0;
+            padding: 20px;
+        }
+        .edittd:hover{
+            cursor: pointer;
+            background-color: #dcf0e2;
+        }
+        .headAddLeft{
+            overflow: hidden;
+            background-color: #efefef;
+            padding: 15px 0 5px 20px;
+            border-left: 5px solid #003c97;
+        }
+        .sqsel{
+            padding: 3px;
+            border: 1px solid #003c97;
+            color: #003c97;
+            font-size: 18px;
+            margin-right: 20px;
+        }
+    </style>
+</head>
+<body>
+<div id="mainContent">
+    <div id="rightContent">
+        <div class="articleContent">
+            <div class="headAddLeft">
+                <div class="layui-col-md12 layui-inline" style="font-size: 18px;font-weight: bold;line-height: 38px;">回款管理
+                    <div class="layui-inline" style="font-weight: normal;margin-left: 60px">开票号码: <label class="layui-inline" id="pro_bill_number">50</label></div>
+                    <div class="layui-inline" style="font-weight: normal;margin-left: 60px">开票总额: <label class="layui-inline" id="pro_bill_price">50</label>元</div>
+                    <button class="layui-btn layui-inline" onclick="add()" style="float:right;margin-top:-3px;margin-right: 20px;">增加回款</button>
+                </div>
+            </div>
+            <table class="layui-table" id="infoList">
+                <colgroup>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                </colgroup>
+                <thead>
+                <tr>
+                    <th style="text-align: center">项目名称</th>
+                    <th style="text-align: center">部门</th>
+                    <th style="text-align: center">申请人</th>
+                    <th style="text-align: center">录入人</th>
+                    <th style="width: 60px;text-align: center">开票号码</th>
+                    <th style="width: 60px;text-align: center">回款类型</th>
+                    <th style="width: 60px;text-align: center;">回款金额</th>
+                    <th style="text-align: center">时间</th>
+                    <th style="width: 90px;text-align: center;">操作</th>
+                </tr>
+                </thead>
+                <tbody id="listTbody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script src="/js/jquery.min.js"></script>
+<script src="/layui/layui.js"></script>
+<script src="/js/ajax.js"></script>
+<script>
+    console.log(parent.obj)
+    var start_time ='';
+    var end_time ='';
+    layui.use('laydate', function(){
+        var laydate = layui.laydate;
+        laydate.render({
+            elem: '#test6'
+            //设置开始日期、日期日期的 input 选择器
+            //数组格式为 2.6.6 开始新增，之前版本直接配置 true 或任意分割字符即可
+            ,range: ['#test-startDate-1', '#test-endDate-1']
+            ,theme: 'molv'
+            ,change: function(value, date, endDate){
+                start_time = value.split(" ")[0]
+                end_time = value.split(" ")[2]
+                // console.log(value.split(" ")); //得到日期生成的值，如：2017-08-18
+                console.log(start_time)
+                console.log(end_time)
+            }
+        });
+    });
+    var sendObj = new Object();
+    sendObj.page_size = 15;
+    sendObj.page = 1;
+    var tpye_add =[{ label: "请选择类型", value: "" }];
+    getAjaxDate('/api/get_profit_type/', 'get', '', function (res) {
+        for (let i = 0; i < res.data.length; i++) {
+            tpye_add.push({label: res.data[i], value: res.data[i]});
+        }
+    })
+    function setselect(infoList){
+        infoList.forEach(function (value) {
+            //显示的按钮
+            //将数据插入表格中
+            $("#sqSelect_dep").append(new Option(value.name, value.id));
+        })
+    }
+
+    function setTable(infoList) {
+        /**
+         *@infoList 是一个数组
+         *  **/
+
+        infoList.forEach(function (value) {
+            //显示的按钮
+            var buttonStr = '<button class="layui-btn editbt layui-btn-sm" onclick="openEditWindow(\''+encodeURIComponent(JSON.stringify(value))+'\')"><i class="layui-icon layui-icon-edit "></i>   </button>'+
+                '<button type="button" class="layui-btn layui-btn-danger layui-btn-sm" onclick="del_project('+value.id+')"><i class="layui-icon"></i></button>';
+            //将数据插入表格中
+            $("#infoList").append('<tr>' +
+                '<td style="text-align: center">'+parent.obj.name+'</td>' +
+                '<td style="text-align: center">'+parent.obj.department_name+'</td>' +
+                '<td style="text-align: center">'+parent.obj.nickname+'</td>' +
+                '<td style="text-align: center">'+value.submit_nickname+'</td>' +
+                '<td style="text-align: center">'+value.bill_number+'</td>' +
+                '<td style="text-align: center">'+value.profit_type+'</td>' +
+                '<td style="text-align: right">'+numFormat(value.price)+'</td>' +
+                '<td style="text-align: center">'+value.time+'</td>' +
+                '<td style="text-align: center">'+buttonStr+'</td>' +
+                '</tr>');
+        })
+    }
+    function openEditWindow(data) {
+        if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+        console.log(JSON.parse(decodeURIComponent(data)))
+        parent.sq.inputWindow({
+            title: {
+                text: "修改回款",//标题
+                titleColor: "#FFFFFF"//弹窗文字颜色
+            },
+            closeBtn: 1,
+            width: "350px",
+            shadeClose: false,
+            form: {
+                number_add: {
+                    label: "开票号码",
+                    type: "hdtext",
+                    value: JSON.parse(decodeURIComponent(data)).bill_number,
+                    tip: "",
+                    allowNull: true
+                },
+                type_add: {
+                    label: "回款类型",
+                    type: "select",
+                    value: tpye_add,
+                    selectedValue:JSON.parse(decodeURIComponent(data)).profit_type,
+                    tip: tpye_add,
+                    allowNull: false
+                },
+                price_add: {
+                    label: "回款金额",
+                    type: "text",
+                    value: JSON.parse(decodeURIComponent(data)).price,
+                    tip: JSON.parse(decodeURIComponent(data)).price,
+                    allowNull: false
+                },
+            },
+            sure: function (rel) {
+                cur_page = 1;
+                console.log(rel);
+                let sendObj_1 =new Object();
+                sendObj_1.type = rel.mdeparment;
+                sendObj_1.bill_number = rel.number_add;
+                sendObj_1.profit_type = rel.type_add;
+                sendObj_1.price = rel.price_add;
+                var number_mark = 1
+                if(rel.type_add == "经销商回款") {
+                    number_mark = 0
+                }else {
+                    number_mark = 1
+                }
+                if(sq.checkNumber(rel.price_add, number_mark)) {
+                    getAjaxDate("/api/profit/"+JSON.parse(decodeURIComponent(data)).id+"/","patch",sendObj_1,function (rel) {
+                        console.log(rel.data)
+                        if(rel.code == 1) {
+                            parent.layer.msg(rel.msg, {time: 2000}, function () {
+                                $("#infoList").empty()
+                                // show_table()
+                                window.parent.location.reload()
+                                parent.layer.closeAll()
+                            });
+                        }else  if(rel.code == 0){
+                            parent.layer.msg(rel.msg, {time: 2000})
+                        }
+                    });
+                }else {
+                    parent.layer.msg("请输入正确的金额 ！")
+                }
+            }
+        })
+    }
+    function add() {
+        if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+        parent.sq.inputWindow({
+            title: {
+                text: "增加回款",//标题
+                titleColor: "#FFFFFF"//弹窗文字颜色
+            },
+            closeBtn: 1,
+            width: "350px",
+            shadeClose: false,
+            offset:'20px',//高度坐标
+            form: {
+                number_add: {
+                    label: "开票号码",
+                    type: "hdtext",
+                    value: parent.obj.bill_number,
+                    tip: "",
+                    allowNull: true,
+                    readOnly: true
+                },
+                type_add: {
+                    label: "回款类型",
+                    type: "select",
+                    value: tpye_add,
+                    tip: tpye_add,
+                    allowNull: false
+                },
+                price_add: {
+                    label: "回款金额",
+                    type: "text",
+                    value: "",
+                    tip: "请输入回款金额",
+                    allowNull: false
+                },
+                seldatetime: {
+                    label: "时间",
+                    type: "datetime",
+                    value: sq.fmtDate(new Date().getTime()/1000),
+                    tip: "请输入时间",
+                    allowNull: true
+                },
+            },
+            sure: function (rel) {
+                cur_page = 1;
+                console.log(rel);
+                let sendObj_1 =new Object();
+                sendObj_1.type = rel.mdeparment;
+                sendObj_1.bill_number = rel.number_add;
+                sendObj_1.profit_type = rel.type_add;
+                sendObj_1.price = parseNum(rel.price_add);
+                sendObj_1.time = rel.seldatetime;
+                sendObj_1.item = parent.obj.id;
+                cur_year = parseInt(sendObj_1.time.split(' ')[0].split('-')[0]);
+                cur_sysyear = new Date().getFullYear();
+                // sendObj_1.token = window.sessionStorage.getItem("token");
+                var number_mark = 1
+                if(rel.type_add == "经销商回款") {
+                    number_mark = 0
+                }else {
+                    number_mark = 1
+                }
+                if(sq.checkNumber(rel.price_add, number_mark)) {  // 10.9 检测输入数字合法性
+                // if(parseFloat(rel.price_add) >0) {
+                    if((cur_year != cur_sysyear && window.sessionStorage.getItem("historyUpdate")==1)||cur_year == cur_sysyear){
+                        getAjaxDate("/api/profit/","post",sendObj_1,function (rel) {
+                            console.log(rel.data)
+                            if(rel.code == 1){
+                                parent.layer.msg(rel.msg,{time:1500}, function(){
+                                    $("#infoList").empty()
+                                    // show_table()
+                                    // window.parent.$("#iframe_id").attr("src","product_paymentdetail.html#r="+Math.random())
+                                    window.parent.location.reload()
+                                    parent.layer.closeAll()
+                                });
+                            }else  if(rel.code == 0) {
+                                parent.layer.msg(rel.msg,{time:1500})
+                            }
+                        });
+                    }else{
+                        parent.layer.msg("录入时间仅限当年！")
+                    }
+                }else{
+                    parent.layer.msg("请输入正确的金额 ！")
+                }
+            }
+        })
+    }
+    show_table()
+    function show_table() {
+        getAjaxDate('/api/profit/','get',{item:parent.obj.id},function (rel) {
+            console.log(rel.data)
+            setTable(rel.data.results)
+        })
+       if((parent.obj.bill_number == undefined && parent.obj.price == undefined)|| parent.obj.bill_number == "" && parent.obj.price == undefined) {
+      
+            $("#pro_bill_number").text("无")
+            $("#pro_bill_price").text("0")
+            parent.obj.bill_number = ""
+        } else {
+            $("#pro_bill_number").text(parent.obj.bill_number)
+            $("#pro_bill_price").text(numFormat(parent.obj.price))
+        }
+    }
+    function del_project(id) {
+        if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+        parent.layer.confirm('确定删除本条目吗？', {
+            btn: ['确定','取消'] //按钮
+        }, function(){
+            getAjaxDate('/api/profit/'+id+'/','patch',{on_delete:1},function (rel) {
+                console.log(rel.data)
+                if(rel.code == 1) {
+                    parent.layer.msg(rel.msg, {time: 500}, function () {
+                        $("#infoList").empty()
+                        // show_table()
+                        // window.parent.$("#iframe_id").attr("src","product_billdetail.html#r="+Math.random())
+                        window.parent.location.reload()
+                        parent.layer.closeAll()
+                    });
+                }else if(rel.code == 0){
+                    parent.layer.msg(rel.msg,{time:1000})
+                }
+            })
+        }, function(){
+            parent.layer.msg('取消成功', {time: 100},function (){
+                parent.layer.closeAll()
+            });
+        });
+    }
+
+
+</script>
+</body>
+</html>

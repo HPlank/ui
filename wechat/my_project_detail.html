@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>湛德财务项目管理系统</title>
+    <link rel="stylesheet" href="/layui/css/layui.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/skin.css">
+    <link rel="stylesheet" href="/css/sq.css">
+    <style type="text/css">
+        .layui-form-select dl{
+            max-height: 120px;
+        }
+        body{
+            background-color: #efefef;
+        }
+        .table_title{
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .table_above td{
+            border: 0;
+        }
+        .table_above{
+            margin: 0 auto;
+        }
+        .certer{
+            text-align: center;
+        }
+        .layui-input, .layui-textarea{
+            border: none;
+            outline: none;
+            display: inline;
+            margin-right: 20px;
+        }
+        .layui-form-item .layui-inline{
+            margin-bottom: 0;
+        }
+        .layui-form-item .layui-form-label{
+            overflow: visible;
+        }
+        .sq-lm{
+            margin: 10px auto;
+            text-align: left;padding: 10px;
+            border: 1px solid #003c97;
+            position: relative;
+            height: 480px;
+        }
+        .sq-lm-title{
+            position: absolute;
+            top: -15px;
+            background-color: #003c97;
+            border-radius: 3px;
+            padding: 3px 8px;
+            font-size: 14px;
+            color: #FFF;
+            font-weight: bold;
+        }
+        .summaryContent  label{
+            font-weight: bold;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+<div style="padding: 10px;border: 1px solid #eee;">
+    <div class="sq-lm" style="background-color: #FFFFFF">
+        <span class="sq-lm-title" style="">项目总览</span>
+        <div class="summaryContent" style="margin: 0 auto">
+            <form class="layui-form">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">项目名：</label>
+                        <div class="layui-input-inline">
+                            <input type="text" class="layui-input" id="pro_name" readonly>
+                        </div>
+                    </div>
+                    <div class="layui-inline" >
+                        <label class="layui-form-label">项目编号：</label>
+                        <div class="layui-input-inline">
+                            <input type="text" class="layui-input" id="pro_number" readonly>
+                        </div>
+                    </div>
+                    <div class="layui-inline" >
+                        <label class="layui-form-label">部门名称：</label>
+                        <div class="layui-input-inline">
+                            <input type="text" class="layui-input" id="department_name" readonly>
+                        </div>
+                    </div>
+                    <div class="layui-inline" >
+                        <label class="layui-form-label">申请人：</label>
+                        <div class="layui-input-inline">
+                            <input type="text" class="layui-input" id="nickname" readonly>
+                        </div>
+                    </div>
+                    <div class="layui-inline" >
+                        <label class="layui-form-label">拟成交价：</label>
+                        <div class="layui-input-inline">
+                            <input type="text" class="layui-input" id="protrans_price" readonly>
+                        </div>
+                    </div>
+                    <div class="layui-inline" >
+                        <label class="layui-form-label">成交价：</label>
+                        <div class="layui-input-inline">
+                            <input type="text" class="layui-input" id="trans_price" readonly>
+                        </div>
+                    </div>
+                    <div class="layui-inline" >
+                        <label class="layui-form-label">预计结余：</label>
+                        <div class="layui-input-inline">
+                            <input type="text" class="layui-input" id="pro_surplus" readonly>
+                        </div>
+                    </div>
+                    <div class="layui-inline" >
+                        <label class="layui-form-label">实际结余：</label>
+                        <div class="layui-input-inline">
+                            <input type="text" class="layui-input" id="surplus" readonly>
+                        </div>
+                    </div>
+                    <div class="layui-inline" >
+                        <label class="layui-form-label">预计支出：</label>
+                        <div class="layui-input-inline">
+                            <input type="text" class="layui-input" id="pro_cost" readonly>
+                        </div>
+                    </div>
+                    <div class="layui-inline" >
+                        <label class="layui-form-label">实际支出：</label>
+                        <div class="layui-input-inline">
+                            <input type="text" class="layui-input" id="cost" readonly>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <hr>
+    <div style="background-color: #FFFFFF">
+        <table class="layui-table">
+            <tr>
+                <thead>
+                <td class="certer"><strong class="table_title">条目</strong></td>
+                <td class="certer"><strong class="table_title">额度</strong></td>
+                <td class="certer"><strong class="table_title">已使用</strong></td>
+                <td class="certer"><strong class="table_title">剩余</strong></td>
+<!--                <td class="certer"><strong class="table_title">最新使用时间</strong></td>-->
+                <!--                <td style="width: 85px;"><strong class="table_title">明细及管理</strong></td>-->
+                </thead>
+            </tr>
+            <tr id="travel_tr">
+                <td class="certer"><strong>差旅费</strong></td>
+                <td class="certer"><span type="text"  id="travel" placeholder="请输入内容" style="text-align: left;width: 100px;margin-bottom: 5px" readonly></span></td>
+                <td class="certer"><span type="text"  id="real_travel" placeholder="请输入内容" style="width: 100px;margin-bottom: 5px" readonly></span></td>
+                <td class="certer"><span type="text"  id="real_travel_remain" placeholder="请输入内容" style="width: 100px;margin-bottom: 5px" readonly></span></td>
+<!--                <td class="certer"><span type="text"  id="real_travel_time" placeholder="请输入内容" style="width: 100px;margin-bottom: 5px" readonly></span></td>-->
+                <!--                <td class="certer"><button class="layui-btn layui-btn-normal layui-btn-sm" onclick="show_log('travel')" style="background-color: #2D93CA;padding: 0px 10px;" type="button"><i class="layui-icon layui-icon-form"></i></button></td>-->
+            </tr>
+            <tr id="communication_tr">
+                <td class="certer"><strong>交际费</strong></td>
+                <td class="certer"><span type="text"  id="communication" placeholder="请输入内容" style="text-align: left;width: 100px;margin-bottom: 5px" readonly></span></td>
+                <td class="certer"><span type="text"  id="real_communication" placeholder="请输入内容" style="width: 100px;margin-bottom: 5px" readonly></span></td>
+                <td class="certer"><span type="text"  id="real_communication_remain" placeholder="请输入内容" style="width: 100px;margin-bottom: 5px" readonly></span></td>
+<!--                <td class="certer"><span type="text"  id="real_communication_time" placeholder="请输入内容" style="width: 100px;margin-bottom: 5px" readonly></span></td>-->
+                <!--                <td class="certer"><button class="layui-btn layui-btn-normal layui-btn-sm" onclick="show_log('communication')"  style="background-color: #2D93CA;padding: 0px 10px;" type="button"><i class="layui-icon layui-icon-form"></i></button></td>-->
+            </tr>
+            <tr id="market_investment_tr">
+                <td class="certer"><strong>市场调研费</strong></td>
+                <td class="certer"><span type="text"  id="market_investment" placeholder="请输入内容" style="text-align: left;width: 100px;margin-bottom: 5px" readonly></span></td>
+                <td class="certer"><span type="text"  id="real_market_investment" placeholder="请输入内容" style="width: 100px;margin-bottom: 5px" readonly></span></td>
+                <td class="certer"><span type="text"  id="real_market_investment_remain" placeholder="请输入内容" style="width: 100px;margin-bottom: 5px" readonly></span></td>
+<!--                <td class="certer"><span type="text"  id="real_market_investment_time" placeholder="请输入内容" style="width: 100px;margin-bottom: 5px" readonly></span></td>-->
+                <!--                <td class="certer"><button class="layui-btn layui-btn-normal layui-btn-sm"  onclick="show_log('market_investment')" style="background-color: #2D93CA;padding: 0px 10px;" type="button"><i class="layui-icon layui-icon-form"></i></button></td>-->
+            </tr>
+            <tr id="tender_tr">
+                <td class="certer"><strong>招标费</strong></td>
+                <td class="certer"><span type="text"  id="tender" placeholder="请输入内容" style="text-align: left;width: 100px;margin-bottom: 5px" readonly></span></td>
+                <td class="certer"><span type="text"  id="real_tender" placeholder="请输入内容" style="width: 100px;margin-bottom: 5px" readonly></span></td>
+                <td class="certer"><span type="text"  id="real_tender_remain" placeholder="请输入内容" style="width: 100px;margin-bottom: 5px" readonly></span></td>
+<!--                <td class="certer"><span type="text"  id="real_tender_time" placeholder="请输入内容" style="width: 100px;margin-bottom: 5px" readonly></span></td>-->
+                <!--                <td class="certer"><button class="layui-btn layui-btn-normal layui-btn-sm" onclick="show_log('tender')"  style="background-color: #2D93CA;padding: 0px 10px;" type="button"><i class="layui-icon layui-icon-form"></i></button></td>-->
+
+            </tr>
+            <tr id="purchasing_cost_tr">
+                <td class="certer"><strong>采购成本</strong></td>
+                <td class="certer"><span type="text"  id="purchasing_cost" placeholder="请输入内容" style="text-align: left;width: 100px;margin-bottom: 5px" readonly></span></td>
+                <td class="certer"><span type="text"  id="real_purchasing_cost" placeholder="请输入内容" style="width: 100px;margin-bottom: 5px" readonly></span></td>
+                <td class="certer"><span type="text"  id="real_purchasing_cost_remain" placeholder="请输入内容" style="width: 100px;margin-bottom: 5px" readonly></span></td>
+<!--                <td class="certer"><span type="text"  id="real_purchasing_cost_time" placeholder="请输入内容" style="width: 100px;margin-bottom: 5px" readonly></span></td>-->
+                <!--                <td class="certer"><button class="layui-btn layui-btn-normal layui-btn-sm" onclick="show_log('purchasing_cost')"  style="background-color: #2D93CA;padding: 0px 10px;" type="button"><i class="layui-icon layui-icon-form"></i></button></td>-->
+
+            </tr>
+            <tr id="dealer_maintenance_tr">
+                <td class="certer"><strong>经销商维修费</strong></td>
+                <td class="certer"><span type="text"  id="dealer_maintenance" placeholder="请输入内容" style="text-align: left;width: 100px;margin-bottom: 5px" readonly></span></td>
+                <td class="certer"><span type="text"  id="real_dealer_maintenance" placeholder="请输入内容" style="width: 100px;margin-bottom: 5px" readonly></span></td>
+                <td class="certer"><span type="text"  id="real_dealer_maintenance_remain" placeholder="请输入内容" style="width: 100px;margin-bottom: 5px" readonly></span></td>
+<!--                <td class="certer"><span type="text"  id="real_dealer_maintenance_time" placeholder="请输入内容" style="width: 100px;margin-bottom: 5px" readonly></span></td>-->
+                <!--                <td class="certer"><button class="layui-btn layui-btn-normal layui-btn-sm"  onclick="show_log('dealer_maintenance')" style="background-color: #2D93CA;padding: 0px 10px;" type="button"><i class="layui-icon layui-icon-form"></i></button></td>-->
+
+            </tr>
+            <tr id="product_maintenance_tr">
+                <td class="certer"><strong>产品维修</strong></td>
+                <td class="certer"><span type="text"  id="product_maintenance" style="text-align: left;width: 100px;margin-bottom: 5px" readonly></span></td>
+                <td class="certer"><span type="text"  id="real_product_maintenance" style="width: 100px;margin-bottom: 5px" readonly></span></td>
+                <td class="certer"><span type="text"  id="real_product_maintenance_remain" style="width: 100px;margin-bottom: 5px" readonly></span></td>
+<!--                <td class="certer"><span type="text"  id="real_product_maintenance_time"  style="width: 100px;margin-bottom: 5px" readonly></span></td>-->
+                <!--                <td class="certer"><button class="layui-btn layui-btn-normal layui-btn-sm" onclick="show_log('product_maintenance')"  style="background-color: #2D93CA;padding: 0px 10px;" type="button"><i class="layui-icon layui-icon-form"></i></button></td>-->
+
+            </tr>
+        </table>
+    </div>
+</div>
+<script src="/js/jquery.min.js"></script>
+<script src="/layui/layui.js"></script>
+<script src="/js/ajax.js"></script>
+<script type="text/javascript">
+    var obj = JSON.parse(decodeURIComponent(sq.getHashStringArgs()["data"]));
+    console.log(obj);
+    function jump_previous() {
+        // console.log(parent)
+        parent.search_pro(parent.cur_page,'reset');
+        parent.layer.closeAll();
+    }
+    getList();
+    function getList(){
+        getAjaxDate('/api/item/'+obj.id+'/','get','',function (rel) {
+            console.log(rel.data)
+            setform(rel.data)
+        })
+    }
+    function setform(data) {
+        $("#pro_name").val(data.name);
+        $("#pro_number").val(data.number);
+        $("#department_name").val(data.department_name);
+        $("#nickname").val(data.nickname);
+        $("#protrans_price").val(data.protrans_price);
+        $("#trans_price").val(data.protrans_price);
+        $("#pro_surplus").val(data.pro_surplus);
+        $("#surplus").val(data.surplus);
+        $("#pro_cost").val(data.pro_cost);
+        $("#cost").val(data.cost);
+        // 各项费用
+        $("#travel").text(data.travel)
+        $("#real_travel").text(data.real_travel);
+        $("#communication").text(data.communication);
+        $("#real_communication").text(data.real_communication);
+        $("#market_investment").text(data.market_investment);
+        $("#real_market_investment").text(data.real_market_investment);
+        $("#tender").text(data.tender);
+        $("#real_tender").text(data.real_tender);
+        $("#purchasing_cost").text(data.purchasing_cost);
+        $("#real_purchasing_cost").text(data.real_purchasing_cost);
+        $("#dealer_maintenance").text(data.dealer_maintenance);
+        $("#real_dealer_maintenance").text(data.real_dealer_maintenance);
+        $("#product_maintenance").text(data.product_maintenance);
+        $("#real_product_maintenance").text(data.real_product_maintenance);
+        //剩余可用费用
+        $("#real_travel_remain").text($("#travel").text()-$("#real_travel").text());
+        $("#real_communication_remain").text($("#communication").text()-$("#real_communication").text());
+        $("#real_market_investment_remain").text($("#market_investment").text()-$("#real_market_investment").text());
+        $("#real_tender_remain").text($("#tender").text()-$("#real_tender").text());
+        $("#real_purchasing_cost_remain").text($("#purchasing_cost").text()-$("#real_purchasing_cost").text());
+        $("#real_dealer_maintenance_remain").text($("#dealer_maintenance").text()-$("#real_dealer_maintenance").text());
+        $("#real_product_maintenance_remain").text($("#product_maintenance").text()-$("#real_product_maintenance").text());
+        //显示时间
+        travel_time = data.travel_time
+        communication_time = data.communication_time
+        market_investment_time = data.market_investment_time
+        tender_time = data.tender_time
+        purchasing_cost_time = data.purchasing_cost_time
+        dealer_maintenance_time = data.dealer_maintenance_time
+        product_maintenance_time = data.product_maintenance_time
+        // $("#real_travel_time").text(data.travel_time);
+        // $("#real_communication_time").text(data.communication_time);
+        // $("#real_market_investment_time").text(data.market_investment_time);
+        // $("#real_tender_time").text(data.tender_time);
+        // $("#real_purchasing_cost_time").text(data.purchasing_cost_time);
+        // $("#real_dealer_maintenance_time").text(data.dealer_maintenance_time);
+        // $("#real_product_maintenance_time").text(data.product_maintenance_time);
+    }
+    $('#travel_tr').hover(function () {
+        layer.tips('最新使用时间：'+travel_time,'#travel_tr',{tips:3})
+    })
+    $('#communication_tr').hover(function () {
+        layer.tips('最新使用时间：'+communication_time,'#communication_tr',{tips:3})
+    })
+    $('#market_investment_tr').hover(function () {
+        layer.tips('最新使用时间：'+market_investment_time,'#market_investment_tr',{tips:3})
+    })
+    $('#tender_tr').hover(function () {
+        layer.tips('最新使用时间：'+tender_time,'#tender_tr',{tips:3})
+    })
+    $('#purchasing_cost_tr').hover(function () {
+        layer.tips('最新使用时间：'+purchasing_cost_time,'#purchasing_cost_tr',{tips:3})
+    })
+    $('#dealer_maintenance_tr').hover(function () {
+        layer.tips('最新使用时间：'+dealer_maintenance_time,'#dealer_maintenance_tr',{tips:3})
+    })
+    $('#product_maintenance_tr').hover(function () {
+        layer.tips('最新使用时间：'+product_maintenance_time,'#product_maintenance_tr',{tips:3})
+    })
+</script>
+</body>
+</html>

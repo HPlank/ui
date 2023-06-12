@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>湛德财务项目管理系统</title>
+    <link rel="stylesheet" href="../../layui/css/layui.css">
+    <link rel="stylesheet" href="../../css/main.css">
+    <link rel="stylesheet" href="../../css/skin.css">
+    <link rel="stylesheet" href="../../css/sq.css">
+    <style type="text/css">
+        .layui-table th{
+            font-weight: bold;
+        }
+        #mainContent{
+            padding: 20px;
+        }
+        .layui-layer-title {
+            padding: 0 80px 0 20px;
+            height: 42px;
+            line-height: 42px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+            color: #333;
+            overflow: hidden;
+            border-radius: 2px 2px 0 0;
+        }
+        .editinput{
+            padding: 10px;
+            width: 90%;
+            border: 1px solid #5FB878;
+        }
+        .edittd{
+            position: absolute;
+            left: 0;
+            right: 0;
+            top:0;
+            bottom: 0;
+            padding: 20px;
+        }
+        .edittd:hover{
+            cursor: pointer;
+            background-color: #dcf0e2;
+        }
+        .headAddLeft{
+            overflow: hidden;
+            background-color: #efefef;
+            padding: 15px 0 5px 20px;
+            border-left: 5px solid #003c97;
+        }
+        .sqsel{
+            padding: 3px;
+            border: 1px solid #003c97;
+            color: #003c97;
+            font-size: 18px;
+            margin-right: 20px;
+        }
+        .layui-form-select dl{
+            max-height: 100px;
+        }
+    </style>
+</head>
+<body>
+<div id="mainContent">
+    <div id="rightContent">
+        <div class="articleContent">
+            <div class="headAddLeft" style="padding-top:10px;">
+                <div class="layui-col-md2" style="font-size: 18px;font-weight: bold;line-height: 38px;">成本录入<button class="layui-btn" onclick="add()" style="margin-left: 600px;margin-top:-3px;float: right;margin-right: 20px;">增加条目</button></div>
+
+            </div>
+            <table class="layui-table" id="infoList" >
+                <colgroup>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                </colgroup>
+                <thead>
+                <tr>
+                    <th>录入人</th>
+                    <th>类型</th>
+                    <th>费用</th>
+                    <th>时间</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody id="listTbody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script src="/js/jquery.min.js"></script>
+<script src="/layui/layui.js"></script>
+<script src="/js/ajax.js"></script>
+<script>
+    console.log(parent.obj)
+    var department = [
+        { id: "travel", dname: "差旅费"},
+        { id: "communication", dname: "交际费"},
+        { id: "market_investment", dname: "市场投入"},
+        { id: "tender", dname: "招标费"},
+        { id: "dealer_maintenance", dname: "经销商维修"},
+        { id: "product_maintenance", dname: "产品维修"},
+        { id: "purchasing_cost", dname: "采购成本"},
+        ];
+    var departmentValue = [{ label: "请选择类型", value: "" }];
+    for (let i = 0; i < department.length; i++) {
+        departmentValue.push({ label: department[i].dname, value: department[i].id });
+    }
+    var start_time ='';
+    var end_time ='';
+    layui.use('laydate', function(){
+        var laydate = layui.laydate;
+        laydate.render({
+            elem: '#test6'
+            //设置开始日期、日期日期的 input 选择器
+            //数组格式为 2.6.6 开始新增，之前版本直接配置 true 或任意分割字符即可
+            ,range: ['#test-startDate-1', '#test-endDate-1']
+            ,theme: 'molv'
+            ,change: function(value, date, endDate){
+                start_time = value.split(" ")[0]
+                end_time = value.split(" ")[2]
+                // console.log(value.split(" ")); //得到日期生成的值，如：2017-08-18
+                console.log(start_time)
+                console.log(end_time)
+            }
+        });
+    });
+    var sendObj = new Object();
+    sendObj.page_size = 15;
+    sendObj.page = 1;
+    get_type();
+    function get_type() {
+        getAjaxDate('/api/department/','get',"",function (rel) {
+            console.log(rel.data)
+            setselect(rel.data.results)
+        });
+    }
+    function setselect(infoList){
+        infoList.forEach(function (value) {
+            //显示的按钮
+            //将数据插入表格中
+            $("#sqSelect_dep").append(new Option(value.name, value.id));
+        })
+    }
+
+    function setTable(infoList) {
+        /**
+         *@infoList 是一个数组
+         *  **/
+
+        infoList.forEach(function (value) {
+            //显示的按钮
+            var buttonStr = '<button class="layui-btn editbt layui-btn-sm" onclick="openEditWindow(\''+encodeURIComponent(JSON.stringify(value))+'\')"><i class="layui-icon layui-icon-edit "></i>   </button>'+
+                '<button type="button" class="layui-btn layui-btn-danger layui-btn-sm" onclick="del_project('+value.id+')"><i class="layui-icon"></i></button>';
+            //将数据插入表格中
+            $("#infoList").append('<tr>' +
+                '<td>'+value.submit_nickname+'</td>' +
+                '<td>'+value.type_name+'</td>' +
+                '<td>'+value.price+'</td>' +
+                '<td>'+value.time+'</td>' +
+                '<td>'+buttonStr+'</td>' +
+                '</tr>');
+        })
+    }
+    function openEditWindow(data) {
+        if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+        console.log(JSON.parse(decodeURIComponent(data)))
+        parent.sq.inputWindow({
+            title: {
+                text: "修改成本条目",//标题
+                titleColor: "#FFFFFF"//弹窗文字颜色
+            },
+            closeBtn: 1,
+            width: "350px",
+            shadeClose: false,
+            form: {
+                mdeparment: {
+                    label: "类型",
+                    type: "select",
+                    value: departmentValue,
+                    selectedValue: JSON.parse(decodeURIComponent(data)).type,
+                    allowNull: false
+                },
+                price_add: {
+                    label: "费用",
+                    type: "text",
+                    value: "",
+                    tip: JSON.parse(decodeURIComponent(data)).price,
+                    allowNull: false
+                },
+            },
+            sure: function (rel) {
+                cur_page = 1;
+                console.log(rel);
+                let sendObj_1 =new Object();
+                sendObj_1.type = rel.mdeparment;
+                sendObj_1.price = rel.price_add;
+                getAjaxDate("/api/cost/"+JSON.parse(decodeURIComponent(data)).id+"/","patch",sendObj_1,function (rel) {
+                    console.log(rel.data)
+                    parent.layer.msg(rel.msg,{time:2000}, function(){
+                        $("#infoList").empty()
+                        show_table()
+                        // window.parent.$("#iframe_id").attr("src","product_costdetail.html#r="+Math.random())
+                        window.parent.location.reload()
+                        parent.layer.closeAll()
+                    });
+                });
+            }
+        })
+    }
+    function add() {
+        if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+        parent.sq.inputWindow({
+            title: {
+                text: "添加成本条目",//标题
+                titleColor: "#FFFFFF"//弹窗文字颜色
+            },
+            closeBtn: 1,
+            width: "500px",
+            shadeClose: false,
+            form: {
+                mdeparment: {
+                    label: "类型",
+                    type: "select",
+                    value: departmentValue,
+                    selectedValue: "",
+                    allowNull: false
+                },
+                price_add: {
+                    label: "费用",
+                    type: "text",
+                    value: "",
+                    tip: "请输入费用",
+                    allowNull: false
+                },
+            },
+            sure: function (rel) {
+                cur_page = 1;
+                console.log(rel);
+                let sendObj_1 =new Object();
+                sendObj_1.type = rel.mdeparment;
+                sendObj_1.price = rel.price_add;
+                sendObj_1.item = parent.obj.id;
+                // sendObj_1.token = window.sessionStorage.getItem("token");
+                getAjaxDate("/api/cost/","post",sendObj_1,function (rel) {
+                    console.log(rel.data)
+                    parent.layer.msg(rel.msg,{time:1000}, function(){
+                        $("#infoList").empty()
+                        show_table()
+                        // window.parent.$("#iframe_id").attr("src","product_costdetail.html#r="+Math.random())
+                        window.parent.location.reload()
+                        parent.layer.closeAll()
+                    });
+                });
+            }
+        })
+    }
+    show_table()
+    function show_table() {
+        getAjaxDate('/api/cost/','get',{item:parent.obj.id},function (rel) {
+            console.log(rel.data)
+            setTable(rel.data.results)
+        })
+    }
+    function del_project(id) {
+        if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+    parent.layer.confirm('确定删除本条目吗？', {
+        btn: ['确定','取消'] //按钮
+        }, function(){
+        getAjaxDate('/api/cost/'+id+'/','patch',{on_delete:1},function (rel) {
+            console.log(rel.data)
+            parent.layer.msg(rel.msg,{time:700}, function(){
+                $("#infoList").empty()
+                show_table()
+                // window.parent.$("#iframe_id").attr("src","product_billdetail.html#r="+math.random())
+                window.parent.location.reload()
+                parent.layer.closeAll()
+            });
+        })
+    }, function(){
+        parent.layer.msg('取消成功', {time: 100},function (){
+            parent.layer.closeAll()
+        });
+    });
+
+    }
+
+
+</script>
+</body>
+</html>

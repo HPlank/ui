@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title></title>
+    <link rel="stylesheet" href="/layui/css/layui.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <style type="text/css">
+        .layui-table th{
+            font-weight: bold;
+        }
+        #mainContent{
+            padding: 20px;
+        }
+        .layui-form-label{
+            text-align: center;
+            width: 30%;
+            font-weight: bold;
+        }
+        .layui-inline{
+            color: #2F4056;
+            margin-bottom: 20px !important;
+            width: 30%;
+        }
+        .layui-input{
+            margin-bottom: 20px;
+            width: 160px;
+        }
+        .redtext{
+            color: #fe2213;
+            margin-right: 2px;
+        }
+        #roleContainer input{
+            margin: 10px;
+            line-height: 50px;
+        }
+        .select{
+            width: 160px;
+            height: 35px;
+            /*margin-top: 3px;*/
+        }
+    </style>
+</head>
+<body>
+<div id="mainContent">
+    <div class="layui-container layui-form">
+        <div class="layui-row">
+            <div class="layui-col-md4">
+                    <label class="layui-form-label">商品大类:</label>
+                    <div class="layui-input-inline">
+                        <select class="select sq-select" id="type" lay-filter="type" name="type" tip_name="商品大类" >
+<!--                            <option value="">无</option>-->
+                            <option value="设备">设备</option>
+                            <option value="耗材">耗材</option>
+                            <option value="维修服务">维修服务</option>
+                            <option value="第三方采购">第三方采购</option>
+                        </select>
+                    </div>
+                </div>
+            <div class="layui-col-md4">
+                    <label class="layui-form-label">商品小类:</label>
+                    <div class="layui-input-inline ">
+                        <select class="select" id="subtype" name="subtype" >
+                            <option value="">无</option>
+                            <option value="外科">外科</option>
+                            <option value="内科">内科</option>
+                        </select>
+                    </div>
+            </div>
+            <div class="layui-col-md4">
+                    <label class="layui-form-label" >商品名:</label>
+                    <div class="layui-input-inline" >
+                        <input type="text" class="layui-input sq-length" id="name" min-length="1" max-length="20" tip_name="商品名" placeholder="最多20位" >
+                    </div>
+            </div>
+        </div>
+        <div class="layui-row">
+            <div class="layui-col-md4">
+                    <label class="layui-form-label" >厂商:</label>
+                    <div class="layui-input-inline">
+                        <input type="text" class="layui-input sq-length" id="manufacturer"  min-length="1" max-length="20" tip_name="厂商" placeholder="最多20位" >
+                    </div>
+            </div>
+            <div class="layui-col-md4">
+                    <label class="layui-form-label">规格:</label>
+                    <div class="layui-input-inline">
+                        <input type="text" class="layui-input"  id="specification" placeholder="最多20位" >
+                    </div>
+            </div>
+            <div class="layui-col-md4">
+                    <label class="layui-form-label" >单位:</label>
+                    <div class="layui-input-inline">
+                        <input type="text" class="layui-input sq-length" min-length="1" max-length="20" tip_name="单位" id="unit" placeholder="最多20位" >
+                    </div>
+            </div>
+        </div>
+        <div class="layui-row">
+            <div class="layui-col-md4">
+                    <label class="layui-form-label" >型号:</label>
+                    <div class="layui-input-inline">
+                        <input type="text" class="layui-input sq-length" min-length="1" max-length="20" tip_name="型号" id="model" placeholder="最多20位" >
+                    </div>
+            </div>
+            <div class="layui-col-md4">
+                    <label class="layui-form-label">报价:</label>
+                    <div class="layui-input-inline">
+                        <input type="text" class="layui-input sq-number" autocomplete="off" id="offer" tip_name="报价" input_type="float" placeholder="请输入报价" >
+                    </div>
+            </div>
+            <div class="layui-col-md4">
+                    <label class="layui-form-label" >折扣:</label>
+                    <div class="layui-input-inline">
+                        <input type="text" class="layui-input sq-number" value="5.6" tip_name="折扣" input_type="discount" id="discount" placeholder="0-10之间">
+                    </div>
+            </div>
+        </div>
+        <div class="layui-row">
+            <div class="layui-col-md4">
+                    <label class="layui-form-label" >是否在售:</label>
+                    <div class="layui-input-inline">
+                        <select class="select sq-select" id="sale" name="sale" tip_name="是否在售">
+                            <option value="1">是</option>
+                            <option value="0">否</option>
+                        </select>
+                    </div>
+            </div>
+        </div>
+        <div class="layui-form-item" style="text-align: center;margin-top: 10px;padding-right: 80px;">
+            <div class="layui-input-block">
+                <a class="layui-btn" lay-submit onclick="saveCameraInfo()" lay-filter="formDemo">立即提交</a>
+                <button type="reset" class="layui-btn layui-btn-primary" onclick="reset_form()">重置</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/js/jquery-3.3.1.min.js"></script>
+<script src="/layui/layui.js"></script>
+<script src="/js/ajax.js"></script>
+<script>
+    var field_list = ["type", "subtype","name","manufacturer","specification","unit","model","offer","discount","add_type"
+        ,"user","time","sale","buttonStr"]
+
+    //根据大类的选择自动返回小类
+    var type2subtype=function (bcls){
+        if(bcls=='设备') {
+            return [{id:"内科",name: "内科"}, {id:"外科",name: "外科"}]
+        }
+        else  if(bcls=='耗材') {
+            return [{id:"",name: "无"}]
+        }
+        else {
+            return []
+        }
+    }
+
+
+    layui.use(['form', 'layedit', 'laydate'], function() {
+        var form = layui.form
+            , layer = layui.layer
+            , layedit = layui.layedit
+            , laydate = layui.laydate;
+
+        //注册大类选择的联动函数，自动调整小类
+        form.on("select(type)",(sel)=>{
+            console.log(sel)
+            layer.msg(sel.value)
+            if(sel.value === '维修服务' || sel.value === '第三方采购'){
+                $("#discount").val(10)
+                $("#discount").attr("readonly","readonly")
+            }else if(sel.value === '设备'){
+                $("#discount").removeAttr("readonly")
+            }else if(sel.value === '耗材'){
+                $("#discount").removeAttr("readonly")
+                $("#discount").val(5.4)
+            }
+            var subtype = $("#subtype");
+            subtype.empty()
+            type2subtype(sel.value).forEach((ele)=>{
+                subtype.append(new Option(ele.name, ele.id));
+            })
+            form.render('select');
+        })
+    });
+    if(sq.getHashStringArgs()["uid"] !== undefined){
+        var obj = JSON.parse(decodeURIComponent(sq.getHashStringArgs()["uid"]));
+        console.log(obj);
+        for (let i=0;i<field_list.length;i++){
+            $("#"+field_list[i]).val(obj[field_list[i]])
+            // $("#"+field_list[i]).attr("placeholder",obj[field_list[i]])
+        }
+        $("#subtype").empty();
+        type2subtype(obj.type).forEach((ele)=>{
+            subtype.append(new Option(ele.name, ele.id));
+        })
+        $("#subtype").val(obj.subtype)
+        form.render('select');
+    } else{
+        if(sq.getHashStringArgs()["copy_good"] !== ''){
+            var obj = JSON.parse(decodeURIComponent(sq.getHashStringArgs()["copy_good"]));
+            console.log(obj);
+            for (let i=0;i<field_list.length;i++){
+                $("#"+field_list[i]).val(obj[field_list[i]])
+                // $("#"+field_list[i]).attr("placeholder",obj[field_list[i]])
+            }
+            $("#subtype").empty();
+            type2subtype(obj.type).forEach((ele)=>{
+                subtype.append(new Option(ele.name, ele.id));
+            })
+            $("#subtype").val(obj.subtype)
+            form.render('select');
+        }else{
+            $("#type").val("");//默认不选择任何东西
+        }
+    }
+
+    function saveCameraInfo() {
+        if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+        if(check_from()){
+        var obj1 = {};
+        layer.confirm("确定保存本条记录吗？",{
+            btn: ["是", "否"],
+            btn1: function () {
+                for(let i=0;i<field_list.length;i++){
+                    obj1[field_list[i]] = $("#"+field_list[i]).val()
+                }
+                if(sq.getHashStringArgs()["uid"] === undefined) {
+                    obj1.deliver_type = "saveCameraInfo";
+                }else{
+                    obj1.deliver_type = "editCameraInfo";
+                }
+                // 提交
+                if (obj1.deliver_type === "saveCameraInfo"){
+                    getAjaxDate("/api/product/","post", obj1,
+                        function (rel) {
+                        if(rel.code === 1){
+                            layer.msg(rel.msg)
+                            parent.getList();
+                            parent.layer.closeAll();
+                        }else{
+                            layer.msg(rel.msg)
+                        }
+
+                        });
+                } else {
+                    getAjaxDate("/api/product/"+obj.id+"/","put", obj1,
+                        function (rel) {
+                            if(rel.code === 1){
+                                layer.msg(rel.msg)
+                                parent.getList();
+                                parent.layer.closeAll();
+                            }else{
+                                layer.msg(rel.msg)
+                            }
+                        });
+                }
+            },
+            btn2: function () {
+                layer.msg("取消成功")
+            }
+        })}
+    }
+    function setselect(infoList){
+        infoList.forEach(function (value) {
+            //显示的按钮
+            //将数据插入表格中
+            $("#lb").append(new Option(value.name, value.id));
+        })
+    }
+    function reset_form() {
+        if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+        for (let i=0;i<field_list.length;i++){
+            $("#"+field_list[i]).val(obj[field_list[i]])
+        }
+        layui.form.render()
+    }
+    $("#offer").focus(function () {
+        layer.tips('报价为整数或小数', '#offer',{tips: 3});
+    })
+    $("#discount").focus(function () {
+        layer.tips('折扣为大于等于0小于等于10的数,允许保留三位小数','#discount',{tips: 3})
+
+    })
+</script>
+</body>
+</html>

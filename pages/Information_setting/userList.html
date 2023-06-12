@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title></title>
+    <link rel="stylesheet" href="/layui/css/layui.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <style type="text/css">
+        .layui-table th{
+            font-weight: bold;
+        }
+        #mainContent{
+            padding: 20px;
+        }
+        .headAddLeft{
+            overflow: hidden;
+            background-color: #efefef;
+            padding: 10px 0 5px 20px;
+            border-left: 5px solid #003c97;
+        }
+        .sqsel{
+            padding: 3px;
+            border: 1px solid #003c97;
+            color: #003c97;
+            font-size: 18px;
+            margin-right: 20px;
+        }
+    </style>
+</head>
+<body>
+<div id="mainContent">
+    <div id="rightContent">
+        <div class="articleContent">
+            <div class="layui-elem-quote" style="overflow: hidden;line-height: 40px;">
+                <div class="layui-col-xs1" style="font-size: 18px;font-weight: bold;">用户管理</div>
+                <div class="layui-form layui-col-xs-offset1" style="overflow: hidden;">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label" style="font-size: 18px;margin-top: 10px">姓名:</label>
+                            <div class="layui-input-inline">
+                                <input type="text" class="layui-input" id="pro_nickname" placeholder="请输入昵称" style="margin-bottom: 12px;margin-top: 10px">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <div  id="sqselect_depdiv" style="text-align: right;padding: 10px;"><span style="font-size: 18px;margin-bottom: 15px">部门筛选：</span>
+                                <select class="sqsel" id="sqSelect_dep" lay-ignore >
+                                    <option value="">所有部门</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="layui-inline">
+                            <a class="layui-btn" style="background-color: #ca1c1d;margin-bottom: 10px" id="AnaBT" onclick="search_pro(search_cur_page)">搜索</a>
+                            <a class="layui-btn" style="margin-bottom: 10px" id="Add" onclick="openAddWindow()">添加用户</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <table class="layui-table layui-form" id="userListTable">
+                <colgroup>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                </colgroup>
+                <thead>
+                <tr>
+                    <th style="text-align: center">编号</th>
+                    <th style="text-align: center">姓名</th>
+                    <th style="text-align: center">登录名</th>
+                    <th style="text-align: center">性别</th>
+                    <th style="text-align: center">部门</th>
+                    <th style="text-align: center">角色</th>
+                    <th style="text-align: center">联系电话</th>
+                    <th style="text-align: center">头像</th>
+                    <th style="text-align: center">启用</th>
+                    <th style="text-align: center">操作</th>
+                </tr>
+                </thead>
+                <tbody id="jjTbody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script src="/js/jquery-3.3.1.min.js"></script>
+<script src="/layui/layui.js"></script>
+<script src="/js/ajax.js"></script>
+<script src="/js/jquery.cookie.js"></script>
+<script>
+    let send_obj = new Object();
+    var search_cur_page = 1;
+    send_obj.page_size = 10;
+    //  刷新页面
+    var sendObj = new Object();
+    if($.cookie(window.location.href) == undefined){
+        sendObj.page_size = 10;
+        send_obj.page_size = 10;
+        $.cookie(window.location.href, sendObj.page_size);
+    }else{
+        sendObj.page_size= $.cookie(window.location.href);
+        send_obj.page_size= $.cookie(window.location.href);
+
+    }
+    var cur_page = 1;
+    getList(cur_page);
+    function getList(cur_page) {
+        sendObj.page = cur_page;
+        getAjaxDate("/api/user/","get",
+            sendObj,
+            function(rel){
+                // console.log(rel.data.results)
+                $("#jjTbody").empty()
+                setTable(rel.data.results)
+                sq.page({
+                    count : ((rel.data.total_items === undefined) ? 0 : rel.data.total_items),
+                    page : ((rel.data.page === undefined) ? 1 : rel.data.page),
+                    size : sendObj.page_size,
+                    jump : function(obj){
+                        sendObj.page = obj.curr;
+                        sendObj.page_size = obj.limit
+                        $.cookie(window.location.href, obj.limit);
+                        // $("#jjTbody").empty()
+                        getList(obj.curr);
+                    },
+                    bro : "#userListTable"
+                });
+            });
+    }
+    //从后台获取部门信息
+    get_dep();
+    function get_dep() {
+        getAjaxDate('/api/department/','get',"",function (rel) {
+            console.log(rel.data)
+            setselect(rel.data.results)
+        });
+    }
+
+    function setselect(infoList){
+        infoList.forEach(function (value) {
+            //显示的按钮
+            //将数据插入表格中
+            $("#sqSelect_dep").append(new Option(value.name, value.id));
+        })
+    }
+    function setTable(infoList) {
+        /**
+         *@infoList 是一个数组
+         *  **/
+        infoList.forEach(function (value) {
+            if(value.id == window.sessionStorage.getItem("user_id")){
+                str = '当前用户'
+            }else{
+                if (value.enable === 1){
+                str = '<input type="checkbox" checked="" id="switch" name="open" lay-skin="switch" lay-filter="switchTest" lay-text="是|否" user_id="'+value.id+'">'
+            }else{
+                str = '<input type="checkbox" id="switch" name="open" lay-skin="switch" lay-filter="switchTest" lay-text="是|否" user_id="'+value.id+'">'
+            }
+            }
+            //显示的按钮
+            var buttonStr = '<button class="layui-btn editbt" onclick="openEditWindow(\''+encodeURIComponent(JSON.stringify(value))+'\')"><i class="layui-icon layui-icon-edit"></i>   </button> ' +
+                '<button  class="layui-btn layui-btn-danger delbt" onclick="openDeleteWindow('+value.id+')"><i class="layui-icon layui-icon-delete"></i>   </button> '+
+                '<button  class="layui-btn layui-btn-warm " onclick="reset_password('+value.id+')"><i class="layui-icon layui-icon-refresh-1"></i>重置密码</button> ';
+            //将数据插入表格中
+            $("#userListTable").append('<tr>' +
+                '<td style="text-align: center">'+value.id+'</td>' +
+                '<td style="text-align: center">'+value.nickname+'</td>' +
+                '<td style="text-align: center">'+value.user_name+'</td>' +
+                '<td style="text-align: center">'+value.gender_name+'</td>' +
+                '<td style="text-align: center">'+value.department_name+'</td>' +
+                '<td style="text-align: center">'+value.role_name+'</td>' +
+                '<td style="text-align: center">'+value.tel+'</td>' +
+                '<td style="text-align: center"><img src="'+imgurl+value.pic+'" style="max-height: 100px"></td>' +
+                '<td style="text-align: center">'+str+'</td>' +
+                '<td style="text-align: center">'+buttonStr+'</td>' +
+                '</tr>');
+        })
+        layui.form.render()
+
+    }
+    function openDeleteWindow(id) {
+        if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+        layer.confirm('确定删除这个用户么？', {
+            btn: ['确定','取消'] //按钮
+        }, function(){
+            getAjaxDate("/api/user/"+id+"/","patch",
+                {on_delete:1},
+                function(rel){
+                    layer.msg(rel.msg);
+                    getList();
+                }
+            );
+        });
+    }
+    $("#sqSelect_dep").on("change",function () {
+        dept = $(this).val();
+        $("#jjTbody").empty();
+        search_pro(1);
+    });
+    function openAddWindow(id) {
+        if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+        var edituser="";
+        if (typeof(id) != "undefined")
+        {
+            edituser =  "#id="+id;
+        }
+        layer.open({
+            type: 2,
+            title: edituser==""?'添加用户':'修改用户',
+            shadeClose: false,
+            shade: 0.7,
+            maxmin: true, //开启最大化最小化按钮
+            area: ['1000px', '500px'],
+            content: 'adduser.html#id='+id
+        });
+    }
+    function openEditWindow(id) {
+        if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+        var edituser="";
+        if (typeof(id) != "undefined")
+        {
+            edituser =  "#id="+id;
+        }
+        layer.open({
+            type: 2,
+            title: edituser==""?'添加用户':'修改用户',
+            shadeClose: false,
+            shade: 0.7,
+            maxmin: true, //开启最大化最小化按钮
+            area: ['1000px', '500px'],
+            content: 'editUser.html#id=' + id
+        });
+    }
+    function reset_password(id) {
+        getAjaxDate('/api/user/password_remake/','post',{user_id:id},function (rel) {
+            // layer.msg(rel.msg)
+            layer.msg("重置成功！密码被重置为a123456",{time:1000});
+            })
+
+    }
+
+    send_obj.page = 1;
+    function search_pro(search_cur_page) {
+        if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+        send_obj.nickname = $("#pro_nickname").val();
+        send_obj.department = $("#sqSelect_dep").val();
+        send_obj.page = search_cur_page;
+        getAjaxDate('/api/user/','get',send_obj,function (rel) {
+            $("#jjTbody").empty();
+            setTable(rel.data.results);
+            sq.page({
+                count : ((rel.data.total_items === undefined) ? 0 : rel.data.total_items),
+                page : ((rel.data.page === undefined) ? 1 : rel.data.page),
+                size : send_obj.page_size,
+                jump : function(obj){
+                    console.log(obj.curr)
+                    send_obj.page = obj.curr;
+                    send_obj.page_size = obj.limit;
+                    $.cookie(window.location.href, obj.limit);
+                    // $("#jjTbody").empty();
+                    search_pro(obj.curr);
+                },
+                bro : "#userListTable"
+            });
+        })
+    }
+    //监听指定开关
+    layui.use('form', function(){
+        var form = layui.form;
+        form.on('switch(switchTest)', function(data){
+            user_id = $(this).attr("user_id");
+            getAjaxDate('/api/user/'+user_id+'/','patch',{enable:(this.checked ? '1' : '0')},function (rel) {
+                console.log(rel.data)
+            });
+            layer.msg('用户：'+ (this.checked ? '已启用' : '已禁用'), {
+                offset: '6px'
+            });
+            // layer.tips('温馨提示：请注意开关状态的文字可以随意定义，而不仅仅是ON|OFF', data.othis)
+    })});
+
+</script>
+</body>
+</html>

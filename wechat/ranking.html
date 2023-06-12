@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>湛德财务项目管理系统</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="../css/sq.css">
+    <script src="../js/echarts.min.js"></script>
+    <style type="text/css">
+        body{
+            padding-bottom: 50px;
+        }
+        #topContainer{
+            text-align: center;
+            background-color: #003c97;
+            color: #FFF;
+            font-weight: bold;
+            font-size: 18px;
+            padding: 20px;
+        }
+        .iconContent{
+            float: left;
+            text-align: center;
+            font-size: 14px;
+        }
+        #myUL{
+            margin: 0;
+            padding: 20px;
+            background-color: #FFF;
+        }
+        #myUL li{
+            list-style: none;
+            background-color: #FFFFFF;
+            margin: 5px 0 0 1%;
+            padding: 0 0 10px 0;
+            border-radius: 5px;
+            cursor: pointer;
+            overflow: hidden;
+            border-bottom: 1px solid #efefef;
+        }
+        #myUL li p{
+            padding: 5px;
+        }
+        .lxdh{
+            margin-left: 10px;
+            color: #FD482C;
+        }
+        #footContainer{
+            font-size: 10px;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background-color: #efefef;
+            text-align: center;
+        }
+        .sq-lm{
+            margin: 10px auto;
+            text-align: left;padding: 10px;
+            border: 1px solid #003c97;
+            position: relative;
+        }
+        .sq-lm-title{
+            position: absolute;
+            top: -15px;
+            background-color: #003c97;
+            border-radius: 3px;
+            padding: 3px 8px;
+            font-size: 14px;
+            color: #FFF;
+            font-weight: bold;
+        }
+        #mainContainer{
+            padding: 15px;
+        }
+        .butiao{
+            height: 200px;
+        }
+        .sq-index-ul{
+            padding: 0;
+            margin: 0;
+        }
+        .sq-index-ul li{
+            display: inline-block;
+            width: 49%;
+            margin: 0;
+            padding: 10px 0;
+            list-style: none;
+            text-align: center;
+            font-size: 16px;
+            background-color: #efefef;
+            margin-top: 10px;
+        }
+        .sq-index-ul li:active{
+            background-color: #ccc;
+        }
+        .sq-index-ul li i{
+            margin-left: 10px;
+        }
+        .rankUL{
+            margin:0;
+            padding: 0;
+            text-align: center;
+        }
+        .rankUL li{
+            display: inline-block;
+            width: 32%;
+            text-align: center;
+            overflow: hidden;
+            border-radius: 5px;
+        }
+        .departmentNum{
+            background-color: #FFF;
+            padding: 12px 0;
+            font-weight: bold;color: #07c160;font-size: 18px;
+        }
+        .departmentTitle{
+            padding: 3px 0;
+            background-color: #07c160;
+            color: #FFF;
+            margin-top: 5px;
+        }
+        .departmentOne{
+            height: 130px;
+            overflow: hidden;
+            margin: 10px;
+            background-color: #efefef;
+            border-radius: 3px;
+            -moz-box-shadow:2px 2px 5px #999; -webkit-box-shadow:2px 2px 5px #999; box-shadow:2px 2px 5px #999;
+        }
+    </style>
+</head>
+<body>
+<div>
+    <div class="layui-card" style="width: 100%">
+        <div class="layui-card-header">
+            <div style= "width: 100%; overflow: scroll">
+                <table class="layui-table" id="ranking_table"  style="width: 100%;">
+                    <colgroup>
+                        <col>
+                        <col>
+                        <col>
+                        <col>
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th id="rank">名次</th>
+                        <th id="department_name">部门</th>
+                        <th id="name" style="display:none;">姓名</th>
+                        <th id="surplus">利润</th>
+                    </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+        <div class="layui-card-body">
+            <tbody id="ttbody"></tbody>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="../js/jquery-3.3.1.min.js" language="JavaScript"></script>
+<script src="../layui/layui.js"></script>
+<script src="../js/ajax.js"></script>
+<script type="text/javascript">
+    getAjaxDate('/api/record/ranking/','get',{data_type:sq.getHashStringArgs()["type"]},function (rel) {
+        // console.log(rel.data)
+        setTable(rel.data)
+    })
+    // 渲染排名列表
+    function setTable(infoList) {
+        infoList.forEach(function (value) {
+            if (sq.getHashStringArgs()["type"] === 'personal'){
+                var str = '<td>'+value.nickname+'</td>'
+                $("#name").show()
+            }else {
+                str = ''
+            }
+            $("#ranking_table").append(
+                '<tr>' +
+                '<td>'+value.rank+'</td>' +
+                '<td>'+value.department_name+'</td>' +
+                str + '<td>'+value.surplus+'</td>'+
+                '</tr>'
+            )
+        })
+    }
+</script>
+</html>

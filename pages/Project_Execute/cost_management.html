@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>湛德财务项目管理系统</title>
+    <link rel="stylesheet" href="../../layui/css/layui.css">
+    <link rel="stylesheet" href="../../css/main.css">
+    <link rel="stylesheet" href="../../css/skin.css">
+    <link rel="stylesheet" href="../../css/sq.css">
+    <style type="text/css">
+        .layui-table th{
+            font-weight: bold;
+        }
+        #mainContent{
+            padding: 20px;
+        }
+        .layui-layer-title {
+            padding: 0 80px 0 20px;
+            height: 42px;
+            line-height: 42px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+            color: #333;
+            overflow: hidden;
+            border-radius: 2px 2px 0 0;
+        }
+        .editinput{
+            padding: 10px;
+            width: 90%;
+            border: 1px solid #5FB878;
+        }
+        .edittd{
+            position: absolute;
+            left: 0;
+            right: 0;
+            top:0;
+            bottom: 0;
+            padding: 20px;
+        }
+        .edittd:hover{
+            cursor: pointer;
+            background-color: #dcf0e2;
+        }
+        .headAddLeft{
+            overflow: hidden;
+            background-color: #efefef;
+            padding: 10px 0 5px 20px;
+            border-left: 5px solid #003c97;
+        }
+        .sqsel{
+            padding: 3px;
+            border: 1px solid #003c97;
+            color: #003c97;
+            font-size: 18px;
+            margin-right: 20px;
+        }
+        .layui-input, .layui-textarea{
+            display: inline;
+            margin-right: 20px;
+        }
+        .layui-input, .layui-textarea{
+             border: none;
+             outline: none;
+         }
+        .summaryContent  label{
+            font-weight: bold;
+        }
+        .layui-form-item .layui-input-inline{
+            width: 150px;
+        }
+        .layui-form-label{
+            width: 100px;
+        }
+    </style>
+</head>
+<body>
+<div id="mainContent">
+    <div id="rightContent">
+        <div class="articleContent">
+            <div class="layui-col-md12" style="font-size: 22px;font-weight: bold;line-height: 38px;text-align: center;margin-bottom: 30px;"><span style="padding: 10px 40px;border-bottom: 3px solid #003c97;">成本管理</span></div>
+            <div class="headAddLeft" style="padding: 15px">
+                <div class="layui-form">
+                    <label style="font-size: 14px;font-weight: bold;">项目名:</label>
+                    <input type="text" class="layui-input" id="pro_name" placeholder="请输入项目名" style="width: 160px;">
+                    <label style="font-size: 14px;font-weight: bold;">项目编号:</label>
+                    <input type="text" class="layui-input" id="pro_number" placeholder="请输入项目编号" style="width: 160px;">
+                    <label  style="font-size: 14px;font-weight: bold;">负责人:</label>
+                    <input type="text" class="layui-input" id="pro_person_name" placeholder="请输入负责人" style="width: 160px;">
+                    <div id="test6" style="display: inline">
+                        <label style="text-align: right;font-weight: bold;margin-top: 2px" >立项日期:</label>
+                        <input type="text" autocomplete="off" id="test-startDate-1" class="layui-input" placeholder="开始日期" style="width: 90px;text-align: center;">
+                        -
+                        <input type="text" autocomplete="off" id="test-endDate-1" class="layui-input" placeholder="结束日期" style="width: 90px;text-align: center;margin-left: 10px">
+                    </div>
+                    <div style="float: right;">
+                        <a class="layui-btn" style="background-color: #ca1c1d;" id="search" onclick="search_pro(cur_page,'search')">搜索</a>
+                        <a class="layui-btn layui-btn-primary"  id="reset" onclick="search_pro(cur_page,'reset')">重置</a>
+                    </div>
+                </div>
+            </div>
+            <div class="summaryContent" style="margin: 0 auto">
+                <form class="layui-form">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">总预计成本：</label>
+                            <div class="layui-input-inline">
+                                <input type="text" class="layui-input" id="total_cost" readonly>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">总实际成本：</label>
+                            <div class="layui-input-inline">
+                                <input type="text" class="layui-input" id="total_real_cost" readonly>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">总可用成本：</label>
+                            <div class="layui-input-inline">
+                                <input type="text" class="layui-input" id="total_rest_cost" readonly>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">预计总上缴：</label>
+                            <div class="layui-input-inline">
+                                <input type="text" class="layui-input" id="total_turn_sum" readonly>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">总预计费用：</label>
+                            <div class="layui-input-inline">
+                                <input type="text" class="layui-input" id="total_expend" readonly>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">总实际费用：</label>
+                            <div class="layui-input-inline">
+                                <input type="text" class="layui-input" id="total_real_expend" readonly>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">总可用费用：</label>
+                            <div class="layui-input-inline">
+                                <input type="text" class="layui-input" id="total_rest_expend" readonly>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">实际总上缴：</label>
+                            <div class="layui-input-inline">
+                                <input type="text" class="layui-input" id="real_total_turn_sum" readonly>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <table class="layui-table" id="infoList">
+                <colgroup>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                </colgroup>
+                <thead>
+                <tr>
+                    <th style="text-align: center">项目名称</th>
+                    <th style="text-align: center">项目编号</th>
+                    <th style="text-align: center">项目负责人</th>
+                    <th style="text-align: center">预计上缴</th>
+                    <th style="text-align: center">实际上缴</th>
+                    <th style="text-align: center">预计成本</th>
+                    <th style="text-align: center">已支成本</th>
+                    <th style="text-align: center">待支成本</th>
+                    <th style="text-align: center">预计费用</th>
+                    <th style="text-align: center">已支费用</th>
+                    <th style="text-align: center">可用费用</th>
+<!--                    <th style="text-align: center">电话</th>-->
+                    <th style="text-align: center">立项时间</th>
+                    <th style="text-align: center">管理</th>
+                </tr>
+                </thead>
+                <tbody id="listTbody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script src="/js/jquery.min.js"></script>
+<script src="/layui/layui.js"></script>
+<script src="/js/ajax.js"></script>
+<script src="/js/jquery.cookie.js"></script>
+<script>
+    var start_time ='';
+    var end_time ='';
+    layui.use('laydate', function(){
+        var laydate = layui.laydate;
+        laydate.render({
+            elem: '#test6'
+            //设置开始日期、日期日期的 input 选择器
+            //数组格式为 2.6.6 开始新增，之前版本直接配置 true 或任意分割字符即可
+            ,range: ['#test-startDate-1', '#test-endDate-1']
+            ,theme: 'molv'
+            ,change: function(value, date, endDate){
+                start_time = value.split(" ")[0]
+                end_time = value.split(" ")[2]
+                // console.log(value.split(" ")); //得到日期生成的值，如：2017-08-18
+                console.log(start_time)
+                console.log(end_time)
+            }
+        });
+    });
+    var sendObj = new Object();
+    var cur_page = 1;
+    var search_obj = new Object();
+    search_obj.page = 1;
+    if($.cookie(window.location.href) == undefined){
+        sendObj.page_size = 10;
+        search_obj.page_size = 10;
+        $.cookie(window.location.href, sendObj.page_size);
+    }else{
+        sendObj.page_size= $.cookie(window.location.href);
+        search_obj.page_size= $.cookie(window.location.href);
+
+    }
+    function search_pro(cur_page,get_type) {
+        if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+        let send_data = new Object();
+        if(get_type === 'search') {
+            search_obj.item_name = $("#pro_name").val();
+            search_obj.number = $("#pro_number").val();
+            search_obj.nickname = $("#pro_person_name").val();
+            search_obj.start_time = start_time;
+            search_obj.end_time = end_time;
+            send_data = search_obj;
+        }else if(get_type === 'reset'){
+            send_data = sendObj;
+            $("#pro_person_name").val('');
+            $("#pro_number").val('');
+            $("#pro_name").val('');
+            $("#test-startDate-1").val('');
+            $("#test-endDate-1").val('');
+        }
+        send_data.page = cur_page;
+        //9.26 刷新时选择获取后端字段
+        send_data.fields = 'id,name,number,nickname,total_turn,real_total_turn,pro_cost_all,cost_all,approval_time,expend,pro_expend'
+        getAjaxDate('/api/item/search/','get',send_data,function (rel) {
+            console.log(rel.data)
+            layer.msg(rel.msg)
+            summary_data = rel.data.sum
+            $("#total_cost").val(numFormat(summary_data.total_cost))
+            $("#total_real_cost").val(numFormat(summary_data.total_cost - summary_data.total_rest_cost))
+            $("#total_rest_cost").val(numFormat(summary_data.total_rest_cost))
+            $("#total_turn_sum").val(numFormat(summary_data.pro_total_turn_price))
+            $("#total_expend").val(numFormat(summary_data.total_expend))
+            $("#total_real_expend").val(numFormat(summary_data.total_expend - summary_data.total_rest_expend))
+            $("#total_rest_expend").val(numFormat(summary_data.total_rest_expend))
+            $("#real_total_turn_sum").val(numFormat(summary_data.total_turn_price))
+            $("#listTbody").empty()
+            setTable(rel.data.results)
+            sq.page({
+                count : ((rel.data.total_items === undefined) ? 0 : rel.data.total_items),
+                page : ((rel.data.page === undefined) ? 1 : rel.data.page),
+                size : sendObj.page_size,
+                jump : function(obj){
+                    sendObj.page = obj.curr;
+                    sendObj.page_size = obj.limit
+                    search_obj.page_size = obj.limit;
+                    $.cookie(window.location.href, obj.limit);
+                    search_pro(obj.curr,'search');
+                },
+                bro : "#infoList"
+            });
+        })
+        console.log(sendObj)
+    }
+
+    function setTable(infoList) {
+        /**
+         *@infoList 是一个数组
+         *  **/
+
+        infoList.forEach(function (value) {
+            //显示的按钮
+            var buttonStr = '<button class="layui-btn editbt" onclick="openEditWindow(\''+encodeURIComponent(JSON.stringify(value))+'\')"><i class="layui-icon layui-icon-edit"></i>   </button>';
+            //将数据插入表格中
+            $("#infoList").append('<tr>' +
+                '<td style="text-align: center">'+value.name+'</td>' +
+                '<td style="text-align: center">'+value.number+'</td>' +
+                '<td style="text-align: center">'+value.nickname+'</td>' +
+                '<td style="text-align: right">'+numFormat(value.total_turn)+'</td>' +
+                '<td style="text-align: right">'+numFormat(value.real_total_turn)+'</td>' +
+                '<td style="text-align: right">'+numFormat(value.pro_cost_all)+'</td>' +
+                '<td style="text-align: right">'+numFormat(value.cost_all)+'</td>' +
+                '<td style="text-align: right">'+numFormat(parseFloat(value.pro_cost_all)-parseFloat(value.cost_all))+'</td>' +
+                '<td style="text-align: right">'+numFormat(value.pro_expend)+'</td>' +
+                '<td style="text-align: right">'+numFormat(value.expend)+'</td>' +
+                '<td style="text-align: right">'+numFormat(parseFloat(value.pro_expend)-parseFloat(value.expend))+'</td>' +
+                // '<td style="text-align: center">'+value.tel+'</td>' +
+                '<td style="text-align: center">'+value.approval_time+'</td>' +
+                '<td style="text-align: center">'+buttonStr+'</td>' +
+                '</tr>');
+        })
+    }
+    function openEditWindow(data) {
+        if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+        // sq.open('cost_edit.html#data='+data)
+        layer.open({
+            // title: '<button  class="layui-btn layui-btn-sm" onclick="close_window()"><i class="layui-icon layui-icon-left"></i></button>'，
+            title:'成本管理',
+            content: 'cost_edit.html#data='+data
+            ,type:2
+            ,area:['100%','100%']
+            ,yes: function(index, layero){
+            }
+            ,btn2: function(index, layero){
+            }
+            ,cancel: function(){
+                layer.msg("取消成功")
+            }
+        });
+    }
+    search_pro(cur_page,'reset');
+    function close_window() {
+        layer.closeAll();
+    }
+</script>
+</body>
+</html>

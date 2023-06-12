@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title></title>
+  <link rel="stylesheet" href="/layui/css/layui.css">
+  <link rel="stylesheet" href="/css/main.css">
+  <style type="text/css">
+    .layui-table th{
+      font-weight: bold;
+    }
+    #mainContent{
+      padding: 20px;
+    }
+    .layui-layer-title {
+      padding: 0 80px 0 20px;
+      height: 42px;
+      line-height: 42px;
+      border-bottom: 1px solid #eee;
+      font-size: 14px;
+      color: #333;
+      overflow: hidden;
+      border-radius: 2px 2px 0 0;
+    }
+    .editinput{
+      padding: 10px;
+      width: 90%;
+      border: 1px solid #5FB878;
+    }
+    .edittd{
+      position: absolute;
+      left: 0;
+      right: 0;
+      top:0;
+      bottom: 0;
+      padding: 20px;
+    }
+    .edittd:hover{
+      cursor: pointer;
+      background-color: #dcf0e2;
+    }
+    .redtext{
+      color: #fe2213;
+      margin-right: 2px;
+    }
+    #roleContainer input{
+      margin: 10px;
+      line-height: 50px;
+    }
+  </style>
+</head>
+<body>
+<div id="mainContent" style="padding-right: 10px;">
+  <div class="layui-form" action="">
+    <div class="layui-form-item">
+      <div class="layui-inline">
+        <label class="layui-form-label"><span class="redtext"></span>部门名称</label>
+        <div class="layui-input-inline">
+          <input type="text" id="id" name="id" lay-verify="title" autocomplete="off" placeholder="请输入部门名称" class="layui-input sq-length" min-length="1" max-length="20" tip_name="部门名称">
+        </div>
+      </div>
+      <div class="layui-inline">
+        <label class="layui-form-label"><span class="redtext"></span>部门编号</label>
+        <div class="layui-input-inline">
+          <input type="text" id="no" name="no" lay-verify="title" autocomplete="off" placeholder="请输入部门编号" class="layui-input sq-length" min-length="1" max-length="20" tip_name="部门编号">
+        </div>
+      </div>
+
+    </div>
+    <div class="layui-form-item">
+      <div class="layui-input-block">
+        <a class="layui-btn" lay-submit="" onclick="saveCameraInfo()" lay-filter="demo1">立即提交</a>
+        <a type="reset" id="reset_btn" class="layui-btn layui-btn-primary" onclick="reset_data()">重置</a>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="/js/jquery-3.3.1.min.js"></script>
+<script src="/layui/layui.js"></script>
+<script src="/js/ajax.js"></script>
+<script>
+  layui.use(['form', 'layedit', 'laydate'], function() {
+    form = layui.form,
+            layer = layui.layer
+            , layedit = layui.layedit
+            , laydate = layui.laydate;
+  });
+  var obj = {name:""};
+  if (sq.getHashStringArgs()["uid"] !== undefined){
+    obj = JSON.parse(decodeURIComponent(sq.getHashStringArgs()["uid"]));
+    console.log(obj)
+    $("#id").val(obj.name) ;
+    // $("#no").val(obj.no) ;
+    $("#no").attr("placeholder",obj.no)
+    console.log($("#no").attr("placeholder",obj.no))
+  }
+  $("#no").focus(function () {
+    layer.tips('例如XLXS,表示微创X部','#no',{tips:3})
+  })
+
+
+  function saveCameraInfo() {
+    if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+    if(check_from()){
+      var obj1 = {};
+      layer.confirm("确定保存本条记录吗？",{
+        btn: ["是", "否"],
+        btn1: function () {
+          obj1.name = $("#id").val();
+          obj1.no = $("#no").val();
+          if(sq.getHashStringArgs()["uid"] != undefined) {
+            obj1.type = "editCameraInfo"
+          }else{
+            obj1.type = "saveCameraInfo";
+          }
+          // 提交
+          if (obj1.type === "saveCameraInfo") {
+            getAjaxDate("/api/department/", "post",
+                    obj1,
+                    function (rel) {
+                      layer.msg(rel.msg,{time:500},function () {
+                        parent.layer.closeAll();
+                        parent.getList();
+                      });
+                    });
+          } else{
+            getAjaxDate("/api/department/"+obj.id +"/", "put",
+                    obj1,
+                    function (rel) {
+                      layer.msg(rel.msg,{time: 500},function () {
+                        parent.layer.closeAll();
+                        parent.getList();
+                      });
+                    });
+          }
+        },
+        btn2: function () {
+          layer.msg("取消成功")
+        }
+      })}
+  }
+  function reset_data() {
+    if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+    if (sq.getHashStringArgs()["uid"] !== undefined) {
+      $("#id").val(obj.name);
+    }else {
+      $("#id").val('');
+    }
+  }
+</script>
+</body>
+</html>

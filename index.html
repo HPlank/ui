@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>湛德财务项目管理系统</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="layui/css/layui.css">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/sq.css">
+  <style type="text/css">
+    .layui-layer-setwin{
+      color: #FFFFFF;
+    }
+    .layui-nav,.layui-nav-more{
+      border-top-color:#b2b2b2 !important;
+    }
+    .sq-db-up{
+      border: 1px solid #666;
+      padding: 10px;
+      background-color: #003c97;
+      color: #fff;
+      height: 30px;
+      margin: auto;
+    }
+    .sq-db-down{
+      border-left:1px solid #666 ;
+      border-bottom:1px solid #666 ;
+      border-right:1px solid #666 ;
+      padding: 10px;
+      height: 80px;
+    }
+    .span_div{
+      font-size: 18px;
+    }
+    .sq-db-up span{
+      margin-right: 10px;
+    }
+    .sq-db-down span{
+      margin-right: 10px;
+    }
+    .sq-db-up strong{
+      color: #ffff00;
+    }
+    .sq-db-down strong{
+      margin: 5px;
+      color: #008fb8;
+    }
+    .agency_div{
+      height: 150px;
+      width: 22%;
+      padding: 5px 17px;
+      display: inline-block;
+    }
+    .layui-nav-img{
+      border-radius: 0;
+    }
+    #sq-message-card{
+      position: fixed;right: -300px;width:300px;top:100px;color: #FFF;z-index: 999;
+      transition: all 0.3s;
+      bottom: 100px;
+    }
+    #sq-card-bt{
+      width: 30px;float: left;text-align: center;background-color: #007DDB;padding: 10px 0;margin-top: 300px;
+      cursor: pointer;
+      margin-left: -30px;
+    }
+    #sq-newMessage{
+      width: 300px;overflow: hidden;
+      color: #666;
+      box-shadow: -2px 2px 4px #888888;
+      background-color: #FFF;
+    }
+    #sq-newMessage-ul li{
+      list-style: none;
+      margin: 8px 0;
+      background-color: #f6f8fa;
+      border-radius: 5px;
+      padding: 10px;
+      overflow: hidden;
+
+    }
+    .sq-message-title:hover{
+      color: #003060;
+    }
+    .sq-message-title{
+       font-size: 14px;
+       color: #0086e5;
+       padding:0px 0 0px 0;
+       cursor: pointer;
+    }
+    .sq-message-time{
+      font-size: 14px;
+      padding-bottom: 5px;
+      color: #96a0aa;
+    }
+    .sq-message-content{
+      font-size: 14px;
+       padding: 5px 0;
+      color: #505a64;
+      text-align: justify;
+    }
+    #sq-newMessage-ul{
+      overflow-y: scroll;
+      overflow-x: hidden;
+      padding: 10px;
+    }
+    .sq-icon-div{
+      float: right;
+      margin: 0 5px;
+    }
+    .sq-message-infoLink{
+      color: #007DDB;
+      text-decoration:underline;
+      margin-left: 5px;
+      cursor: pointer;
+    }
+    .sq-message-sun-ul{
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      transition: all 0.5s;
+    }
+    #sq-newMessage-ul li .sq-message-sun-ul li{
+      margin: 5px 0;
+      padding: 3px 0;
+      font-size: 13px;
+    }
+    .layui-tab[overflow]>.layui-tab-title{
+      background-color: #FFF;
+    }
+    .layui-tab-content{
+      z-index: -1;
+    }
+  </style>
+</head>
+<body style="display: none">
+<div class="layui-layout layui-layout-admin">
+  <div class="layui-header" style="">
+    <div class="layui-logo" >
+      <img src="img/zzb_logo.png"/>
+    </div>
+    <!-- 头部区域（可配合layui已有的水平导航） -->
+    <ul class="layui-nav layui-layout-left" lay-filter="leftnav">
+      <li style="font-size: 28px;font-weight: bold;line-height: 60px;padding-left: 70px;">湛德财务项目管理系统</li>
+    </ul>
+    <ul  class="layui-nav layui-layout-right">
+      <li class="layui-nav-item" id="info">待办事项</li>
+      <li id="wx_tip" class="layui-nav-item" style="position: relative;">
+        <a>
+          <img id="adminimg" src="img/binoculars_128px.png" class="layui-nav-img">
+          <span id="adminName"></span>
+        </a>
+
+        <dl id="info_div" class="layui-nav-child">
+          <dd><a href="javascript:;" onclick="info_detail()">基本信息</a></dd>
+          <dd><a href="javascript:;" onclick="edit_password()">修改密码</a></dd>
+          <dd><a href="javascript:;" onclick="logout()">退出</a></dd>
+
+        </dl>
+      </li>
+      <li class="layui-nav-item" style="margin-left: 10px;"><span id="userName" class="sima" onclick="showrole()"></span></li>
+    </ul>
+  </div>
+
+  <div class="layui-side layui-bg-black">
+    <div class="layui-side-scroll" id="alldaohang" style="">
+      <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+      <ul class="layui-nav layui-nav-tree" lay-filter="leftnav1" id="dhul">
+        <li class="layui-nav-item layui-nav-itemed" style="position: relative;">
+          <a id="homepage" href="javascript:;" data-url="pages/index/message.html" data-id="0"><span class="single_status" > 首页</span></a>
+                  <div id="warn_num" style="cursor:pointer;display:none;background-color: red;color: white;width: 20px;border-radius: 10px;text-align: center;line-height: 20px;
+                    position: absolute;top:10px;right: 9px;font-size: 10px;font-weight: bold;padding: 3px 8px;" >
+                    99
+                  </div>
+        </li>
+        <li class="layui-nav-item layui-nav-itemed" style="">
+          <a class="" href="javascript:;" id="prj_manage" style="display: none">立项管理</a>
+          <dl class="layui-nav-child">
+            <dd id="my_prj" style="display: none"><a href="javascript:;" data-url="pages/Project_Management/my_project.html" data-id="124"><i class="layui-icon">&#xe656;</i><span class="single_status" > 我的项目</span></a></dd>
+            <dd id="prj_apply" style="display: none"><a href="javascript:;" data-url="pages/Project_Management/approvalList.html" data-id="103"><i class="layui-icon">&#xe656;</i><span class="single_status" > 立项申请</span></a></dd>
+            <dd id="prj_modify" style="display: none"><a href="javascript:;" data-url="pages/Project_Management/approval_editList.html" data-id="123"><i class="layui-icon">&#xe656;</i><span class="single_status" > 立项修改</span></a></dd>
+          </dl>
+        </li>
+        <li class="layui-nav-item ">
+          <a class="" href="javascript:;" id="prj_execute" style="display: none">项目执行</a>
+          <dl class="layui-nav-child">
+            <dd id="turn_in_adjust" style="display: none"><a href="javascript:;" data-url="pages/Project_Execute/turn_in_adjust.html" data-id="101"><i class="layui-icon">&#xe62d;</i><span class="single_status"> 上提调整</span></a></dd>
+            <dd id="cost_manage" style="display: none"><a href="javascript:;" data-url="pages/Project_Execute/cost_management.html" data-id="102"><i class="layui-icon">&#xe62d;</i><span class="single_status"> 成本管理</span></a></dd>
+            <dd id="invoice_manage" style="display: none"><a href="javascript:;" data-url="pages/Project_Execute/bill_management.html" data-id="110"><i class="layui-icon">&#xe62d;</i><span class="single_status" > 开票管理</span></a></dd>
+            <dd id="payment_manage" style="display: none"><a href="javascript:;" data-url="pages/Project_Execute/payment_management.html" data-id="109"><i class="layui-icon">&#xe62d;</i><span class="single_status" > 回款管理</span></a></dd>
+            <dd id="dealer_manage" style="display: none"><a href="javascript:;" data-url="pages/Project_Execute/dealer_management.html" data-id="112"><i class="layui-icon">&#xe62d;</i><span class="single_status"> 经销商管理</span></a></dd>
+            <dd id="duration_manage" style="display: none"><a href="javascript:;" data-url="pages/Project_Execute/duration_management.html" data-id="113"><i class="layui-icon">&#xe62d;</i><span class="single_status"> 逾期管理</span></a></dd>
+            <dd id="oder_lost_manage" style="display: none"><a href="javascript:;" data-url="pages/Project_Execute/Lost_orderList.html" data-id="108"><i class="layui-icon">&#xe62d;</i><span class="single_status" > 丢单</span></a></dd>
+          </dl>
+        </li>
+        <li class="layui-nav-item ">
+          <a class="" href="javascript:;" id="prj_analyze" style="display: none">项目分析</a>
+          <dl class="layui-nav-child">
+            <dd id="prj_detail" style="display: none"><a href="javascript:;" data-url="pages/Project_Analysis/pro_summary.html" data-id="701"><i class="layui-icon">&#xe647;</i><span class="single_status" > 项目明细</span></a></dd>
+            <dd id="prj_summary" style="display: none"><a href="javascript:;" data-url="pages/Project_Analysis/pro_analyze.html" data-id="702"><i class="layui-icon">&#xe629;</i><span class="single_status" > 销售分析 </span></a></dd>
+            <dd id="financial_analysis" style="display: none"><a href="javascript:;" data-url="pages/Project_Analysis/financial_analysis.html" data-id="703"><i class="layui-icon">&#xe65e;</i><span class="single_status" > 财务分析 </span></a></dd>
+            <dd id="bill_analysis" style="display: none"><a href="javascript:;" data-url="pages/Project_Analysis/bill_analysis.html" data-id="704"><i class="layui-icon">&#xe6b2;</i><span class="single_status" > 开票分析 </span></a></dd>
+            </dl>
+        </li>
+        <li class="layui-nav-item ">
+          <a class="" href="javascript:;" id="management_expenses" style="display: none">管理费用</a>
+          <dl class="layui-nav-child">
+          <dd id="admin_expenses" style="display: none"><a href="javascript:;" data-url="pages/Project_Analysis/management_expenses.html#type=admin_expenses" data-id="705"><i class="layui-icon">&#xe659;</i><span class="single_status" > 行政费用 </span></a></dd>
+          <dd id="dep_expenses" style="display: none"><a href="javascript:;" data-url="pages/Project_Analysis/management_expenses.html#type=dep_expenses" data-id="706"><i class="layui-icon">&#xe659;</i><span class="single_status" > 部门费用 </span></a></dd>
+          </dl>
+        </li>
+        <li class="layui-nav-item "class="layui-nav-item ">
+          <dd id="warn" style="display: none"><a href="javascript:;" data-url="pages/index/warn.html" data-id="121"><span class="single_status" > 系统消息</span></a></dd>
+        </li>
+        <li class="layui-nav-item" style="">
+          <a class="" href="javascript:;" id="info_setting" style="display: none">信息设置</a>
+          <dl class="layui-nav-child">
+            <dd  id="dept_manage" style="display: none"><a href="javascript:;" data-url="pages/Information_setting/depList.html" data-id="201"><i class="layui-icon">&#xe614;</i><span> 部门管理</span></a></dd>
+            <dd id="user_manage" style="display: none"><a href="javascript:;" data-url="pages/Information_setting/userList.html" data-id="202" ><i class="layui-icon">&#xe614;</i><span> 用户管理</span></a></dd>
+            <dd id="goods_manage" style="display: none"><a href="javascript:;" data-url="pages/Information_setting/goodsManage.html" data-id="204"><i class="layui-icon">&#xe614;</i><span> 商品管理</span></a>
+            <dd id="parameter_manage" style="display: none"><a href="javascript:;" data-url="pages/Information_setting/editPram.html" data-id="203" ><i class="layui-icon">&#xe614;</i><span> 参数配置</span></a></dd>
+            <dd id="finiance_manage" style="display: none"><a href="javascript:;"  data-id="203" ><i class="layui-icon">&#xe614;</i><span> 财务成本</span></a></dd>
+            <dd id="administration_manage" style="display: none"><a href="javascript:;" data-id="203" ><i class="layui-icon">&#xe614;</i><span> 行政成本</span></a></dd>
+            </dd>
+          </dl>
+        </li>
+        <li id="peoplemana" class="layui-nav-item ">
+          <a id="log_search" style="display: none" class="" href="javascript:;">日志查询</a>
+          <dl class="layui-nav-child">
+            <dd id="op_search" style="display: none"><a href="javascript:;" data-url="pages/log_search/op_search.html" data-id="301"><i class="layui-icon">&#xe613;</i><span> 操作查询</span></a></dd>
+            <dd id="security_search" style="display: none"><a href="javascript:;" data-url="pages/log_search/security_search.html" data-id="302"><i class="layui-icon">&#xe613;</i><span> 安全审计</span></a></dd>
+            <dd id="login_search" style="display: none"><a href="javascript:;" data-url="pages/log_search/login_search.html" data-id="303"><i class="layui-icon">&#xe613;</i><span> 登录查询</span></a></dd>
+
+          </dl>
+        </li>
+        <li class="layui-nav-item">
+          <a class="" href="javascript:;" id="statistics_report" style="display: none">统计报告</a>
+          <dl class="layui-nav-child">
+            <!--                        <dd ><a href="javascript:;" data-url="sun/khtableList_r.html" data-id="501"><i-->
+            <!--                                class="layui-icon">&#xe640;</i><span> 考核表回收站</span></a></dd>-->
+            <dd id="dept_statistics" style="display: none"><a href="javascript:;" data-url="pages/tjbg/khItemList_r.html" data-id="602"><i class="layui-icon">&#xe640;</i><span> 部门统计</span></a></dd>
+            <dd id="execution_statistics" style="display: none"><a href="javascript:;" data-url="pages/tjbg/yearList_r.html" data-id="603"><i class="layui-icon">&#xe640;</i><span> 执行统计</span></a></dd>
+          </dl>
+        </li>
+<!--        <li class="layui-nav-item"><a href="javascript:;" data-url="changePassWord.html" data-id="802">修改密码</a></li>-->
+      </ul>
+    </div>
+  </div>
+
+  <div class="layui-body">
+    <!-- 内容主体区域 -->
+    <div style="margin-top:4px;" class="layui-tab layui-tab-brief" lay-filter="tab" lay-allowclose="true">
+      <ul class="layui-tab-title">
+        <li lay-id="0" class="layui-this">首页</li>
+      </ul>
+      <div class="layui-tab-content">
+        <div class="layui-tab-item layui-show">
+          <iframe src="pages/index/message.html" class="layadmin-iframe" frameborder="0"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="sq-message-card" style=""  >
+  <div id="sq-card-bt" sq-open="0" style="overflow: hidden;">
+    <i class="layui-icon">&#xe668;</i><br>最<br>新<br>消<br>息</div>
+  <div id="sq-newMessage">
+    <div style="padding: 10px;">
+    <div  style="text-align: center;font-weight: bold;border-bottom: 1px solid #eee;padding-bottom: 5px;"><strong id="new_msg">最新消息</strong></div>
+      <ul id="sq-newMessage-ul" style="">
+<!--        <li>-->
+<!--          <div class="sq-message-title" sq-open="0">消息标题(6)<div class="sq-icon-div"><i class="layui-icon">&#xe61a;</i></div></div>-->
+
+<!--          <div class="sq-message-content">-->
+<!--            <ul id="msg" class="sq-message-sun-ul">-->
+<!--              <li>-->
+<!--                <div class="sq-message-time">2021-06-36 02:06</div>-->
+<!--                <div>消息内容消息内容消息内容消息内容消息内容消<span class="sq-message-infoLink">详情</span></div>-->
+<!--              </li>-->
+<!--              <li>-->
+<!--                <div class="sq-message-time">2021-06-36 02:06</div>-->
+<!--                <div>消息内容消息内容消息内容消息内容消息内容消<span class="sq-message-infoLink">详情</span></div>-->
+<!--              </li>-->
+<!--              <li>-->
+<!--                <div class="sq-message-time">2021-06-36 02:06</div>-->
+<!--                <div>消息内容消息内容消息内容消息内容消息内容消<span class="sq-message-infoLink">详情</span></div>-->
+<!--              </li>-->
+<!--              <li>-->
+<!--                <div class="sq-message-time">2021-06-36 02:06</div>-->
+<!--                <div>消息内容消息内容消息内容消息内容消息内容消<span class="sq-message-infoLink">详情</span></div>-->
+<!--              </li>-->
+<!--              <li>-->
+<!--                <div class="sq-message-time">2021-06-36 02:06</div>-->
+<!--                <div>消息内容消息内容消息内容消息内容消息内容消<span class="sq-message-infoLink">详情</span></div>-->
+<!--              </li>-->
+<!--              <li>-->
+<!--                <div class="sq-message-time">2021-06-36 02:06</div>-->
+<!--                <div>消息内容消息内容消息内容消息内容消息内容消<span class="sq-message-infoLink">详情</span></div>-->
+<!--              </li>-->
+<!--              <li>-->
+<!--                <div class="sq-message-time">2021-06-36 02:06</div>-->
+<!--                <div>消息内容消息内容消息内容消息内容消息内容消<span class="sq-message-infoLink">详情</span></div>-->
+<!--              </li>-->
+<!--            </ul>-->
+<!--          </div>-->
+<!--        </li>-->
+
+<!--        <li>-->
+<!--          <div class="sq-message-title" sq-open="0">消息标题(6)<div class="sq-icon-div"><i class="layui-icon">&#xe61a;</i></div></div>-->
+<!--          <div class="sq-message-time">2021-06-36 02:06</div>-->
+<!--          <div class="sq-message-content">-->
+<!--            <ul class="sq-message-sun-ul">-->
+<!--              <li>消息内容消息内容消息内容消息内容消息内容消息内容消息内容<span class="sq-message-infoLink">详情</span></li>-->
+<!--              <li>消息内容消息内容消息内容消息内容消息内容消息内容消息内容<span class="sq-message-infoLink">详情</span></li>-->
+<!--              <li>消息内容消息内容消息内容消息内容消息内容消<span class="sq-message-infoLink">详情</span></li>-->
+<!--              <li>消息内容消息内容消息内容消息内容消息内容消息内容消息内容<span class="sq-message-infoLink">详情</span></li>-->
+<!--              <li>消息内容消息内容消息内容消息内容消息内容消息内容消息内容<span class="sq-message-infoLink">详情</span></li>-->
+<!--              <li>消息内容消息内容消息内容消息内容消息内容消息内容消息内容<span class="sq-message-infoLink">详情</span></li>-->
+<!--            </ul>-->
+<!--          </div>-->
+<!--        </li>-->
+      </ul>
+    </div>
+    <div style="padding: 10px;text-align: center;">
+      <button onclick="show_all()" class="layui-btn layui-btn-sm">显示全部</button>
+      <button class="layui-btn layui-btn-sm" onclick="read_msg()">全部已读</button>
+    </div>
+  </div>
+</div>
+<script src="js/jquery-3.3.1.min.js"></script>
+<script src="layui/layui.js"></script>
+<script src="js/ajax.js"></script>
+<script src="js/qrcode.min.js"></script>
+<script src="js/myqr.js"></script>
+<script>
+  if(window.sessionStorage.getItem('login_type') == '微信登录'){
+    $("#info_div").prepend('<dd><a href="javascript:;" onclick="bind_wechat()">解除绑定</a></dd>')
+  }else if(window.sessionStorage.getItem('login_type') == '账号登录'){
+    $("#info_div").prepend('<dd><a href="javascript:;" onclick="bind_wechat()">绑定微信</a></dd>')
+    top.layer.msg('为了您的账号安全，请点击右上角下拉绑定微信！')
+    $("#wx_tip").hover(function () {
+      layer.tips('为了您的账号安全，请点击下拉绑定微信！','#wx_tip',{tips: [2, 'red']})
+    })
+  }
+  $("#new_msg").hover(function () {
+    layer.tips('只显示各类别最新未读的5条消息，全部消息请点击“显示全部”','#new_msg',{tips:3})
+  })
+  var element;
+  var form;
+  var frameset={};
+  var datalist = [];
+  console.log(window.sessionStorage.getItem("user_id"))
+  console.log(window.sessionStorage.getItem("user_id") === null);
+  if (window.sessionStorage.getItem("user_id") === null){
+    sq.open("login.html")
+  }else{
+    getAjaxDate('/api/permission/','post',{role:window.sessionStorage.getItem("role_id")},
+            function (rel) {
+              $("body").show()
+              for(let i=0;i<rel.data.length;i++){
+                $("#"+rel.data[i]).show()
+              }
+            })
+  }
+  role_id = window.sessionStorage.getItem("role_id")
+  if (role_id === '2' || role_id === '3' || role_id === '4' || role_id === '7'){
+    $("#info").text(window.sessionStorage.getItem("realname")+" ("+window.sessionStorage.getItem("role_name")+")")
+  }else if(role_id === '1' || role_id === '6'){
+    $("#info").text(window.sessionStorage.getItem("realname")+" ("+window.sessionStorage.getItem("department")+")")
+  }else if(role_id === '5'){
+    $("#info").text(window.sessionStorage.getItem("realname")+" ("+window.sessionStorage.getItem("role_name")+")")
+  }
+  $("#adminimg").attr("src",imgurl+window.sessionStorage.getItem("pic"));
+  //控制页面中菜单交互Begin
+  layui.use(['element', 'form'], function () {
+    element = layui.element;
+    form = layui.form;
+    form.render();
+
+    //监听左侧导航点击
+    element.on('nav(leftnav1)', function (elem) {
+
+      var url = $(elem).attr('data-url');
+      var id = $(elem).attr('data-id');
+      var title = $(elem).html();
+      sq.violet(url);
+      open_Tab(url,id,title)
+
+    });
+    $($(".layui-tab-title li")[0]).html("首页")
+    //点击右边的tab，导航进行同步
+    element.on('tab(tab)', function(data){
+      //获取tab对应的layid
+      let layid = data.elem.children('ul').children('li[class=layui-this]').attr('lay-id')
+      //让所有的导航条去除lay-this 这个class
+      let nav =$("#dhul")
+
+      nav.children('li').each((index,value)=>{
+        let firstNav = $(value);
+        let foundNav =firstNav.find('a[data-id='+layid+']')
+        //检查一级菜单是否tab对应的菜单
+        if(foundNav.length>0){//在一级菜单中找到了对应的菜单
+          firstNav.addClass('layui-nav-itemed')//打开菜单
+          if(foundNav.parent('.layui-this').length==0){//之前没有被选中则重新选中，否则什么都不做
+            firstNav.find('.layui-this').removeClass('layui-this')//清除之前选中的
+            foundNav.parent().addClass('layui-this')//选中当前节点
+          }
+
+        }else{//没有在一级菜单中找到
+          firstNav.removeClass('layui-this')//如果自己被选中则去除选中样式
+            firstNav.find('.layui-this').removeClass('layui-this')//清除所有选中痕迹
+          }
+
+      })
+
+      form.render();
+        $($(".layui-tab-title li")[0]).html("首页")
+    });
+
+
+      element.on('tabDelete(tab)', function(data){
+          setTimeout(function () {
+              form.render();
+              $($(".layui-tab-title li")[0]).html("首页")
+          },90)
+
+      });
+
+  });
+  function open_Tab(url,id,title,refresh) {
+
+    //防止重复点击
+    if(tooFastCall(url,''))return;
+
+    console.log(refresh == true)
+    if (title === "首页") {
+      element.tabChange('tab', 0);
+      // console.log('11111');
+      return;
+    }
+    if (url === undefined) return;
+
+    var tabTitleDiv = $('.layui-tab[lay-filter=\'tab\']').children('.layui-tab-title');
+    var exist = tabTitleDiv.find('li[lay-id=' + id + ']');
+    if (exist.length > 0) {
+      //切换到指定索引的卡片
+      if(refresh == true){
+
+        // $("iframe[lay-id="+id+"]").attr('src',url)
+        // $("iframe[lay-id='"+id+"']")[0].contentWindow.window.location.reload(true);
+        // element.tabDelete('tab', id)
+        // element.tabAdd('tab', {title: title, content: tabstr(url,id), id: id});
+        element.tabChange('tab', id);
+      }else {
+        element.tabChange('tab', id);
+      }
+      //刷新tab 下面的iframe
+      $("iframe[lay-id="+id+"]").attr('src',url)
+    } else {
+      //创建新的tab，lay-filter为‘tab’
+      element.tabAdd('tab', {title: title, content: tabstr(url,id), id: id});
+      //切换到指定索引的卡片
+      if(refresh == true){
+        // element.tabDelete('tab', id)
+        // element.tabAdd('tab', {title: title, content: tabstr(url,id), id: id});
+        element.tabChange('tab', id);
+      }else {
+        element.tabChange('tab', id);
+      }
+    }
+      form.render();
+      $($(".layui-tab-title li")[0]).html("首页")
+  }
+  function tabstr(s,id){
+      var str = '<div class="layui-tab-item layui-show">' +
+          '<iframe lay-id="'+id+'" class="layadmin-iframe" frameborder="0" src="'+s+'"></iframe>' +
+          '</div>'
+      return str;
+  }
+  //控制页面中菜单交互End
+
+
+  // 注销
+  function logout() {
+    if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+    window.sessionStorage.clear()
+    sq.open("login.html")
+  }
+
+
+
+
+  var qr_content ='<div id="qr_code" style="width:280px;height: 280px; margin: 20px;"></div>'
+  function qr_check(code){ //如果范围成功则不再刷新
+    if(code==0){ //扫码成功
+
+    }
+    if(code==1){ //尚未扫码
+
+    }
+    return false;
+
+  }
+
+  //将微信账号与账号绑定
+
+  var myqr = null;
+  function bind_wechat(){
+    getAjaxDate('/api/wechat/wechat_binding_code/?t='+new Date().getTime(),'get','',function (rel){
+      if(rel.code==1){
+        // 打开二维码
+        let qr_win = layer.open({
+          type: 1,
+          title: '请用微信扫描二维码',
+          content:qr_content,
+          cancel: function(index, layero){
+            if(myqr!=null){
+              myqr.stop_scan()
+              myqr=null;
+            }
+            return true;
+          }
+        })
+
+        if(myqr!=null){
+          myqr.stop_scan()
+        }
+        myqr = new MyQr({
+          qr_container:'qr_code',
+          uuid:rel.data.state,
+          qr_url : rel.data.url,
+          check_url : '/api/wechat/bind_reflash/?state=',
+          check:function (rel){ //如果范围成功则不再刷新
+            if(rel.data==0){ //扫码成功
+              layer.close(qr_win);
+              layer.msg('绑定成功', {time:1000});
+              window.sessionStorage.setItem('login_type','微信登录')
+              window.location.reload()
+              return true
+
+            }
+            else if(rel.data==1){ //尚未扫码
+              return false
+            }
+            else if(rel.data==-1){ //微信已经绑定到其他账号
+              layer.close(qr_win);
+              layer.msg('该微信已经绑定到其他账号', {time:1000});
+              window.location.reload()
+              return true
+            }
+            layer.close(qr_win);
+            layer.msg('未知错误', {time:1000});
+            return true
+
+          },
+          timeout:function (){
+            layer.close(qr_win);
+            layer.msg('扫码超时', {time:1000});
+
+          }
+        })
+        myqr.start_scan();
+
+      }
+      else{//已经绑定，询问是否清清除后重新绑定?
+        let content ='当前用户已经绑定微信！ 是否解除绑定？'
+        layer.confirm(content, {icon: 3, title:'提示'}, function(index){
+            layer.close(index);
+          //清除绑定关系后重新绑定
+          getAjaxDate('/api/wechat/wechat_unbinding/','get','',function (rel){
+            if(rel.code==1){
+              layer.msg('解除操作成功！',{time:1000})
+              logout()
+            }else
+            {
+              layer.msg(rel.msg,{time:1000})
+            }
+
+          });
+
+        });
+
+      }
+
+
+    })
+  }
+
+
+
+  function info_detail() {
+    if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+    layer.open({
+      title: ''
+      ,content: 'user_info.html'
+      ,type:2
+      ,area:['39%','40%']
+      ,yes: function(index, layero){
+      }
+      ,btn2: function(index, layero){
+      }
+      ,cancel: function(){
+        layer.msg("取消成功")
+      }
+    });
+  }
+  function edit_password() {
+    if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+    sq.inputWindow({
+      title: {
+        text: "修改密码",//标题
+        titleColor: "#FFFFFF"//弹窗文字颜色
+      },
+      closeBtn: 1,
+      width: "30%",
+      shadeClose: false,
+      form: {
+        old_password: {
+          label: "现用密码",
+          type: "password",
+          value: "",
+          tip: "请输入现用密码",
+          allowNull: false
+        },
+        new_password: {
+          label: "新密码",
+          type: "password",
+          value: "",
+          tip: "以字母开头,只能包括字符,数字和下划线,6-18位",
+          allowNull: false
+        },
+        confirm: {
+          label: "确认新密码",
+          type: "password",
+          value: "",
+          tip: "请确认密码",
+          allowNull: false
+        },
+      },
+      sure: function (rel) {
+        let passwod_zz = /^[a-zA-Z]\w{5,17}$/;
+        if(!passwod_zz.test(rel.new_password)){
+          layer.msg("密码需以字母开头、长度在6-18之间，只能包括字符、数字和下划线");
+        }else{
+          let sendObj = new Object()
+          sendObj.old_password = rel.old_password;
+          sendObj.new_password = rel.new_password;
+          if(rel.new_password.length < 6){
+            layer.msg("新密码要大于6位")
+          }else if (rel.confirm !== rel.new_password){
+            layer.msg("两次密码不一致，请重新输入！")
+          }else {
+            getAjaxDate('/api/user/'+window.sessionStorage.getItem("user_id")+'/','patch',sendObj,function (rel) {
+              console.log(rel.msg)
+              layer.msg(rel.msg,{time: 1000},function () {
+                layer.closeAll();
+                logout()
+              })
+
+            })
+          }
+        }
+      }
+    })
+  }
+  getAjaxDate('/api/remind/msg/','get','',function (rel){
+    console.log(rel.data)
+    datalist =rel.data;
+    setMsg(datalist)
+  })
+
+  function setMsg(infoList) {
+    /**
+     *@infoList 是一个数组
+     *  **/
+    for(let row_id = 0;row_id< infoList.length;++row_id) {
+      let value = infoList[row_id]
+      console.log(value)
+      console.log(value.title)
+      //显示的按钮
+      //将数据插入表格中
+
+      $("#sq-newMessage-ul").append('<li style="">' +
+              '<div class="sq-message-title" sq-open="0">' +
+              value.title + ' (' + value.count + ')'
+              + '<div class="sq-icon-div"><i class="layui-icon">&#xe61a;</i></div></div>'
+              + '<div class="sq-message-content"><ul id="li' + value.title + '" class="sq-message-sun-ul">'
+              + '<li id="li' + value.data[0].id + '"  style="font-weight: bold;"><div class="sq-message-time">' + value.data[0].time + '</div><div onclick="checkMessage(\''+encodeURIComponent(JSON.stringify(value.data[0]))+'\')" style="display: inline;">' + value.data[0].remark + '</div><span onclick="open_detail(\'' + value.title+ '\',\'' + value.data[0].number+ '\')" class="sq-message-infoLink" id="' + value.title + '" >详情</span>' +
+              '</li></ul></div></li>'
+      );
+      for (let i = 1; i < value.data.length; ++i) {
+        $("#li" + value.title).append('<li id="li' + value.data[i].id + '"  style="font-weight: bold;"><div class="sq-message-time">' + value.data[i].time + '</div><div onclick="checkMessage(\''+encodeURIComponent(JSON.stringify(value.data[i]))+'\')" style="display: inline;">' + value.data[i].remark + '</div><span style="display: inline" onclick="open_detail(\'' + value.title+ '\',\'' + value.data[i].number+ '\')" id="' + value.title + '" class="sq-message-infoLink" >详情</span>' +
+                '</li>')
+      }
+    }
+    let obj = $(".sq-message-sun-ul");
+    for (let i = 0;i<obj.length;i++){
+      $(obj[i]).css("height",$($(obj[i]).children("li")[0]).height()+10);
+    }
+    $("#sq-newMessage-ul").css("height",($("#sq-message-card").height()-40)+"px");
+      $("#sq-card-bt").unbind('click');
+      $(".sq-message-title").unbind('click');
+    $("#sq-card-bt").click(function () {
+      let titleObj = $(this);
+      if(titleObj.attr("sq-open") == "0"){
+        $('#sq-message-card').css('right','0px');
+        titleObj.children(".layui-icon").html("&#xe66b;");
+        titleObj.attr("sq-open","1");
+      }else{
+        $('#sq-message-card').css('right','-300px')
+        titleObj.children(".layui-icon").html("&#xe668;");
+        titleObj.attr("sq-open","0");
+      }
+
+    })
+    $(".sq-message-title").click(function () {
+      let titleObj = $(this);
+      let obj = $(this).siblings(".sq-message-content").children(".sq-message-sun-ul");
+      if(titleObj.attr("sq-open") == "0"){
+        obj.css("height","auto");
+        titleObj.children(".sq-icon-div").children(".layui-icon").html("&#xe619;");
+        titleObj.attr("sq-open","1");
+      }else{
+        obj.css("height",$(obj.children("li")[0]).height()+10);
+        titleObj.children(".sq-icon-div").children(".layui-icon").html("&#xe61a;");
+        titleObj.attr("sq-open","0");
+      }
+
+
+    })
+  }
+  function  open_detail(type,number) {
+    if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+    if (type==="立项申请"){
+      url = "pages/Project_Management/approvalList.html?t="+$.now()+"#number="+number
+      top.open_Tab(url,"103","立项申请",true)
+      top.$("dd").removeClass("layui-this")
+      top.$("#prj_apply").addClass("layui-this")
+    }
+    if (type==="立项修改"){
+      url = "pages/Project_Management/approval_editList.html?t="+$.now()+"#number="+number
+      top.open_Tab(url,"123","立项修改",true)
+      top.$("dd").removeClass("layui-this")
+      top.$("#prj_modify").addClass("layui-this")
+    }
+    if (type==="丢单操作"){
+      url = "pages/Project_Execute/Lost_orderList.html?t="+$.now()+"#number="+number
+      top.open_Tab(url,"108","丢单操作",true)
+      top.$("dd").removeClass("layui-this")
+      top.$("#oder_lost_manage").addClass("layui-this")
+    }
+  }
+  function  refreshnotifications()
+  {
+    // 加上时间戳，防止定时任务被误认为重复点击。
+    getAjaxDate('/api/todoitem/?t='+new Date().getTime(),'get','',function (rel) {
+      console.log("********************************")
+      $("#item_apply").text(rel.data.item_apply)
+      $("#item_update").text(rel.data.item_update)
+      $("#item_loss").text(rel.data.item_loss)
+      $("#item_warn").text(rel.data.item_warn)
+      $("#warn_num").text(parseInt(rel.data.item_warn)+parseInt(rel.data.item_apply)+parseInt(rel.data.item_update)+parseInt(rel.data.item_loss))
+      if(parseInt(rel.data.item_warn)+parseInt(rel.data.item_apply)+parseInt(rel.data.item_update)+parseInt(rel.data.item_loss)<1)
+      {
+        $("#warn_num").hide()
+      }
+      else
+      {
+        $("#warn_num").show()
+      }
+
+      console.log(rel.data)
+    },false)
+  }
+
+  $(function(){
+    setInterval(function(){
+      refreshnotifications();
+    }, 300000);
+  });
+  $(function(){
+    setInterval(function(){
+      getAjaxDate('/api/remind/msg/','get','',function (rel){
+        console.log(rel.data)
+        datalist =rel.data;
+        $("#sq-newMessage-ul").empty()
+        setMsg(datalist)
+      },false)
+    }, 30000);
+  });
+
+
+
+
+  function show_all() {
+    if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+    let url = "pages/index/warn.html?t="+$.now()+"#wait=1"
+    top.open_Tab(url,"121","系统消息")
+    top.$("dd").removeClass("layui-this")
+    top.$("#oder_lost_manage").addClass("layui-this")
+  }
+  function read_msg() {
+    getAjaxDate('/api/remind/batch_read/','patch','',function (rel) {
+      console.log(rel.data)
+      layer.msg(rel.msg)
+      $("#sq-newMessage-ul").empty()
+      setMsg(rel.data)
+    })
+  }
+  function checkMessage(row_id) {
+    if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+    value = JSON.parse(decodeURIComponent(row_id));
+    console.log(value)
+    $("#li" + value.id).removeAttr("style");
+    $("#li" + value.id).css("color","#96a0aa");
+    layer.open({
+      title: "【"+value.remind_type+"】"+value.id
+      ,content: value.msg
+      ,btn: ['确认', '取消']
+      ,yes: function(index, layero){
+        getAjaxDate("/api/remind/"+value.id+"/","patch",
+                {read:1},
+                function(rel){
+                  console.log(rel.data)
+                  // if(rel.code == 1){
+                  //   getAjaxDate('/api/remind/msg/','get','',function (rel){
+                  //     console.log(rel.data)
+                  //     datalist =rel.data;
+                      // $("#sq-newMessage-ul").empty()
+                      // setMsg(datalist)
+                    // })
+                    layer.closeAll()
+                  // }
+                });
+      }
+      ,btn3: function(index, layero){
+        //按钮【按钮三】的回调
+
+        //return false 开启该代码可禁止点击该按钮关闭
+      }
+    })
+  }
+</script>
+</body>
+</html>

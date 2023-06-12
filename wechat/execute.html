@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>项目申请</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="../layui/css/layui.css" media="all">
+  <link rel="stylesheet" href="../css/sq.css">
+  <style type="text/css">
+    #mainContent{
+      padding: 20px;
+    }
+    #topContainer{
+      text-align: center;
+      background-color: #003c97;
+      color: #FFF;
+      font-weight: bold;
+      font-size: 18px;
+      padding: 20px;
+    }
+    .iconContent{
+      float: left;
+      text-align: center;
+      font-size: 14px;
+    }
+    #myUL{
+      margin: 0;
+      padding: 20px;
+      background-color: #FFF;
+    }
+    #myUL li{
+      list-style: none;
+      background-color: #FFFFFF;
+      margin: 5px 0 0 1%;
+      padding: 0 0 10px 0;
+      border-radius: 5px;
+      cursor: pointer;
+      overflow: hidden;
+      border-bottom: 1px solid #efefef;
+    }
+    #myUL li p{
+      padding: 5px;
+    }
+    .lxdh{
+      margin-left: 10px;
+      color: #FD482C;
+    }
+    #footContainer{
+      font-size: 10px;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background-color: #efefef;
+      text-align: center;
+    }
+    .sqtime{
+      font-size: 12px;
+      color: #999999;
+    }
+    .sqsel{
+      padding: 3px;
+      border: 1px solid #003c97;
+      color: #003c97;
+      font-size: 14px;
+      margin-right: 20px;
+    }
+    .summaryContent  label{
+      font-weight: bold;
+      text-align: left;
+    }
+    .layui-input, .layui-textarea{
+      border: none;
+      outline: none;
+      display: inline;
+      margin-right: 20px;
+    }
+    .layui-form-item .layui-inline{
+      margin-bottom: 0;
+    }
+    .layui-form-item .layui-form-label{
+      overflow: visible;
+    }
+    .sq-lm{
+      margin: 10px auto;
+      text-align: left;padding: 10px;
+      border: 1px solid #003c97;
+      position: relative;
+      height: 130px;
+    }
+    .sq-lm-title{
+      position: absolute;
+      top: -15px;
+      background-color: #003c97;
+      border-radius: 3px;
+      padding: 3px 8px;
+      font-size: 14px;
+      color: #FFF;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+<div id="topContainer">
+  我的项目(<span id="depName" style="color: #FFB800;">部门名称</span>)
+</div>
+<div id="mainContent" class="layui-form">
+  <div class="sq-lm" style="">
+    <span class="sq-lm-title" style="">数据总览</span>
+    <div class="summaryContent" style="margin: 0 auto">
+      <form class="layui-form">
+        <div class="layui-form-item">
+          <div class="layui-inline">
+            <label class="layui-form-label">总拟成交价：</label>
+            <div class="layui-input-inline">
+              <input type="text" class="layui-input" id="total_transaction_price" readonly>
+            </div>
+          </div>
+          <div class="layui-inline" >
+            <label class="layui-form-label">总回款：</label>
+            <div class="layui-input-inline">
+              <input type="text" class="layui-input" id="total_refunds" readonly>
+            </div>
+          </div>
+          <div class="layui-inline" >
+            <label class="layui-form-label">总开票：</label>
+            <div class="layui-input-inline">
+              <input type="text" class="layui-input" id="total_invoice_amount" readonly>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+  <ul id="myUL" style="margin-top: -30px;"></ul>
+
+  <div style="text-align: center;padding: 10px; padding-bottom: 60px">
+    <button class="layui-btn" id="loadMoreBT" style="background-color: #666;" onclick="search_pro(++cur_page,'search')" >点击加载更多……</button>
+  </div>
+
+<div id="footContainer">
+  <div style="width: 25%" class="iconContent" id="index_foot">
+    <div style="padding: 10px 0" onclick="sq.open('index.html')">
+      <i class="layui-icon layui-icon-home" style="font-size: 22px;font-weight: bold;"></i>
+      <br>
+      <span>首页</span>
+    </div>
+  </div>
+  <!--  <div style="width: 25%;" class="iconContent" id="project_foot">-->
+  <!--    <div style="padding: 10px 0" onclick="sq.open('approvalList.html')">-->
+  <!--      <i class="layui-icon layui-icon-form" style="font-size: 22px;font-weight: bold;"></i>-->
+  <!--      <br>-->
+  <!--      <span>项目</span>-->
+  <!--    </div>-->
+  <!--  </div>-->
+  <div style="width: 25%" class="iconContent" id="project_foot">
+    <div style="padding: 10px 0" id="project_dropdown">
+      <i class="layui-icon layui-icon-form" style="font-size: 22px;font-weight: bold;"></i>
+      <br>
+      <span >项目</span>
+    </div>
+  </div>
+  <div style="width: 25%;color: #003c97;" class="iconContent" id="execute_foot">
+    <div style="padding: 10px 0" >
+      <i class="layui-icon layui-icon-template-1" style="font-size: 22px;font-weight: bold;"></i>
+      <br>
+      <span>执行</span>
+    </div>
+  </div>
+  <div style="width: 25%;display: none;" class="iconContent" id="analyse_foot">
+    <div style="padding: 10px 0" onclick="sq.open('analysis.html')">
+      <i class="layui-icon layui-icon-template-1" style="font-size: 22px;font-weight: bold;"></i>
+      <br>
+      <span>分析</span>
+    </div>
+  </div>
+  <div style="width: 25%" class="iconContent" id="msg_foot">
+    <div style="padding: 10px 0" onclick="sq.open('my.html')">
+      <i class="layui-icon layui-icon-notice" style="font-size: 22px;font-weight: bold;"></i>
+      <br>
+      <span>消息</span>
+    </div>
+  </div>
+</div>
+<div id="searchBT" style="background-color: #222;color: #FFF;position: fixed;right: 10px;bottom: 70px;width: 40px;height: 40px;border-radius: 20px;text-align: center;line-height: 40px;">
+  <i class="layui-icon layui-icon-search" style="font-size: 20px;"></i>
+</div>
+<!--下方为模板部分-->
+<!--用户登陆的模板-->
+</body>
+<script src="/js/jquery.min.js"></script>
+<script src="/layui/layui.js"></script>
+<script src="/js/ajax.js"></script>
+<script src="/js/jszip.js"></script>
+<script src="/js/xlsx.js"></script>
+<script src="/js/jquery.cookie.js"></script>
+<script>
+  if(window.sessionStorage.getItem('role_id') == 3){
+    $("#execute_foot").hide()
+    $("#index_foot").css('width','34%')
+    $("#project_foot").css('width','33%')
+    $("#msg_foot").css('width','33%')
+  }
+  if(window.sessionStorage.getItem('rold_id') == 4){
+    $("#execute_foot").hide()
+    $("#analyse_foot").show()
+  }
+  layui.use('dropdown', function(){
+    var dropdown = layui.dropdown
+    dropdown.render({
+      elem: '#project_dropdown' //可绑定在任意元素中，此处以上述按钮为例
+      ,align: 'center'
+      ,data: [{
+        title: '立项申请'
+        ,id: 100
+        ,href: 'approvalList.html'
+      },{
+        title: '立项修改'
+        ,id: 101
+        ,href: 'approval_editList.html' //开启超链接
+        // ,target: '_blank' //新窗口方式打开
+      },{
+        title: '丢单'
+        ,id: 102
+        ,href: 'Lost_orderList.html'
+      },]
+      ,id: 'project_dropdown'
+      //菜单被点击的事件
+      ,click: function(obj){
+        console.log(obj);
+        // layer.msg('回调返回的参数已显示再控制台');
+      }
+    });
+  });
+  <!--  只有销售人员和部门主管才显示 我的项目 页面-->
+  var role_id = window.sessionStorage.getItem("role_id")
+  var cur_page = 1;
+  var start_time ='';
+  var end_time ='';
+  var isManager = false;
+
+  // var member_id = ''; //当用户为部门主管，选定的成员的id
+
+  //默认项目搜索参数
+  var sendObj = new Object();
+  if($.cookie(window.location.href) == undefined){
+    sendObj.page_size = 10;
+    $.cookie(window.location.href, sendObj.page_size);
+  }else{
+    sendObj.page_size= $.cookie(window.location.href);
+
+  }
+  sendObj.page = 1;
+  sendObj.member_id = '';
+  sendObj.get_type = 'personal';
+
+  //进入页面后立即执行搜索，传递默认参数
+
+  //金额汇总的搜索
+  if(role_id === '2') {
+    isManager = true;
+    // search_summary('/api/myitem/cost_detail/?get_type=department&member_id=');
+    //111111
+    sendObj.get_type = 'department'
+    search_pro(1,'search');
+    //获取部门成员列表
+    get_person();
+  }
+  if(role_id !== '2'){
+    $('#myPrjDeptSelect').hide()
+    // $('#role_change').hide();
+    // $('#sqselect_person').hide();
+    // search_summary('/api/myitem/cost_detail/?get_type=personal&memeber_id=');
+    //111111
+    sendObj.get_type = 'personal'
+    search_pro(1,'search');
+  }
+  layui.use('laydate', function(){
+    var laydate = layui.laydate;
+    laydate.render({
+      elem: '#test6'
+      //设置开始日期、日期日期的 input 选择器
+      //数组格式为 2.6.6 开始新增，之前版本直接配置 true 或任意分割字符即可
+      ,range: ['#test-startDate-1', '#test-endDate-1']
+      ,theme: 'molv'
+      ,change: function(value, date, endDate){
+        start_time = value.split(" ")[0]
+        end_time = value.split(" ")[2]
+        // console.log(value.split(" ")); //得到日期生成的值，如：2017-08-18
+        // console.log(start_time)
+        // console.log(end_time)
+      }
+    });
+  });
+  layui.use('form', function(){
+    var form = layui.form;
+    form.on('checkbox(get_type)', (data)=>{search_pro(1,'search');});
+    form.on('switch(switchTest)', function(data){
+      // console.log(this.checked ? 'department' : 'personal');
+      sendObj.get_type = this.checked ? 'department' : 'personal';
+      if (sendObj.get_type === 'department' || sendObj.get_type === undefined){
+        isManager = true;
+        $("#sqselect_person").show()
+        // if (sendObj.member_id !== '' && sendObj.member_id !== undefined){
+        //   //搜索部门内某个成员的项目金额汇总
+        //   search_summary('/api/myitem/cost_detail/?get_type=department&member_id='+sendObj.member_id.toString());
+        //
+        // }else{
+        //   //搜索整个部门的项目金额汇总
+        //   search_summary('/api/myitem/cost_detail/?get_type=department&member_id=');
+        // }
+        //  选择department
+        //111111
+        sendObj.get_type = 'department'
+        search_pro(1,'search');
+      }else {
+        isManager = false;
+        $("#sqselect_person").hide()
+        // search_summary('/api/myitem/cost_detail/?get_type=personal&memeber_id=');
+        //111111
+        sendObj.get_type = 'personal'
+        search_pro(1,'search');
+      }
+      // $("#listTbody").empty();
+      //切换个人/部门，再刷新列表
+
+
+      layer.msg('角色已切换至：'+ (this.checked ? '部门' : '个人'), {
+        offset: '6px'
+      });
+      // layer.tips('温馨提示：请注意开关状态的文字可以随意定义，而不仅仅是ON|OFF', data.othis)
+    });
+    form.render()
+  });
+  //隐藏 个人/部门切换 checckbox 和 本部门内人员选择框
+
+
+  function search_summary(url){
+    getAjaxDate(url,'get','',function (rel) {
+      // console.log(rel.data)
+      var summary_data = rel.data[0]
+      // $('#total_invoice_amount').val(summary_data.total_invoice_amount.toString() + '  元')
+      // $('#rest_invoice_amount').val(summary_data.rest_invoice_amount.toString() + '  元')
+      // $('#total_cost').val(numFormat(summary_data.total_cost.toString()) + '  元')
+      $('#total_transaction_price').val(numFormat(summary_data.total_transaction_price.toString()) + '  元')
+      $('#total_refunds').val(numFormat(summary_data.total_refunds.toString()) + '  元')
+      $('#total_invoice_amount').val(numFormat(summary_data.total_invoice_amount.toString()) + '  元')
+    })
+  }
+  //有memeber_id表示对该member搜索，否则只是对个人搜素，不带该参数
+  function search_pro(cur_page,get_type) {
+    if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+
+    // var search_type = search_type;
+    // console.log("test");
+    let send_data = new Object();
+
+    var search_obj = new Object();
+    var reset_obj = new Object();
+
+    // if(search_type === ''){
+    //   search_type = sendObj.get_type;
+    // }
+
+    search_obj.page_size = sendObj.page_size;
+    search_obj.page = cur_page;
+    // search_obj.get_type = search_type;
+    search_obj.get_type = sendObj.get_type
+    reset_obj.page_size = sendObj.page_size;
+    reset_obj.page = sendObj.page;
+    // reset_obj.get_type = search_type;
+    reset_obj.get_type = sendObj.get_type;
+
+    if (sendObj.member_id !=='' && sendObj.member_id !== undefined){
+      //当部门主管作为个人角色时，该值初始值为false,
+      if (!isManager){
+        search_obj.member_id = '';
+      }else{
+        search_obj.member_id = sendObj.member_id;
+      }
+    }else{
+      search_obj.member_id = ''
+    }
+    // search_obj.member_id = sendObj.member_id;
+
+    if(get_type === 'search') {
+      // search_obj.item_name = $("#pro_name").val();
+      search_obj.name = $("#pro_name").val();
+      search_obj.search = sendObj.search
+      search_obj.number = $("#pro_number").val();
+      search_obj.start_time = start_time;
+      search_obj.end_time = end_time;
+
+      params = layui.form.val('params');
+      if(params["get_type[LX]"]=="on" &&params["get_type[DD]"]!="on" )
+      {
+        search_obj.status = 40;
+      }
+      else if(params["get_type[LX]"]!="on" &&params["get_type[DD]"]=="on" )
+      {
+        search_obj.status = 60
+      }
+      else{
+        search_obj.status = ""
+      }
+      send_data = search_obj;
+    }else if(get_type === 'reset'){
+      //reset只搜索部门主管个人或销售人员，没有member_id字段
+      // delete sendObj.member_id;
+      // send_data = sendObj;
+      // search_obj.member_id = ''
+      sendObj.member_id = '';
+      sendObj.page = sendObj.page;
+      sendObj.page_size = $.cookie(window.location.href);
+      reset_obj.member_id = '';
+      send_data = reset_obj;
+
+      $("#pro_name").val('');
+      $("#pro_number").val('');
+      $("#test-startDate-1").val('');
+      $("#test-endDate-1").val('');
+      $("#sqSelect_dep_person").val('');
+    }
+    // getAjaxDate('/api/item/search/','get',send_data,function (rel) {
+    getAjaxDate('/api/myitem/','get',send_data,function (rel) {
+      console.log(rel.data.total_items - cur_page * rel.data.page_size)
+      $("#loadMoreBT").show();
+      if (rel.data.total_items - cur_page * rel.data.page_size <= 0) {
+        $("#loadMoreBT").hide();
+      }
+      console.log(rel.data)
+      layer.msg(rel.msg)
+      $("#listTbody").empty()
+      setTable(rel.data.results[1])
+      // setTable(rel.data.results)
+
+      //修改汇总数据
+      var summary_data = rel.data.results[0][0]
+      console.log('aaa:',summary_data)
+      // $('#total_cost').val(numFormat(summary_data.total_cost.toString()) + '  元')
+      $('#total_transaction_price').val(numFormat(summary_data.total_transaction_price.toString()) + '  元')
+      $('#total_refunds').val(numFormat(summary_data.total_refunds.toString()) + '  元')
+      $('#total_invoice_amount').val(numFormat(summary_data.total_invoice_amount.toString()) + '  元')
+
+    })
+    // console.log(sendObj)
+  }
+  function setTable(infoList) {
+    /**
+     *@infoList 是一个数组
+     *  **/
+    infoList.forEach(function (value) {
+      //显示的按钮
+      var buttonStr = '<button class="layui-btn editbt layui-btn-sm" onclick="openEditWindow(\''+encodeURIComponent(JSON.stringify(value))+'\')"><i class="layui-icon layui-icon-form"></i>   </button>';
+      //将数据插入表格中
+      $("#myUL").append('<li>'+'<div class="layui-col-md12 layui-col-xs12">'+'<p style="text-align: left;">'
+              // +'<strong>项目名称:  </strong>'
+              +'<span id="project">'+value.name+' ('+value.number+')'+'</span>'
+              +'<span  style="float: right;">'+buttonStr+'</button></span>'
+              +'</p><div style="padding: 10px 5px;">'
+              +'<div class="layui-col-xs6"><span class="xm">状态：</span><span class="lxdh" style="color: #01AAED">'+value.project_status+'</span></div>'
+              +'<div class="layui-col-xs6" style="text-align: right;"><span class="sqtime">'+value.time+'</span></div></div> </div> </li>'
+      );
+    })
+  }
+  function openEditWindow(data) {
+    if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
+    sq.open('my_project_detail.html#data='+data)
+  }
+
+
+  function get_person() {
+    getAjaxDate('/api/user/?get_type=department','get',"",function (rel) {
+      // console.log(rel.data)
+      setselect(rel.data.results)
+    });
+  }
+  function setselect(infoList){
+    infoList.forEach(function (value) {
+      //显示的按钮
+      //将数据插入表格中
+      $("#sqSelect_dep_person").append(new Option(value.nickname, value.id));
+    })
+  }
+
+  //选择框切换用户，重新计算汇总，刷新项目列表
+  $("#sqSelect_dep_person").on("change",function () {
+    sendObj.member_id = $(this).val();
+    $("#listTbody").empty();
+    // if($(this).val() !== '' && $(this).val() !== undefined){
+    //   // search_pro(1,'search','personal');
+    //   search_summary('/api/myitem/cost_detail/?get_type=personal&member_id='+$(this).val().toString());
+    // }
+    // else{
+    //   sendObj.member_id = ''
+    //   // search_pro(1,'search','department');
+    //   search_summary('/api/myitem/cost_detail/?get_type=department&member_id='+$(this).val().toString());
+    // }
+    //111111
+    sendObj.get_type = 'department'
+    search_pro(1,'search');
+  });
+
+  $("#searchBT").click(function () {
+    sq.inputWindow({
+      title: {
+        text: "项目搜索",//标题
+        titleColor: "#FFFFFF"//弹窗文字颜色
+      },
+      closeBtn: 1,
+      width: "90%",
+      shadeClose: false,
+      form: {
+        pro_number: {
+          label: "项目编号",
+          type: "text",
+          value: "",
+          tip: "请输入项目编号",
+          allowNull: true
+        },
+      },
+      sure: function (rel) {
+        cur_page = 1;
+        sendObj.search = rel.pro_number;
+        $("#myUL").html("");
+        layer.closeAll();
+        layer.msg('搜索成功!',{time: 500},function () {});
+        search_pro(cur_page,'search')
+      }
+    })
+  })
+</script>
+</body>
+</html>

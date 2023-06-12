@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>个人中心</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="/css/sq.css">
+    <style type="text/css">
+        /* 10.16 修改 body 下内边距 */
+        #mainContainer{
+            padding-bottom: 60px;
+        }
+        #topContainer{
+            text-align: center;
+            background-color: #003c97;
+            color: #FFF;
+            font-weight: bold;
+            font-size: 18px;
+            padding: 20px;
+        }
+        .iconContent{
+            float: left;
+            text-align: center;
+            font-size: 14px;
+        }
+        #myUL{
+            margin: 0;
+            padding: 20px;
+            background-color: #FFF;
+        }
+        #myUL li{
+            list-style: none;
+            /*background-color: #FFFFFF;*/
+            margin: 5px 0 0 1%;
+            padding: 0 0 10px 0;
+            border-radius: 5px;
+            cursor: pointer;
+            overflow: hidden;
+            border-bottom: 1px solid #efefef;
+        }
+        #myUL li p{
+            padding: 5px;
+        }
+        .lxdh{
+            margin-left: 10px;
+            color: #FD482C;
+        }
+        #footContainer{
+            font-size: 10px;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background-color: #efefef;
+            text-align: center;
+        }
+        .sqsel{
+            padding: 3px;
+            border: 1px solid #003c97;
+            color: #003c97;
+            font-size: 18px;
+            width: 100px;
+        }
+        .readcss{
+            background-color:#c2c2c2;
+        }
+        .unreadcss{
+
+        }
+    </style>
+</head>
+<body>
+<div id="topContainer">
+    系统消息(<span id="num_msg" style="color: #FFB800;">99+</span>)
+</div>
+<div id="mainContainer" class="layui-form">
+    <div class="layui-col-xs4">
+        <label class="layui-form-label" style="text-align: right;font-weight: bold">类型筛�?</label>
+    </div>
+    <div class="layui-col-xs8">
+        <div id="demo1" style="margin-left: 0px;margin-right: 32px;margin-top: 5px;"></div>
+    </div>
+    <div style="text-align: left;padding-left: 35px;">
+        <span style="margin-right: 12px;font-weight: bold;">状态筛选：</span>
+        <select class="sqsel" id="state_select" lay-ignore style="font-size: 16px;padding-left: 0px;margin-top: 10px;">
+            <option value="">全部</option>
+            <option value="1">已读</option>
+            <option value="0">未读</option>
+        </select>
+<!--        <span style="margin-left: 40px;font-size: 16px;font-weight: bold">总计: <strong id="totalnum" style="color: #008fb8;"></strong> �?/span>-->
+    </div>
+
+    <ul id="myUL" style="padding-top: 20px;"></ul>
+
+    <div style="text-align: center;padding: 10px;">
+        <button class="layui-btn" id="loadMoreBT" style="background-color: #666;" onclick="getMsg(++cur_page)" >点击加载更多…�?/button>
+    </div>
+    <li id="login_debugger" style="text-align: center;">
+        <button onclick="login_1()" class="layui-btn" id="login_button" style="background-color: #ff8a00;">登录</button>
+        <button class="layui-btn layui-btn-normal" id="logoutbt" type="button" onclick="quit()">退出登�?/button>
+    </li>
+</div>
+<div id="footContainer">
+    <div style="width: 25%" class="iconContent" id="index_foot">
+        <div style="padding: 10px 0" onclick="sq.open('index.html')">
+            <i class="layui-icon layui-icon-home" style="font-size: 22px;font-weight: bold;"></i>
+            <br>
+            <span>首页</span>
+        </div>
+    </div>
+    <div style="width: 25%" class="iconContent" id="project_foot">
+        <div style="padding: 10px 0" id="project_dropdown">
+            <i class="layui-icon layui-icon-form" style="font-size: 22px;font-weight: bold;"></i>
+            <br>
+            <span >项目</span>
+        </div>
+    </div>
+    <div style="width: 25%" class="iconContent" id="execute_foot">
+        <div style="padding: 10px 0" onclick="sq.open('execute.html')">
+            <i class="layui-icon layui-icon-template-1" style="font-size: 22px;font-weight: bold;"></i>
+            <br>
+            <span>执行</span>
+        </div>
+    </div>
+    <div style="width: 25%;display: none;" class="iconContent" id="analyse_foot">
+        <div style="padding: 10px 0" id="analyse_dropdown">
+            <i class="layui-icon layui-icon-template-1" style="font-size: 22px;font-weight: bold;"></i>
+            <br>
+            <span>分析</span>
+        </div>
+    </div>
+    <div style="width: 25%;color: #003c97;" class="iconContent" id="msg_foot">
+        <div style="padding: 10px 0">
+            <i class="layui-icon layui-icon-notice" style="font-size: 22px;font-weight: bold;"></i>
+            <br>
+            <span>消息</span>
+        </div>
+    </div>
+</div>
+<!--下方为模板部�?->
+<!--用户登陆的模�?->
+
+<script src="/js/jquery-3.3.1.min.js"></script>
+<script src="/layui/layui.js"></script>
+<script src="/js/ajax.js"></script>
+<script src="/js/jquery.cookie.js"></script>
+<script src="/js/echarts.min.js"></script>
+<script src="/js/xm-select.js"></script>
+
+<script>
+    var demo1 = xmSelect.render({
+        el: '#demo1',
+        language: 'zn',
+        toolbar: {
+            show: true
+        },
+        // data:select_data,
+        data: [
+            {name: '结余警告', value: '结余警告'},
+            {name: '回款提醒', value: '回款提醒'},
+            {name: '立项申请', value: '立项申请'},
+            {name: '立项修改', value: '立项修改'},
+            {name: '丢单', value: '丢单'},
+        ],
+        on: function(data){
+            //可以return一个数�? 代表想选中的数�?
+
+            //arr:  当前多选已选中的数�?
+            var arr = data.arr;
+            //change, 此次选择变化的数�?数组
+            var change = data.change;
+            //isAdd, 此次操作是新增还是删�?
+            var isAdd = data.isAdd;
+            console.log(change)
+
+            $("#loadMoreBT").show();
+            cur_page = 1;
+            $("#myUL").empty()
+            getMsg(arr)
+        }
+
+        });
+    layui.use('dropdown', function(){
+        var dropdown = layui.dropdown
+        dropdown.render({
+            elem: '#project_dropdown' //可绑定在任意元素中，此处以上述按钮为�?
+            ,align: 'center'
+            ,data: [{
+                title: '立项申请'
+                ,id: 100
+                ,href: 'approvalList.html'
+            },{
+                title: '立项修改'
+                ,id: 101
+                ,href: 'approval_editList.html' //开启超链接
+                // ,target: '_blank' //新窗口方式打开
+            },{
+                title: '丢单'
+                ,id: 102
+                ,href: 'Lost_orderList.html'
+            },]
+            ,id: 'project_dropdown'
+            //菜单被点击的事件
+            ,click: function(obj){
+                console.log(obj);
+                // layer.msg('回调返回的参数已显示再控制台');
+            }
+        });
+    });
+    layui.use('dropdown', function(){
+        var dropdown = layui.dropdown
+        dropdown.render({
+            elem: '#analyse_dropdown' //可绑定在任意元素中，此处以上述按钮为�?
+            ,align: 'center'
+            ,data: [{
+                title: '销售分�?
+                ,id: 200
+                ,href: 'sales_analysis.html'
+            },{
+                title: '财务分析'
+                ,id: 201
+                ,href: 'financial_analysis.html' //开启超链接
+                // ,target: '_blank' //新窗口方式打开
+            },{
+                title: '开票分�?
+                ,id: 202
+                ,href: 'bill_analysis.html'
+            },]
+            ,id: 'analyse_dropdown'
+            //菜单被点击的事件
+            ,click: function(obj){
+                console.log(obj);
+                // layer.msg('回调返回的参数已显示再控制台');
+            }
+        });
+    });
+    if(sq.getHashStringArgs()["wait"] === '1'){
+        // demo1.setValue(['结余警告']);
+        // demo1.append(['回款提醒']);
+        demo1.setValue([
+            {name: '结余警告', value: '结余警告'},
+            {name: '回款提醒', value: '回款提醒'},
+        ])
+        $("#state_select").val("0");
+    }
+    if(sq.getHashStringArgs()['debug'] != '1'){
+        $("#login_debugger").hide();
+    }
+    if(window.sessionStorage.getItem('role_id') == 3){
+        $("#execute_foot").hide()
+        $("#index_foot").css('width','34%')
+        $("#project_foot").css('width','33%')
+        $("#msg_foot").css('width','33%')
+    }
+    if(window.sessionStorage.getItem('role_id') == 4){
+        $("#execute_foot").hide()
+        $("#analyse_foot").show()
+    }
+    var sendObj = new Object();
+    sendObj.user_name = "";
+    sendObj.user_password = "";
+    sendObj.page_size = 5;
+    cur_page = 1
+
+    function login_1() {
+        sq.inputWindow({
+            title: {
+                text: "添加物品",//标题
+                titleColor: "#FFFFFF"//弹窗文字颜色
+            },
+            closeBtn: 1,
+            width: "90%",
+            shadeClose: false,
+            form: {
+                user_name: {
+                    label: "用户�?,
+                    type: "text",
+                    value: "",
+                    tip: "请输入用户名",
+                    allowNull: true
+                },
+                password: {
+                    label: "密码",
+                    type: "text",
+                    value: "",
+                    tip: "请输入密�?,
+                    allowNull: true
+                },
+            },
+            sure: function (rel) {
+                sendObj.user_name = rel.user_name;
+                sendObj.user_password = rel.password;
+                // sendObj.user_name = 'admin';
+                // sendObj.user_password = '123456';
+                layer.closeAll()
+                getList();
+            }
+        })
+    }
+    function getList() {
+        getAjaxDate("/login/","post", sendObj,
+            function(rel){
+                console.log(rel.data)
+                window.sessionStorage.setItem("token",rel.data.token)
+                $("#realname").text(rel.data.nickname)
+                $("#imgsrc").html('<img src="'+imgurl+'static/img/user/9.png'+'" style="max-width: 100px;max-height: 100px"  />')
+                $("#loginname").text(rel.data.user_name)
+                $("#sex").text(rel.data.gender)
+                $("#tel").text(rel.data.tel)
+                $("#department").text(rel.data.department_name)
+                $("#roleid").text(rel.data.role_name)
+                $("#depName").text(rel.data.department_name)
+                if(rel.code === 1){
+                    window.sessionStorage.setItem("realname",rel.data.nickname)
+                    window.sessionStorage.setItem("loginname",rel.data.user_name)
+                    window.sessionStorage.setItem("sex",rel.data.gender)
+                    window.sessionStorage.setItem("tel",rel.data.tel)
+                    window.sessionStorage.setItem("department",rel.data.department_name)
+                    window.sessionStorage.setItem("role_name",rel.data.role_name)
+                    window.sessionStorage.setItem("role_id",rel.data.role_id)
+                }
+                if (window.sessionStorage.getItem("token")){
+                    $("#login_button").hide(300)
+                }
+            })
+    }
+    function quit() {
+        window.sessionStorage.clear()
+        $("myUL").empty()
+        sq.open("my.html")
+    }
+    if(window.sessionStorage.getItem("token")){
+        $("#realname").text(window.sessionStorage.getItem("realname"))
+        $("#loginname").text(window.sessionStorage.getItem("loginname"))
+        $("#sex").text(window.sessionStorage.getItem("sex"))
+        $("#tel").text(window.sessionStorage.getItem("tel"))
+        $("#department").text(window.sessionStorage.getItem("department"))
+        $("#roleid").text(window.sessionStorage.getItem("role_name"))
+        $("#login_button").hide(300)
+    }
+    $("#state_select").on("change",function () {
+        $("#loadMoreBT").show();
+        cur_page = 1;
+        $("#myUL").empty()
+        getMsg()
+    });
+    function getMsg(type_data) {
+        sendObj.page = cur_page;
+        delete sendObj["user_name"];
+        delete sendObj["user_password"];
+        sendObj.read = $('#state_select').val()
+        if($("#state_select").val() == ''){
+            delete sendObj.read
+        }
+        if(type_data == undefined){
+            var selectArr = demo1.getValue();
+        }else{
+            var selectArr = type_data;
+        }
+        console.log(type_data == undefined)
+
+        sendObj.remind_type = [];
+        for(let i =0;i<selectArr.length;i++){
+            sendObj.remind_type.push(selectArr[i].value)
+        }
+        sendObj.remind_type = JSON.stringify(sendObj.remind_type)
+        getAjaxDate("/api/remind/","get", sendObj, function(rel){
+            // layer.msg("获取数据成功")  10.16 删除获取数据时的提示消息
+            $("#loadMoreBT").show();
+            if (rel.data.total_items - cur_page*rel.data.page_size <= 0){
+                $("#loadMoreBT").hide();
+            }
+            if(rel.data.total_items > 99){
+                $("#num_msg").text('99+')
+            }else {
+                $("#num_msg").text(rel.data.total_items)
+            }
+            datalist =rel.data.results;
+            setTable(datalist)
+            });
+    }
+    function setTable(infoList) {
+        /**
+         *@infoList 是一个数�?
+         *  **/
+        for(let row_id = 0;row_id< infoList.length;++row_id){
+            let value = infoList[row_id]
+            let rowcss = null;
+            if(value.read){
+                rowcss='readcss';
+            }
+            else
+            {
+                rowcss='unreadcss';
+            }
+
+            // 将数据插入表格中
+            // $("#myUL").append('<tr class="'+rowcss+'" onclick="checkMessage('+row_id+')">' +
+            //     '<td>'+value.number+'</td>' +
+            //     '<td >'+value.remark+'</td>' +
+            //     '<td>'+value.remind_type+'</td>' +
+            //     '<td>'+value.time+'</td>' +
+            //     '</tr>');
+            $("#myUL").append('<li class="'+rowcss+'" onclick="checkMessage('+row_id+')">'
+                +'<div class="layui-col-md12 layui-col-xs12">'+'<p style="text-align: left;"><strong>消息: </strong>'
+                +'<span>'+value.remark+'</span>'
+                +'</p><div style="padding: 10px 5px;">'
+                +'<div class="layui-col-xs6"><span class="xm">消息类型�?/span><span class="lxdh" style="color: #00e365">'+value.remind_type+'</span></div>'
+                +'<div class="layui-col-xs6" style="text-align: right;"><span class="sqtime">'+value.time+'</span></div></div> </div> </li>'
+            );
+        }
+        // layui.form.render()
+
+    }
+    function checkMessage(row_id) {
+        if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点�?
+        let value = datalist[row_id]
+        layer.open({
+            title: "�?+value.remind_type+"�?+value.id
+            ,content: value.msg
+            ,btn: ['确认', '取消']
+            ,yes: function(index, layero){
+                getAjaxDate("/api/remind/"+value.id+"/","patch",
+                    {read:1},
+                    function(rel){
+                        let row = $("#myUL").find('li').eq(row_id)
+                        row.removeClass('unreadcss')
+                        row.addClass('readcss')
+                        layer.closeAll()
+                    });
+            }
+            // ,btn2: function(index, layero){
+            //     getAjaxDate("/api/remind/"+value.id+"/","patch",
+            //         {read:1},
+            //         function(rel){
+            //             let row = $("#jjTbody").find('li').eq(row_id)
+            //             row.removeClass('unreadcss')
+            //             row.addClass('readcss')
+            //             layer.closeAll()
+            //         });
+            //     console.log(value.remind_type)
+            //     if (value.remind_type==="立项申请"){
+            //         let url = "approvalList.html?t="+$.now()+"#number="+value.number
+            //         sq.open(url)
+            //     }
+            //     if (value.remind_type==="立项修改"||value.remind_type==="结余警告"||value.remind_type==="回款提醒"){
+            //         let url = "approval_editList.html?t="+$.now()+"#number="+value.number
+            //         sq.open(url)
+            //     }
+            //     if (value.remind_type==="丢单操作"){
+            //         let url = "Lost_orderList.html?t="+$.now()+"#number="+value.number
+            //         sq.open(url)
+            //     }
+            //
+            //     //return false 开启该代码可禁止点击该按钮关闭
+            // }
+            ,btn3: function(index, layero){
+                //按钮【按钮三】的回调
+                //return false 开启该代码可禁止点击该按钮关闭
+            }
+        })
+    }
+    getMsg()
+</script>
+</body>
+</html>
