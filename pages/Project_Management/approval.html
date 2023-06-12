@@ -421,6 +421,7 @@
         "2":["name","dep_no","protrans_price","trans_price","remittance_term","travel","communication","tender","product_maintenance","dealer_maintenance","market_investment","payment_term"],
         "3":["name","dep_no","protrans_price","trans_price","remittance_term","travel","communication","tender","product_maintenance","dealer_maintenance","market_investment","payment_term"],
         "4":["name","dep_no","protrans_price","trans_price","remittance_term","travel","communication","tender","product_maintenance","dealer_maintenance","market_investment","payment_term","turn_ratio","department_promotion","proportion_promotion"],
+        "8":["name","dep_no","protrans_price","trans_price","remittance_term","travel","communication","tender","product_maintenance","dealer_maintenance","market_investment","payment_term","turn_ratio","department_promotion","proportion_promotion"],
         "5":["name","nickname","dep_no","protrans_price","trans_price","remittance_term","travel","communication","tender","product_maintenance","dealer_maintenance","market_investment","payment_term"],};
     if(role_id === '1' || role_id === '2'|| role_id === '3'){
         var hide_list = ["turn_ratio_div","department_promotion_div","proportion_promotion_div","tax_rate_div","time_div"]
@@ -428,12 +429,13 @@
             $("#"+hide_list[i]).hide()
         }
     }
-    if(role_id === '4'){
+    if(role_id === '4'|| role_id === '8'){
         var hide_list = ["tax_rate_div","time_div"]
         for (let i=0;i<hide_list.length;i++){
             $("#"+hide_list[i]).hide()
         }
     }
+
     function show_button(role_id) {
         if(role_id in role_authority){
             for(let i= 0;i < role_authority[role_id].length;i++){
@@ -532,7 +534,7 @@
                         $("#withdrawal").show()
                     }
                 }
-                if (role_id === '4'){
+                if (role_id === '4'|| role_id === '8'){
                     if (rel.data.status === '30'){
                         show_button(role_id)
                         $("#reject").show()
@@ -547,7 +549,7 @@
                 if(status === '0'){
                     $("input[name='nameof_num']").removeAttr("readonly")
                     // $("input[name='nameof_devnum']").removeAttr("readonly")
-                }else if (role_id === '4' && status === '30'){
+                }else if ((role_id === '4' && status === '30' )|| (role_id === '8'&& status === '30' )){
                     $("input[name='nameof_discount']").removeAttr("readonly")
                     // $("input[name='nameof_devnum']").removeAttr("readonly")
                 }
@@ -747,7 +749,7 @@
             if(status === '0'){
                 $("input[name='nameof_num']").removeAttr("readonly")
                 // $("input[name='nameof_devnum']").removeAttr("readonly")
-            }else if (role_id === '4' && status === '30'){
+            }else if ((role_id === '4' && status === '30') || (role_id === '8' && status === '30')){
                 $("input[name='nameof_discount']").removeAttr("readonly")
                 // $("input[name='nameof_devnum']").removeAttr("readonly")
             }
@@ -1087,7 +1089,7 @@
         if(tooFastCall( window.location.href,arguments.callee.name))return;//防止快速点击
         compare(receive_data,post_data);
         // compare(receive_product,post_product)
-        if(role_id === '4' && status === '30'){
+        if((role_id === '4' && status === '30') || (role_id === '8' && status === '30')){
             layer.confirm('确定要通过吗？', {
                 btn: ['确定','取消'] //按钮
                 ,btn1: function () {
